@@ -414,13 +414,13 @@ fn empty_mcp_output_preserves_docs_hyperlink() {
     let destination = "https://developers.openai.com/codex/mcp";
     let cell: Box<dyn HistoryCell> = Box::new(empty_mcp_output());
 
-    insta::assert_snapshot!(render_lines(&cell.display_lines(/*width*/ 80)).join("\n"), @r"
+    insta::assert_snapshot!(render_lines(&cell.display_lines(/*width*/ 80)).join("\n"), @"
     /mcp
 
-    🔌  MCP Tools
+    🔌  MCP 工具
 
-      • No MCP servers configured.
-        See the MCP docs to configure them.
+      • 尚未配置 MCP 服务器。
+        请参阅 MCP 文档 进行配置。
     ");
 
     let expected_link = vec![crate::terminal_hyperlinks::TerminalHyperlink::web(
@@ -502,7 +502,7 @@ fn structured_tool_cell_renders_raw_plain_text_without_prefix_or_style() {
 
     let lines = cell.raw_lines();
     let rendered = render_lines(&lines);
-    assert!(rendered[0].starts_with("Called search.find_docs("));
+    assert!(rendered[0].starts_with("已调用 search.find_docs("));
     assert_eq!(rendered[1..], ["alpha".to_string(), "beta".to_string()]);
     assert_unstyled_lines(&lines);
 }
@@ -581,7 +581,7 @@ fn image_generation_call_renders_saved_path() {
     assert_eq!(
         render_lines(&cell.display_lines(/*width*/ 80)),
         vec![
-            "• Generated Image:".to_string(),
+            "• 已生成图像：".to_string(),
             "  └ A tiny blue square".to_string(),
             expected_saved_path,
         ],
@@ -621,7 +621,7 @@ fn unified_exec_interaction_cell_renders_input() {
     let lines = render_lines(&cell.display_lines(/*width*/ 80));
     assert_eq!(lines, render_transcript(&cell));
     insta::assert_snapshot!(lines.join("\n"), @"
-    ↳ Interacted with background terminal · cat
+    ↳ 已与后台终端交互 · cat
       └ line 1
         line 2
         line 3
@@ -645,7 +645,7 @@ fn unified_exec_interaction_cell_renders_input() {
 fn unified_exec_interaction_cell_renders_wait() {
     let cell = new_unified_exec_interaction(/*command_display*/ None, String::new());
     let lines = render_transcript(&cell);
-    assert_eq!(lines, vec!["• Waited for background terminal"]);
+    assert_eq!(lines, vec!["• 已等待后台终端"]);
 }
 
 #[test]
@@ -684,7 +684,7 @@ fn final_message_separator_preserves_runtime_metrics_for_short_turns() {
     let rendered = render_lines(&cell.display_lines(/*width*/ 600));
 
     assert_eq!(rendered.len(), 1);
-    assert!(rendered[0].starts_with("  Local tools:"));
+    assert!(rendered[0].starts_with("  本地工具："));
     assert!(rendered[0].contains("Local tools: 3 calls (2.5s)"));
     assert!(rendered[0].contains("Inference: 2 calls (1.2s)"));
     assert!(rendered[0].contains("WebSocket: 1 events send (700ms)"));
@@ -713,7 +713,7 @@ fn final_message_separator_includes_worked_label_after_one_minute() {
     let rendered = render_lines(&cell.display_lines(/*width*/ 200));
 
     assert_eq!(rendered.len(), 1);
-    assert!(rendered[0].contains("Worked for"));
+    assert!(rendered[0].contains("已工作"));
 }
 
 #[test]
@@ -1342,7 +1342,7 @@ fn web_search_history_cell_truncates() {
 
     assert_eq!(
         rendered,
-        vec!["• Searched the web for example search query with several generi…".to_string(),]
+        vec!["• 已搜索网页：example search query with several generic words t…".to_string(),]
     );
 }
 
@@ -1359,10 +1359,7 @@ fn web_search_history_cell_short_query_does_not_wrap() {
     );
     let rendered = render_lines(&cell.display_lines(/*width*/ 64));
 
-    assert_eq!(
-        rendered,
-        vec!["• Searched the web for short query".to_string()]
-    );
+    assert_eq!(rendered, vec!["• 已搜索网页：short query".to_string()]);
 }
 
 #[test]
@@ -1443,7 +1440,7 @@ fn code_mode_tool_call_uses_title_and_preserves_full_transcript() {
         +1 line (ctrl + t to view transcrip…
 
     transcript:
-    • Called node_repl.js({"title":"Inspect Spotify workspace","code":"await tools.exec_command({ cmd: 'git status' })"})
+    • 已调用 node_repl.js({"title":"Inspect Spotify workspace","code":"await tools.exec_command({ cmd: 'git status' })"})
       └ Script completed
         Wall time 0.1 seconds
         Output:
@@ -1484,7 +1481,7 @@ fn code_mode_tool_call_preserves_failure_details() {
         permission denied
 
     transcript:
-    • Called node_repl.js({"title":"Inspect workspace","code":"throw Error('denied')"})
+    • 已调用 node_repl.js({"title":"Inspect workspace","code":"throw Error('denied')"})
       └ Script failed
         Output:
         permission denied
@@ -1506,7 +1503,7 @@ fn mcp_inventory_loading_without_animations_is_stable() {
     let second = render_lines(&cell.display_lines(/*width*/ 80));
 
     assert_eq!(first, second);
-    assert_eq!(first, vec!["• Loading MCP inventory…".to_string()]);
+    assert_eq!(first, vec!["• 正在加载 MCP 清单…".to_string()]);
 }
 
 #[test]
@@ -1514,7 +1511,7 @@ fn thread_recap_loading_without_animations_snapshot() {
     let cell = ThreadRecapLoadingCell::new(/*animations_enabled*/ false);
     let rendered = render_lines(&cell.display_lines(/*width*/ 80)).join("\n");
 
-    insta::assert_snapshot!(rendered, @"• Generating conversation recap…");
+    insta::assert_snapshot!(rendered, @"• 正在生成对话回顾…");
 }
 
 #[test]
@@ -1776,7 +1773,7 @@ fn session_header_includes_reasoning_level_when_present() {
     let lines = render_lines(&cell.display_lines(/*width*/ 80));
     let model_line = lines
         .iter()
-        .find(|line| line.contains("model:"))
+        .find(|line| line.contains("模型:"))
         .expect("model line");
 
     assert!(model_line.contains("gpt-4o high   fast"));
@@ -1796,11 +1793,11 @@ fn session_header_hides_fast_status_when_disabled() {
     let lines = render_lines(&cell.display_lines(/*width*/ 80));
     let model_line = lines
         .iter()
-        .find(|line| line.contains("model:"))
+        .find(|line| line.contains("模型:"))
         .expect("model line");
 
     assert!(model_line.contains("gpt-4o high"));
-    assert!(!model_line.contains("fast"));
+    assert!(!model_line.contains("快速"));
 }
 
 #[test]

@@ -10,7 +10,7 @@ activity:
 "                                                                                "
 "› Ask Codex to do anything                                                      "
 "                                                                                "
-"  GPT-5.6-Sol default · /tmp/project                                            "
+"  GPT-5.6-Sol 默认 · /tmp/project                                               " Hidden by multi-width symbols: [(15, " "), (17, " ")]
 history:
-• Hook stopped
+• 钩子已停止
   └ continue with more context

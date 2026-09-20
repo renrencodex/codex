@@ -2,7 +2,7 @@
 source: tui/src/chatwidget/tests/status_and_layout.rs
 expression: history
 ---
-• Blocked by hook
+• 已被钩子阻止
   └ command blocked by policy
 
 • The hook feedback was applied.

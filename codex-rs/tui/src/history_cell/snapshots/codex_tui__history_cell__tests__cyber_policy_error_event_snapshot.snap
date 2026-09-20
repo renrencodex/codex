@@ -1,11 +1,9 @@
 ---
 source: tui/src/history_cell/tests.rs
-assertion_line: 774
 expression: rendered
 ---
-ⓘ This content can’t be shown
-  We take extra care with some cybersecurity requests. If you’re doing
-  authorized security work, apply for Daybreak to get broader access.
-  Learn more: https://help.openai.com/en/articles/20001326
-  Apply for Daybreak: https://openai.com/form/enterprise-trusted-access-for-
-  cyber/
+ⓘ 无法显示此内容
+  对于某些网络安全请求，我们会格外谨慎。如果你正在从事获授权的安全工作，可以申
+  请 Daybreak 以获得更广泛的访问权限。
+  了解更多: https://help.openai.com/en/articles/20001326
+  申请 Daybreak: https://openai.com/form/enterprise-trusted-access-for-cyber/

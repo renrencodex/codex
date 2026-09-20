@@ -362,7 +362,7 @@ async fn status_surface_thread_usage_previews_omit_unavailable_usd_estimates() {
                 StatusLineItem::EstimatedThreadCost,
             ],
         ),
-        "5.2 credits"
+        "5.2 点"
     );
     assert_eq!(
         title_preview_line(
@@ -372,7 +372,7 @@ async fn status_surface_thread_usage_previews_omit_unavailable_usd_estimates() {
                 TerminalTitleItem::EstimatedThreadCost,
             ],
         ),
-        "5.2 credits"
+        "5.2 点"
     );
 }
 
@@ -406,7 +406,7 @@ async fn status_surface_preview_omits_unavailable_rate_limit_items() {
             &mut chat,
             &[StatusLineItem::FiveHourLimit, StatusLineItem::WeeklyLimit]
         ),
-        "weekly 91% left"
+        "weekly 剩余 91%"
     );
     assert_eq!(
         title_preview_line(
@@ -416,7 +416,7 @@ async fn status_surface_preview_omits_unavailable_rate_limit_items() {
                 TerminalTitleItem::WeeklyLimit
             ],
         ),
-        "weekly 91% left"
+        "weekly 剩余 91%"
     );
 }
 

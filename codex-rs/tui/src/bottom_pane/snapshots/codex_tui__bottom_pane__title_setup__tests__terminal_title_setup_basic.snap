@@ -3,19 +3,19 @@ source: tui/src/bottom_pane/title_setup.rs
 expression: "render_lines(&view, 84)"
 ---
                                                                                     
-  Configure Terminal Title                                                          
-  Select which items to display in the terminal title.                              
+  配 置 终 端 标 题                                                                       
+  选 择 要 在 终 端 标 题 中 显 示 的 项 目 。                                                     
                                                                                     
-  Type to search                                                                    
+  输 入 以 搜 索                                                                         
   >                                                                                 
-› [x] project-name  Project name (falls back to current directory name)             
-  [x] activity      Spinner while working, action-required message while blocked.   
-  [x] run-state     Compact session run-state text (Ready, Working, Thinking)       
-  [x] thread-title  Current thread title, or thread identifier when unnamed         
-  [ ] app-name      Codex app name                                                  
-  [ ] current-dir   Current working directory                                       
-  [ ] thread-name   Current thread name (omitted when unnamed)                      
-  [ ] git-branch    Current Git branch (omitted when unavailable)                   
+› [x] 项 目       项 目 名 称 （ 回 退 为 当 前 目 录 名 称 ）                                       
+  [x] 活 动 状 态   工 作 时 显 示 旋 转 指 示 器 ， 受 阻 时 显 示 需 要 操 作 的 消 息 。                     
+  [x] 运 行 状 态   简 洁 的 会 话 运 行 状 态 （ 就 绪 、 工 作 中 、 思 考 中 ）                           
+  [x] 会 话 标 题   当 前 会 话 标 题 ； 未 命 名 时 显 示 会 话 标 识 符                                 
+  [ ] 应 用 名 称   Codex 应 用 名 称                                                       
+  [ ] 当 前 目 录   当 前 工 作 目 录                                                         
+  [ ] 会 话 名 称   当 前 会 话 名 称 （ 未 命 名 时 省 略 ）                                         
+  [ ] Git 分 支   当 前  Git 分 支 （ 不 可 用 时 省 略 ）                                        
                                                                                     
   [ ! ] Action Required | my-project | Working | thread title                       
-  Press space to toggle; ←/→ to move; enter to confirm and close; esc to close
+  按  space 切 换 ; ←/→ 移 动 ; enter 确 认 并 关 闭 ; esc 关 闭

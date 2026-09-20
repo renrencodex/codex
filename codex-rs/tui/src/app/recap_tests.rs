@@ -664,7 +664,7 @@ fn recap_history_cell_uses_hanging_indent_and_right_padding() {
     }));
     assert_eq!(
         &lines[0].spans[..3],
-        &["  ".into(), "↳ ".dim(), "Recap: ".bold()],
+        &["  ".into(), "↳ ".dim(), "回顾：".bold()],
     );
     let rendered = lines
         .iter()
@@ -672,9 +672,9 @@ fn recap_history_cell_uses_hanging_indent_and_right_padding() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    insta::assert_snapshot!(rendered, @r"
-      ↳ Recap: Automatic recaps stay compact on wide
-               terminals.
+    insta::assert_snapshot!(rendered, @"
+    ↳ 回顾：Automatic recaps stay compact on wide
+            terminals.
     ");
 }
 
@@ -690,10 +690,10 @@ fn recap_history_cell_wraps_in_narrow_terminals() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    insta::assert_snapshot!(rendered, @r"
-      ↳ Recap: Keep conversation
-               recaps readable in
-               narrow terminals.
+    insta::assert_snapshot!(rendered, @"
+    ↳ 回顾：Keep conversation
+            recaps readable in
+            narrow terminals.
     ");
 }
 
@@ -709,10 +709,10 @@ fn recap_history_cell_preserves_unicode_and_url_tokens() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    insta::assert_snapshot!(rendered, @r"
-      ↳ Recap: Résumé ready. See
-               https://example.com/review/42
-               日本語 details.
+    insta::assert_snapshot!(rendered, @"
+    ↳ 回顾：Résumé ready. See
+            https://example.com/review/42 日本語
+            details.
     ");
 }
 
@@ -728,7 +728,7 @@ fn recap_history_cell_wraps_long_urls_in_narrow_terminals() {
         lines
             .iter()
             .skip(/*n*/ 1)
-            .all(|line| line.to_string().starts_with("           "))
+            .all(|line| line.to_string().starts_with("          "))
     );
     assert!(lines.iter().all(|line| {
         line.style
@@ -742,28 +742,25 @@ fn recap_history_cell_wraps_long_urls_in_narrow_terminals() {
         .join("\n");
 
     insta::assert_snapshot!(rendered, @"
-    ↳ Recap: The café review is
-             paused with the
-             draft ready at
-             https://example.com
-             /review/42. 日本語
+    ↳ 回顾：The café review is
+            paused with the
+            draft ready at
+            https://example.com/
+            review/42. 日本語
     ");
 }
 
 #[test]
 fn recap_history_cell_splits_only_urls_wider_than_the_text_column() {
     for (url, expected) in [
-        (
-            "https://example.com",
-            vec!["  ↳ Recap: https://example.com"],
-        ),
+        ("https://example.com", vec!["  ↳ 回顾：https://example.com"]),
         (
             "https://example.com/",
-            vec!["  ↳ Recap: https://example.com", "           /"],
+            vec!["  ↳ 回顾：https://example.com", "          /"],
         ),
         (
             "https://a.co/ｶﾞｶﾞｶﾞｶﾞｶﾞｶﾞ",
-            vec!["  ↳ Recap: https://a.co/ｶﾞｶﾞｶﾞ", "           ｶﾞｶﾞｶﾞ"],
+            vec!["  ↳ 回顾：https://a.co/ｶﾞｶﾞｶﾞ", "          ｶﾞｶﾞｶﾞ"],
         ),
     ] {
         let cell = ThreadRecapHistoryCell::new(url.to_string());
@@ -775,7 +772,13 @@ fn recap_history_cell_splits_only_urls_wider_than_the_text_column() {
         );
         let displayed_url = lines
             .iter()
-            .map(|line| line.to_string().chars().skip(/*n*/ 11).collect::<String>())
+            .enumerate()
+            .map(|(index, line)| {
+                line.to_string()
+                    .chars()
+                    .skip(if index == 0 { 7 } else { 10 })
+                    .collect::<String>()
+            })
             .collect::<String>();
         assert_eq!(displayed_url, url);
     }
@@ -793,8 +796,8 @@ fn recap_history_cell_uses_available_space_below_indent_width() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    insta::assert_snapshot!(rendered, @r"
-    ↳ Recap:
+    insta::assert_snapshot!(rendered, @"
+    ↳ 回顾：
     Resume
     this task.
     https://ex
@@ -814,8 +817,8 @@ fn recap_history_cell_preserves_heading_in_raw_history() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    insta::assert_snapshot!(rendered, @r"
-    Conversation recap
+    insta::assert_snapshot!(rendered, @"
+    对话回顾
     Resume this task.
     ");
 }
@@ -830,8 +833,8 @@ fn recap_history_cell_wraps_next_action_urls_in_narrow_terminals() {
         lines
             .iter()
             .flat_map(|line| &line.spans)
-            .find(|span| span.content == "Next: "),
-        Some(&"Next: ".bold().italic()),
+            .find(|span| span.content == "下一步："),
+        Some(&"下一步：".bold().italic()),
     );
     let rendered = lines
         .iter()
@@ -839,12 +842,12 @@ fn recap_history_cell_wraps_next_action_urls_in_narrow_terminals() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    insta::assert_snapshot!(rendered, @r"
-      ↳ Recap: The café draft is
-               ready.
-               Next: Review
-               https://example.com
-               /review/42.
+    insta::assert_snapshot!(rendered, @"
+    ↳ 回顾：The café draft is
+            ready.
+            下一步：Review
+            https://example.com/
+            review/42.
     ");
 }
 
@@ -859,8 +862,8 @@ fn recap_history_cell_preserves_line_breaks_and_optional_next() {
         lines
             .iter()
             .flat_map(|line| &line.spans)
-            .find(|span| span.content == "Next: "),
-        Some(&"Next: ".bold().italic()),
+            .find(|span| span.content == "下一步："),
+        Some(&"下一步：".bold().italic()),
     );
     let area = Rect::new(
         /*x*/ 0,
@@ -930,7 +933,7 @@ async fn generated_recap_is_returned_for_synchronous_insertion() {
             .iter()
             .map(ToString::to_string)
             .collect::<Vec<_>>(),
-        vec!["Conversation recap", "Continue with focused tests."]
+        vec!["对话回顾", "Continue with focused tests."]
     );
 }
 

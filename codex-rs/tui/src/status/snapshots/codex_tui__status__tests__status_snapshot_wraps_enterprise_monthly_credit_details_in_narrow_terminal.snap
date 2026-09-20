@@ -7,21 +7,19 @@ expression: sanitized
 ╭────────────────────────────────────────────╮
 │  >_ OpenAI Codex (v0.0.0)                  │
 │                                            │
-│ Visit                                      │
+│ 访问                                       │
 │ https://chatgpt.com/codex/settings/usage   │
-│ for up-to-date                             │
-│ information on rate limits and credits     │
+│ 查看最新的                                 │
+│ 速率限制和点数信息                         │
 │                                            │
-│  Model:                  gpt-5.1-codex-max │
-│  Directory: [[workspace]]                  │
-│  Permissions:            Custom (workspace │
-│  Agents.md:              <none>            │
+│  模型:           gpt-5.1-codex-max (推理强 │
+│  目录:           /workspace/tests          │
+│  权限:           自定义（工作区，可访问网  │
+│  Agents.md:      <none>                    │
 │                                            │
-│  Token usage:            1.2K total  (800  │
-│  Context window:         100% left (1.2K u │
-│  Monthly credit limit:   68% left          │
-│                          (resets 07:08 on  │
-│                          7 May)            │
-│                          8,000 of 25,000   │
-│                          credits used      │
+│  Token 用量:     1.2K 总计  (800 输入 + 40 │
+│  上下文窗口:     剩余 100% (1.2K 已使用 /  │
+│  每月点数限制:   剩余 68%                  │
+│                  （5月7日 07:08 重置）     │
+│                  已使用 8,000 / 25,000 点  │
 ╰────────────────────────────────────────────╯

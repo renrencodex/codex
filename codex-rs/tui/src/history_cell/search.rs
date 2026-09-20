@@ -81,10 +81,10 @@ impl WebSearchCell {
         let (header, separator) = match (&self.action, self.completed) {
             (Some(WebSearchAction::OpenPage { .. }), completed) => (
                 match (completed, detail.is_empty()) {
-                    (true, true) => "Opened page",
-                    (true, false) => "Opened",
-                    (false, true) => "Opening page",
-                    (false, false) => "Opening",
+                    (true, true) => "已打开页面",
+                    (true, false) => "已打开",
+                    (false, true) => "正在打开页面",
+                    (false, false) => "正在打开",
                 },
                 " ",
             ),
@@ -92,24 +92,24 @@ impl WebSearchCell {
                 let has_pattern = pattern.as_ref().is_some_and(|pattern| !pattern.is_empty());
                 (
                     match (completed, has_pattern) {
-                        (true, true) => "Searched for",
-                        (true, false) => "Searched page",
-                        (false, true) => "Searching for",
-                        (false, false) => "Searching page",
+                        (true, true) => "已查找",
+                        (true, false) => "已搜索页面",
+                        (false, true) => "正在查找",
+                        (false, false) => "正在搜索页面",
                     },
                     " ",
                 )
             }
             (None | Some(WebSearchAction::Other), false) if detail.is_empty() => {
-                ("Browsing the web", " ")
+                ("正在浏览网页", " ")
             }
             (Some(WebSearchAction::Search { .. } | WebSearchAction::Other) | None, completed) => (
                 if completed {
-                    "Searched the web"
+                    "已搜索网页"
                 } else {
-                    "Searching the web"
+                    "正在搜索网页"
                 },
-                " for ",
+                "：",
             ),
         };
         let mut line = Line::from(header.bold());

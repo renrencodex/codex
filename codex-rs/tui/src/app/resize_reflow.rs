@@ -656,7 +656,7 @@ impl App {
             return;
         };
         let notice = Line::from(format!(
-            "Earlier messages are available — press {} to view the full transcript",
+            "更早的消息可用 — 按 {} 查看完整对话记录",
             binding.display_label()
         ))
         .dim();

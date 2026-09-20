@@ -9,7 +9,7 @@ use codex_app_server_protocol::UserVerificationUnavailableReason;
 
 pub(super) fn verification_error_message(error: &TypedRequestError) -> &'static str {
     let TypedRequestError::Server { source, .. } = error else {
-        return "Could not complete user verification with the local Codex binary.";
+        return "无法使用本地 Codex 二进制文件完成用户验证。";
     };
     let details = source
         .data
@@ -18,35 +18,35 @@ pub(super) fn verification_error_message(error: &TypedRequestError) -> &'static 
     match details {
         Some(UserVerificationErrorDetails::InvalidRequest {
             reason: UserVerificationInvalidRequestReason::InvalidParams,
-        }) => "The local Codex binary could not verify this request.",
+        }) => "本地 Codex 二进制文件无法验证此请求。",
         Some(UserVerificationErrorDetails::Unavailable {
             reason: UserVerificationUnavailableReason::CredentialMissing,
-        }) => "No user-verification credential is available in the local Codex binary.",
+        }) => "本地 Codex 二进制文件中没有可用的用户验证凭据。",
         Some(UserVerificationErrorDetails::Unavailable {
             reason: UserVerificationUnavailableReason::BiometricsUnavailable,
-        }) => "Biometric verification is currently unavailable on this device.",
+        }) => "此设备当前无法使用生物识别验证。",
         Some(UserVerificationErrorDetails::Unavailable {
             reason: UserVerificationUnavailableReason::ProviderUnavailable,
-        }) => "User verification is unavailable for this request.",
+        }) => "此请求无法使用用户验证。",
         Some(UserVerificationErrorDetails::Cancelled {
             reason: UserVerificationCancellationReason::UserCancelled,
-        }) => "User verification was cancelled.",
+        }) => "用户验证已取消。",
         Some(UserVerificationErrorDetails::Cancelled {
             reason: UserVerificationCancellationReason::Interrupted,
-        }) => "User verification was interrupted.",
+        }) => "用户验证已中断。",
         Some(UserVerificationErrorDetails::Failed {
             reason: UserVerificationFailureReason::AuthenticationFailed,
-        }) => "Biometric verification did not succeed. The request was cancelled.",
+        }) => "生物识别验证未成功，请求已取消。",
         Some(UserVerificationErrorDetails::Failed {
             reason: UserVerificationFailureReason::Timeout,
-        }) => "User verification timed out. The request was cancelled.",
+        }) => "用户验证超时，请求已取消。",
         Some(UserVerificationErrorDetails::Failed {
             reason: UserVerificationFailureReason::ProviderError,
         })
         | Some(UserVerificationErrorDetails::Failed {
             reason: UserVerificationFailureReason::ServiceError,
         })
-        | None => "The local Codex binary could not complete user verification.",
+        | None => "本地 Codex 二进制文件无法完成用户验证。",
     }
 }
 

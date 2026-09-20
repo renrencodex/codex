@@ -2,13 +2,13 @@
 source: tui/src/app/tests.rs
 expression: rendered
 ---
-  Would you like to make the following edits?
+  是 否 要 进 行 以 下 修 改 ？
 
-  Description: Apply proposed file edits
-  Destination: /tmp/project/visible-target.md
+  说 明 ： 应 用 建 议 的 文 件 修 改
+  目 标 ： /tmp/project/visible-target.md
 
-› 1. Yes, proceed (y)
-  2. Yes, and don't ask again for these files (a)
-  3. No, and tell Codex what to do differently (esc)
+› 1. 是 ， 继 续  (y)
+  2. 是 ， 并 且 不 再 询 问 这 些 文 件  (a)
+  3. 否 ， 并 告 诉  Codex 应 如 何 调 整  (esc)
 
-  Press enter to confirm or esc to cancel
+  按  enter 确 认 ， 或 按  esc 取 消

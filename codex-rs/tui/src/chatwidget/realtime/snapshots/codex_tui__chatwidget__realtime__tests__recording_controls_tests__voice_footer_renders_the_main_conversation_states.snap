@@ -3,7 +3,7 @@ source: tui/src/chatwidget/realtime/recording_controls_tests.rs
 expression: "states.join(\"\\n\\n\")"
 ---
 connecting:
- voice ◌ connecting                                                 /voice stop
+ voice ◌ 正 在 连 接                                                    /voice stop
    mic ▁▁▁▁▁▁  codex ▁▁▁▁▁▁
 
 › Ask Codex to do anything
@@ -11,7 +11,7 @@ connecting:
   status line stays visible
 
 listening:
- voice ● listening                                  ctrl+x mute     /voice stop
+ voice ● 正 在 聆 听                                    ctrl+x mute     /voice stop
    mic ▁▁▁▁▁▁  codex ▁▁▁▁▁▁
 
 › Ask Codex to do anything
@@ -19,7 +19,7 @@ listening:
   status line stays visible
 
 speaking:
- voice ● speaking                                   ctrl+x mute     /voice stop
+ voice ● 正 在 说 话                                    ctrl+x mute     /voice stop
    mic ▁▁▇▇▇▇  codex ▁▁████
 
 › Ask Codex to do anything
@@ -27,7 +27,7 @@ speaking:
   status line stays visible
 
 muted:
- voice ◌ muted                                      ctrl+x unmute   /voice stop
+ voice ◌ 已 静 音                                      ctrl+x unmute   /voice stop
    mic ▁▁▁▁▁▁  codex ▁▁▇▇▇▇
 
 › Ask Codex to do anything
@@ -35,7 +35,7 @@ muted:
   status line stays visible
 
 transcript:
- voice ● speaking                                   ctrl+x mute     /voice stop
+ voice ● 正 在 说 话                                    ctrl+x mute     /voice stop
    mic ▁▁▄▄▄▄  codex ▁▁▄▄▄▄
 
 › Ask Codex to do anything
@@ -43,7 +43,7 @@ transcript:
   status line stays visible
 
 interrupted:
- voice ● heard                                      ctrl+x mute     /voice stop
+ voice ● 已 听 到                                      ctrl+x mute     /voice stop
    mic ▁▁▄▄▄▄  codex ▁▁▄▄▄▄
 
 › Ask Codex to do anything

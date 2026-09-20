@@ -17,9 +17,10 @@ use super::source::ExternalAgentConfigMigrationSource;
 use super::source::run_external_agent_config_source_prompt;
 
 pub(crate) const EXTERNAL_AGENT_CONFIG_MIGRATION_NO_ITEMS_MESSAGE: &str =
-    "No compatible setup was found to import.";
-pub(crate) const EXTERNAL_AGENT_CONFIG_MIGRATION_REMOTE_UNAVAILABLE_MESSAGE: &str = "Import from other apps is unavailable in remote sessions. Start Codex locally and run /import.";
-pub(crate) const EXTERNAL_AGENT_CONFIG_MIGRATION_DAEMON_UNAVAILABLE_MESSAGE: &str = "Import from other apps is unavailable while Codex is connected to the local app-server daemon. Restart with `codex --no-daemon` and run /import.";
+    "未找到可导入的兼容设置。";
+pub(crate) const EXTERNAL_AGENT_CONFIG_MIGRATION_REMOTE_UNAVAILABLE_MESSAGE: &str =
+    "远程会话中无法从其他应用导入。请在本地启动 Codex 并运行 /import。";
+pub(crate) const EXTERNAL_AGENT_CONFIG_MIGRATION_DAEMON_UNAVAILABLE_MESSAGE: &str = "Codex 连接到本地 app-server 后台服务时无法从其他应用导入。请使用 `codex --no-daemon` 重启并运行 /import。";
 
 pub(crate) enum ExternalAgentConfigMigrationFlowOutcome {
     Started(Vec<Line<'static>>),
@@ -72,7 +73,7 @@ impl ExternalAgentConfigDetection {
             ExternalAgentConfigDetectionOutcome::NoItems
         } else {
             ExternalAgentConfigDetectionOutcome::Failed(format!(
-                "Could not check for importable setup: {}",
+                "无法检查可导入的设置：{}",
                 self.errors.join("; ")
             ))
         }
@@ -147,12 +148,12 @@ fn external_agent_config_migration_started_lines(
     let mut lines = vec![
         vec![
             "• ".dim(),
-            "Import started.".cyan(),
-            " You can keep working while it finishes.".into(),
+            "导入已开始。".cyan(),
+            " 导入期间你可以继续工作。".into(),
         ]
         .into(),
-        vec!["  ".into(), "Imported setup will apply to new chats.".dim()].into(),
-        vec!["  ".into(), "Importing:".cyan().bold()].into(),
+        vec!["  ".into(), "导入的设置将应用于新对话。".dim()].into(),
+        vec!["  ".into(), "正在导入：".cyan().bold()].into(),
     ];
     lines.extend(
         import_summaries
@@ -169,7 +170,7 @@ fn external_agent_config_migration_started_lines(
                     let mut name_summary = shown_names.join(", ");
                     if names.len() > shown_names.len() {
                         name_summary
-                            .push_str(&format!(", +{} more", names.len() - shown_names.len()));
+                            .push_str(&format!("，另有 {} 项", names.len() - shown_names.len()));
                     }
                     line.extend([" — ".dim(), name_summary.into()]);
                 }
@@ -196,15 +197,15 @@ pub(crate) fn external_agent_config_migration_finished_lines(
         .map(|type_result| type_result.failures.len())
         .sum::<usize>();
     let failed_count = if failed_count == 0 {
-        format!("{failed_count} failed").green()
+        format!("{failed_count} 项失败").green()
     } else {
-        format!("{failed_count} failed").red()
+        format!("{failed_count} 项失败").red()
     };
     let mut lines = vec![
         vec![
             "• ".dim(),
-            "Import finished: ".into(),
-            format!("{imported_count} imported").green(),
+            "导入完成：".into(),
+            format!("已导入 {imported_count} 项").green(),
             ", ".into(),
             failed_count,
             ".".into(),
@@ -212,9 +213,9 @@ pub(crate) fn external_agent_config_migration_finished_lines(
         .into(),
     ];
     if !notification.item_type_results.is_empty() {
-        lines.push(vec!["  ".into(), "Results by type:".cyan().bold()].into());
+        lines.push(vec!["  ".into(), "按类型列出的结果：".cyan().bold()].into());
         lines.extend(notification.item_type_results.iter().map(|type_result| {
-            let failed_count = format!("{} failed", type_result.failures.len());
+            let failed_count = format!("{} 项失败", type_result.failures.len());
             let failed_count = if type_result.failures.is_empty() {
                 failed_count.green()
             } else {
@@ -224,32 +225,23 @@ pub(crate) fn external_agent_config_migration_finished_lines(
                 "    ".into(),
                 external_agent_config_migration_type_label(type_result.item_type).cyan(),
                 ": ".into(),
-                format!("{} imported", type_result.successes.len()).green(),
+                format!("已导入 {} 项", type_result.successes.len()).green(),
                 ", ".into(),
                 failed_count,
             ]
             .into()
         }));
     }
-    lines.push(
-        vec![
-            "  ".into(),
-            "Run /import again to check for additional items.".dim(),
-        ]
-        .into(),
-    );
+    lines.push(vec!["  ".into(), "再次运行 /import 以检查其他项目。".dim()].into());
     lines
 }
 
 fn remaining_items_handoff(remaining_item_count: usize) -> Option<String> {
     match remaining_item_count {
         0 => None,
-        1 => Some(
-            "1 additional item remains. After it finishes, run /import again to review it."
-                .to_string(),
-        ),
+        1 => Some("还有 1 个项目。完成后请再次运行 /import 查看。".to_string()),
         _ => Some(format!(
-            "{remaining_item_count} additional items remain. After it finishes, run /import again to review them."
+            "还有 {remaining_item_count} 个项目。完成后请再次运行 /import 查看。"
         )),
     }
 }
@@ -323,7 +315,7 @@ pub(crate) async fn handle_external_agent_config_migration_prompt(
         .into_iter()
         .find(|detected| detected.source == selected_source)
     else {
-        return Err("Selected import source is no longer available.".to_string());
+        return Err("所选导入来源已不可用。".to_string());
     };
     let detected_items = detected_source.items;
 
@@ -365,7 +357,7 @@ pub(crate) async fn handle_external_agent_config_migration_prompt(
                             cwd = %cwd.display(),
                             "failed to import external agent config migration items"
                         );
-                        error = Some(format!("Import failed: {err}"));
+                        error = Some(format!("导入失败：{err}"));
                     }
                 }
             }

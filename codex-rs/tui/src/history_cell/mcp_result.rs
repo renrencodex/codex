@@ -74,7 +74,7 @@ impl McpToolResult {
                         if !has_image {
                             has_image = decode_mcp_image(&image.data).is_some();
                         }
-                        McpContentDisplay::Summary("Returned image".into())
+                        McpContentDisplay::Summary("已返回图像".into())
                     }
                     Ok(ContentBlock::Audio(_)) => {
                         McpContentDisplay::Summary("<audio content>".into())
@@ -83,14 +83,14 @@ impl McpToolResult {
                         let summary = match resource.resource {
                             ResourceContents::TextResourceContents { uri, .. }
                             | ResourceContents::BlobResourceContents { uri, .. } => {
-                                format!("embedded resource: {uri}").into()
+                                format!("嵌入资源：{uri}").into()
                             }
                             _ => "<unknown embedded resource>".into(),
                         };
                         McpContentDisplay::Summary(summary)
                     }
                     Ok(ContentBlock::ResourceLink(link)) => {
-                        McpContentDisplay::Summary(format!("link: {}", link.uri).into())
+                        McpContentDisplay::Summary(format!("链接：{}", link.uri).into())
                     }
                     Ok(_) | Err(_) => McpContentDisplay::Json(block.to_string()),
                 };

@@ -8,11 +8,11 @@ impl ChatWidget {
         let muted = !self.realtime_conversation.microphone_muted;
         if let Some(handle) = self.realtime_conversation.handle.as_ref() {
             if let Err(error) = handle.set_microphone_muted(muted) {
-                self.on_realtime_error(format!("Failed to update microphone: {error}"));
+                self.on_realtime_error(format!("更新麦克风失败：{error}"));
                 return;
             }
         } else if self.realtime_conversation.phase != RealtimeConversationPhase::Starting {
-            self.add_error_message("Start voice mode before muting the microphone.".to_string());
+            self.add_error_message("请先启动语音模式，再将麦克风静音。".to_string());
             return;
         }
 
@@ -148,7 +148,7 @@ impl ChatWidget {
             return;
         };
         if let Some(error) = handle.take_error() {
-            self.on_realtime_error(format!("Voice conversation failed: {error}"));
+            self.on_realtime_error(format!("语音对话失败：{error}"));
             return;
         }
         if self.realtime_conversation.phase == RealtimeConversationPhase::Starting {
@@ -251,24 +251,24 @@ impl ChatWidget {
         }
 
         let activity = if self.realtime_conversation.phase == RealtimeConversationPhase::Starting {
-            "connecting"
+            "正在连接"
         } else if self.realtime_conversation.microphone_muted {
-            "muted"
+            "已静音"
         } else if self
             .realtime_conversation
             .interruption_acknowledged_until
             .is_some_and(|deadline| deadline > Instant::now())
         {
-            "heard"
+            "已听到"
         } else if self.realtime_conversation.speaker_level > 0
             || self
                 .realtime_conversation
                 .speaker_active_until
                 .is_some_and(|deadline| deadline > Instant::now())
         {
-            "speaking"
+            "正在说话"
         } else {
-            "listening"
+            "正在聆听"
         };
         self.bottom_pane.set_voice_strip(Some(VoiceStripState {
             mute_hint: self.chat_keymap.voice_mute_hint(),

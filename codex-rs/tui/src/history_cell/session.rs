@@ -87,7 +87,7 @@ impl HistoryCell for TooltipHistoryCell {
             .max(1);
         let mut lines: Vec<Line<'static>> = Vec::new();
         append_markdown(
-            &format!("**Tip:** {}", self.tip),
+            &format!("**提示：** {}", self.tip),
             Some(wrap_width),
             Some(self.cwd.as_path()),
             &mut lines,
@@ -97,7 +97,7 @@ impl HistoryCell for TooltipHistoryCell {
     }
 
     fn raw_lines(&self) -> Vec<Line<'static>> {
-        vec![Line::from(format!("Tip: {}", self.tip))]
+        vec![Line::from(format!("提示：{}", self.tip))]
     }
 }
 
@@ -196,9 +196,9 @@ pub(crate) fn new_session_info(
         }
         if requested_model != session.model.as_str() {
             let lines = vec![
-                "model changed:".magenta().bold().into(),
-                format!("requested: {requested_model}").into(),
-                format!("used: {}", session.model).into(),
+                "模型已更改：".magenta().bold().into(),
+                format!("请求的模型：{requested_model}").into(),
+                format!("实际使用：{}", session.model).into(),
             ];
             parts.push(Box::new(PlainHistoryCell { lines }));
         }
@@ -333,24 +333,14 @@ impl HistoryCell for SessionHeaderHistoryCell {
         ];
 
         const CHANGE_MODEL_HINT_COMMAND: &str = "/model";
-        const CHANGE_MODEL_HINT_EXPLANATION: &str = " to change";
-        const DIR_LABEL: &str = "directory:";
-        const PERMISSIONS_LABEL: &str = "permissions:";
-        let label_width = if self.yolo_mode {
-            DIR_LABEL.len().max(PERMISSIONS_LABEL.len())
-        } else {
-            DIR_LABEL.len()
-        };
-
-        let model_label = format!(
-            "{model_label:<label_width$}",
-            model_label = "model:",
-            label_width = label_width
-        );
+        const CHANGE_MODEL_HINT_EXPLANATION: &str = " 更改";
+        const MODEL_LABEL: &str = "模型：";
+        const DIR_LABEL: &str = "目录：";
+        const PERMISSIONS_LABEL: &str = "权限：";
         let reasoning_label = self.reasoning_label();
         let model_spans: Vec<Span<'static>> = {
             let mut spans = vec![
-                Span::from(format!("{model_label} ")).dim(),
+                Span::from(format!("{MODEL_LABEL} ")).dim(),
                 Span::styled(self.model.clone(), self.model_style),
             ];
             if let Some(reasoning) = reasoning_label {
@@ -359,7 +349,7 @@ impl HistoryCell for SessionHeaderHistoryCell {
             }
             if self.show_fast_status {
                 spans.push("   ".into());
-                spans.push(Span::styled("fast", self.model_style.magenta()));
+                spans.push(Span::styled("快速", self.model_style.magenta()));
             }
             spans.push("   ".dim());
             spans.push(CHANGE_MODEL_HINT_COMMAND.cyan());
@@ -367,8 +357,7 @@ impl HistoryCell for SessionHeaderHistoryCell {
             spans
         };
 
-        let dir_label = format!("{DIR_LABEL:<label_width$}");
-        let dir_prefix = format!("{dir_label} ");
+        let dir_prefix = format!("{DIR_LABEL} ");
         let dir_prefix_width = display_width(dir_prefix.as_str());
         let dir_max_width = inner_width.saturating_sub(dir_prefix_width);
         let dir = self.format_directory(Some(dir_max_width));
@@ -382,10 +371,9 @@ impl HistoryCell for SessionHeaderHistoryCell {
         ];
 
         if self.yolo_mode {
-            let permissions_label = format!("{PERMISSIONS_LABEL:<label_width$}");
             lines.push(make_row(vec![
-                Span::from(format!("{permissions_label} ")).dim(),
-                "YOLO mode".magenta().bold(),
+                Span::from(format!("{PERMISSIONS_LABEL} ")).dim(),
+                "YOLO 模式".magenta().bold(),
             ]));
         }
 
@@ -400,19 +388,19 @@ impl HistoryCell for SessionHeaderHistoryCell {
         let mut lines = vec![
             Line::from(format!("OpenAI Codex (v{})", self.version)),
             Line::from(format!(
-                "model: {}{}",
+                "模型：{}{}",
                 self.model,
                 self.reasoning_label()
                     .map(|reasoning| format!(" {reasoning}"))
                     .unwrap_or_default()
             )),
             Line::from(format!(
-                "directory: {}",
+                "目录：{}",
                 self.format_directory(/*max_width*/ None)
             )),
         ];
         if self.yolo_mode {
-            lines.push(Line::from("permissions: YOLO mode"));
+            lines.push(Line::from("权限：YOLO 模式"));
         }
         lines
     }

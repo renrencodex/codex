@@ -8,8 +8,8 @@ expression: "render_snapshot(&overlay, Rect::new(0, 0, 120, 16))"
                                                                                                                         
   Confirm                                                                                                               
   Approve the pending action.                                                                                           
-  › 1. True                                                                                                             
-    2. False                                                                                                            
+  › 1. 是                                                                                                                
+    2. 否                                                                                                                
                                                                                                                         
                                                                                                                         
                                                                                                                         

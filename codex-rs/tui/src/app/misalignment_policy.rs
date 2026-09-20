@@ -23,7 +23,7 @@ impl App {
             .show_misalignment_review_confirmation(Arc::clone(&review));
         let mut lines = Vec::new();
         if let Some(message) = review.continuation_message() {
-            lines.push(Line::from("Continuation request (quoted)").bold());
+            lines.push(Line::from("继续请求（引用）").bold());
             // Keep the submitted text ahead of potentially long findings, without interpreting it.
             lines.push(Line::from(format!("{message:?}")));
             lines.push(Line::default());
@@ -41,7 +41,7 @@ impl App {
         let _ = tui.enter_alt_screen();
         self.overlay = Some(Overlay::new_static_with_lines(
             lines,
-            "What we detected".to_string(),
+            "检测结果".to_string(),
             self.keymap.pager.clone(),
         ));
         tui.frame_requester().schedule_frame();
@@ -125,10 +125,8 @@ impl App {
         let Ok((sandbox_policy, permissions)) =
             turn_permissions_overrides(permissions_override, config.cwd.as_path())
         else {
-            self.chat_widget.add_error_message(
-                "Couldn’t continue this chat. Review its latest status before trying again."
-                    .to_string(),
-            );
+            self.chat_widget
+                .add_error_message("无法继续此对话。请查看其最新状态后重试。".to_string());
             return;
         };
         let result = app_server
@@ -178,10 +176,8 @@ impl App {
             }
             Err(_) => {
                 // An RPC diagnostic can contain the submitted steer. Keep the review error generic.
-                self.chat_widget.add_error_message(
-                    "Couldn’t continue this chat. Review its latest status before trying again."
-                        .to_string(),
-                );
+                self.chat_widget
+                    .add_error_message("无法继续此对话。请查看其最新状态后重试。".to_string());
             }
         }
     }

@@ -19,9 +19,9 @@ impl ChatWidget {
         self.permission_popup_request_id = Some(request_id);
         self.bottom_pane.show_selection_view(SelectionViewParams {
             view_id: Some(VIEW_ID),
-            title: Some("Update Model Permissions".to_string()),
+            title: Some("更新模型权限".to_string()),
             items: vec![SelectionItem {
-                name: "Loading permission profiles…".to_string(),
+                name: "正在加载权限配置文件…".to_string(),
                 is_disabled: true,
                 ..Default::default()
             }],
@@ -66,10 +66,10 @@ impl ChatWidget {
             }
             Err(message) => self.bottom_pane.show_selection_view(SelectionViewParams {
                 view_id: Some(VIEW_ID),
-                title: Some("Update Model Permissions".to_string()),
+                title: Some("更新模型权限".to_string()),
                 subtitle: Some(message),
                 items: vec![SelectionItem {
-                    name: "Retry".to_string(),
+                    name: "重试".to_string(),
                     actions: vec![Box::new(|tx| tx.send(AppEvent::OpenPermissionsPopup))],
                     dismiss_on_select: true,
                     ..Default::default()

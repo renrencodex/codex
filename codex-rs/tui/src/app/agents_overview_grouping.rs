@@ -16,7 +16,7 @@ pub(super) fn model_name(thread: &Thread) -> &str {
         .model
         .as_deref()
         .filter(|model| !model.is_empty())
-        .unwrap_or("Unknown")
+        .unwrap_or("未知")
 }
 
 impl AgentsOverviewView {

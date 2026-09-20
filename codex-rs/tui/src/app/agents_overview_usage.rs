@@ -175,7 +175,7 @@ pub(super) fn usage_lines(usage: &AgentsOverviewUsage) -> Vec<Line<'static>> {
         tokens.push(format!("{} out", format_tokens_compact(output)));
     }
     if !tokens.is_empty() {
-        lines.push(vec!["Tokens: ".dim(), tokens.join(" · ").into()].into());
+        lines.push(vec!["Tokens：".dim(), tokens.join(" · ").into()].into());
     }
     if let Some(estimate) = &usage.estimate {
         let mut values = Vec::new();
@@ -192,7 +192,7 @@ pub(super) fn usage_lines(usage: &AgentsOverviewUsage) -> Vec<Line<'static>> {
             values.push(cost);
         }
         if !values.is_empty() {
-            lines.push(vec!["Est. usage: ".dim(), values.join(" · ").into()].into());
+            lines.push(vec!["估算用量：".dim(), values.join(" · ").into()].into());
         }
     }
     lines

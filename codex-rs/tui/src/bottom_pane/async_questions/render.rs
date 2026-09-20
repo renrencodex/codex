@@ -97,7 +97,7 @@ impl Renderable for AsyncQuestions {
                 &option_rows,
                 &options_state,
                 option_rows.len().max(1),
-                "No options",
+                "没有选项",
             );
         }
 

@@ -23,7 +23,7 @@ impl AnalyticsView {
             lines.push(
                 self.profile
                     .message()
-                    .unwrap_or("Profile statistics unavailable.")
+                    .unwrap_or("个人资料统计不可用。")
                     .to_owned()
                     .into(),
             );
@@ -73,7 +73,7 @@ impl AnalyticsView {
                 | PlanType::EnterpriseCbpUsageBased
                 | PlanType::Enterprise => "Enterprise",
                 PlanType::Edu | PlanType::EduPlus | PlanType::EduPro => "Education",
-                PlanType::Unknown => "Account",
+                PlanType::Unknown => "账户",
             }
         });
         if let Some(plan) = plan {
@@ -86,32 +86,25 @@ impl AnalyticsView {
         let tokens = &profile.stats.tokens;
         let fields = [
             (
-                "Lifetime tokens",
+                "累计 tokens",
                 tokens
                     .lifetime_tokens
                     .map(|value| super::data::compact_amount(value as f64)),
             ),
             (
-                "Peak tokens",
+                "峰值 tokens",
                 tokens
                     .peak_daily_tokens
                     .map(|value| super::data::compact_amount(value as f64)),
             ),
+            ("最长对话", tokens.longest_running_turn_sec.map(duration)),
             (
-                "Longest chat",
-                tokens.longest_running_turn_sec.map(duration),
+                "当前连续天数",
+                tokens.current_streak_days.map(|days| format!("{days} 天")),
             ),
             (
-                "Current streak",
-                tokens
-                    .current_streak_days
-                    .map(|days| format!("{days} days")),
-            ),
-            (
-                "Longest streak",
-                tokens
-                    .longest_streak_days
-                    .map(|days| format!("{days} days")),
+                "最长连续天数",
+                tokens.longest_streak_days.map(|days| format!("{days} 天")),
             ),
         ];
         if !self.zoomed {
@@ -158,16 +151,12 @@ impl AnalyticsView {
         let selected = self.sections[Section::Summary].group;
         let controls = Line::from(super::summary::VIEWS[selected].label());
         if inner_width >= 58 {
-            lines.push(columns(
-                "Token activity".bold().into(),
-                controls,
-                inner_width,
-            ));
+            lines.push(columns("Token 活动".bold().into(), controls, inner_width));
         } else {
-            lines.push("Token activity".bold().into());
+            lines.push("Token 活动".bold().into());
             lines.extend(word_wrap_lines([controls], RtOptions::new(inner_width)));
         }
-        lines.push("Last 12 months".set_style(secondary_style()).into());
+        lines.push("过去 12 个月".set_style(secondary_style()).into());
         lines.push(Line::default());
         if let Some(buckets) = &tokens.daily_usage_buckets {
             lines.extend(activity_chart::chart_lines(
@@ -177,11 +166,7 @@ impl AnalyticsView {
                 inner_width as u16,
             ));
         } else {
-            lines.push(
-                "Token activity history unavailable"
-                    .set_style(secondary_style())
-                    .into(),
-            );
+            lines.push("Token 活动历史不可用".set_style(secondary_style()).into());
         }
         lines.push(Line::default());
         let stats = &profile.stats;
@@ -195,13 +180,13 @@ impl AnalyticsView {
             .unwrap_or_else(|| "—".into());
         let metrics = [
             (
-                "Fast Mode",
+                "快速模式",
                 percent(stats.fast_mode_usage_percentage.as_ref()),
             ),
-            ("Most used reasoning", reasoning),
-            ("Skills explored", count_value(stats.unique_skills_used)),
-            ("Total skills used", count_value(stats.total_skills_used)),
-            ("Total chats", count_value(stats.total_threads)),
+            ("最常用推理强度", reasoning),
+            ("探索过的技能", count_value(stats.unique_skills_used)),
+            ("技能使用总数", count_value(stats.total_skills_used)),
+            ("对话总数", count_value(stats.total_threads)),
         ];
         let two_columns = inner_width >= 76;
         let column_width = if two_columns {
@@ -209,7 +194,7 @@ impl AnalyticsView {
         } else {
             inner_width
         };
-        let mut insights = vec!["Activity insights".bold().into(), Line::default()];
+        let mut insights = vec!["活动洞察".bold().into(), Line::default()];
         for (label, value) in metrics {
             insights.extend(word_wrap_lines(
                 [columns(
@@ -220,10 +205,7 @@ impl AnalyticsView {
                 RtOptions::new(column_width),
             ));
         }
-        let mut plugins = vec![
-            "Most used plugins and skills".bold().into(),
-            Line::default(),
-        ];
+        let mut plugins = vec!["最常用的插件和技能".bold().into(), Line::default()];
         if let Some(invocations) = &stats.top_invocations {
             let mut displayed = 0;
             for invocation in invocations {
@@ -237,13 +219,7 @@ impl AnalyticsView {
                 };
                 let value = invocation
                     .usage_count
-                    .map(|count| {
-                        format!(
-                            "{} {}",
-                            count_value(Some(count)),
-                            if count == 1 { "run" } else { "runs" }
-                        )
-                    })
+                    .map(|count| format!("{} {}", count_value(Some(count)), "次运行"))
                     .unwrap_or_else(|| "—".into());
                 plugins.extend(word_wrap_lines(
                     [columns(
@@ -262,18 +238,10 @@ impl AnalyticsView {
                 }
             }
             if displayed == 0 {
-                plugins.push(
-                    "No reported plugins or skills."
-                        .set_style(secondary_style())
-                        .into(),
-                );
+                plugins.push("没有上报的插件或技能。".set_style(secondary_style()).into());
             }
         } else {
-            plugins.push(
-                "Plugin and skill usage unavailable."
-                    .set_style(secondary_style())
-                    .into(),
-            );
+            plugins.push("插件和技能用量不可用。".set_style(secondary_style()).into());
         }
         if two_columns {
             lines.extend(join_columns(&insights, &plugins, column_width));
@@ -290,7 +258,7 @@ impl AnalyticsView {
                 .and_then(|date| chrono::NaiveDate::parse_from_str(date, "%Y-%m-%d").ok())
             {
                 lines.push(
-                    format!("Statistics as of {}", date.format("%b %-d, %Y"))
+                    format!("统计截至 {}", date.format("%b %-d, %Y"))
                         .set_style(secondary_style())
                         .into(),
                 );
@@ -301,7 +269,7 @@ impl AnalyticsView {
                 .is_some_and(|error| !error.trim().is_empty())
             {
                 lines.push(
-                    "Some profile statistics are unavailable."
+                    "部分个人资料统计不可用。"
                         .set_style(secondary_style())
                         .into(),
                 );

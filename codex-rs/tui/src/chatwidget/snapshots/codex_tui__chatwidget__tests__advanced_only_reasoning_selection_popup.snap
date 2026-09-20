@@ -2,8 +2,8 @@
 source: tui/src/chatwidget/tests/popups_and_settings.rs
 expression: popup
 ---
-  Select Reasoning Level for GPT-5.5
+  选 择  GPT-5.5 的 推 理 级 别
 
-› 1. More reasoning…  Ultra consumes usage limits faster
+› 1. 更 高 推 理 强 度 …  极 致 会 更 快 消 耗 用 量 限 额
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

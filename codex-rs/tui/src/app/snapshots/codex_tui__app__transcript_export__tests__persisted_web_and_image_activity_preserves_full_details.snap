@@ -6,12 +6,12 @@ expression: "render_markdown_transcript(&cells).expect(\"exported transcript\")"
 
 ## Activity
 
-    Opened https://example.com/long/path?query=full#details
+    已打开 https://example.com/long/path?query=full#details
 
 ## Activity
 
-    Searched for 'needle' in https://example.com/long/path
+    已查找 'needle' in https://example.com/long/path
 
 ## Activity
 
-    Viewed image C:\workspace\assets\screenshot.png
+    已查看图像 C:\workspace\assets\screenshot.png

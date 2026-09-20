@@ -172,7 +172,7 @@ fn mcp_preview_shares_one_limit_across_blocks_and_preserves_transcript() {
             .map(ToString::to_string)
             .collect::<Vec<_>>(),
         [
-            "Called search.lookup()",
+            "已调用 search.lookup()",
             "first",
             "second",
             "third",
@@ -353,11 +353,11 @@ fn projected_content_preserves_full_rendering() {
             .collect::<Vec<_>>(),
         vec![
             format_text(text),
-            "Returned image".to_string(),
+            "已返回图像".to_string(),
             "<audio content>".to_string(),
-            "embedded resource: file:///text.txt".to_string(),
-            "embedded resource: file:///blob.bin".to_string(),
-            "link: file:///linked.txt".to_string(),
+            "嵌入资源：file:///text.txt".to_string(),
+            "嵌入资源：file:///blob.bin".to_string(),
+            "链接：file:///linked.txt".to_string(),
             format_text(&malformed.to_string()),
             format_text(&invalid_metadata.to_string()),
             format_text(&unknown.to_string()),
@@ -376,7 +376,7 @@ fn projected_image_marker_still_requires_a_complete_image() {
 
     let projected = McpToolResult::new(result(vec![invalid.clone()]), McpResultKind::Standard);
     assert!(!projected.has_image);
-    assert_eq!(projected.content[0].render(), "Returned image");
+    assert_eq!(projected.content[0].render(), "已返回图像");
 
     let projected = McpToolResult::new(result(vec![invalid, valid]), McpResultKind::Standard);
     assert!(projected.has_image);
@@ -410,7 +410,7 @@ fn code_mode_preserves_text_fields_on_nontext_and_unknown_blocks() {
             .take(2)
             .map(ToString::to_string)
             .collect::<Vec<_>>(),
-        vec!["  └ Returned", "    image"],
+        vec!["  └ 已返回图像", "    image-side"],
     );
 
     let display = cell
@@ -428,13 +428,13 @@ fn code_mode_preserves_text_fields_on_nontext_and_unknown_blocks() {
     insta::assert_snapshot!(format!("history:\n{display}\n\ntranscript:\n{transcript}"), @r#"
     history:
     • Inspect results
-      └ Returned image
+      └ 已返回图像
         image-side output
         unknown-side output
 
     transcript:
-    • Called node_repl.js({"title":"Inspect results"})
-      └ Returned image
+    • 已调用 node_repl.js({"title":"Inspect results"})
+      └ 已返回图像
         Script completed
         Output:
         image-side output

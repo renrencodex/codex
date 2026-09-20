@@ -105,19 +105,19 @@ impl AnalyticsView {
                 .unwrap_or_default()
         };
         let mut controls = if self.visible_sections().is_empty() {
-            format!("R refresh · {} back · q close", hint(ListAction::Cancel))
+            format!("R 刷新 · {} 返回 · q 关闭", hint(ListAction::Cancel))
         } else {
             let navigation = if !self.zoomed {
-                format!("{}/z maximize", hint(ListAction::Accept))
+                format!("{}/z 最大化", hint(ListAction::Accept))
             } else if self.section == Section::Summary {
                 format!(
-                    "{}/{} scroll",
+                    "{}/{} 滚动",
                     hint(ListAction::MoveUp),
                     hint(ListAction::MoveDown)
                 )
             } else if self.section == Section::Plan {
                 format!(
-                    "{}/{} window · {}/{} period · {} details",
+                    "{}/{} 窗口 · {}/{} 周期 · {} 详情",
                     hint(ListAction::MoveLeft),
                     hint(ListAction::MoveRight),
                     hint(ListAction::MoveUp),
@@ -126,38 +126,38 @@ impl AnalyticsView {
                 )
             } else if self.section != Section::Chats {
                 format!(
-                    "{}/{} day · {} details",
+                    "{}/{} 日期 · {} 详情",
                     hint(ListAction::MoveLeft),
                     hint(ListAction::MoveRight),
                     hint(ListAction::Accept)
                 )
             } else {
                 format!(
-                    "{}/{} row · {} details",
+                    "{}/{} 行 · {} 详情",
                     hint(ListAction::MoveUp),
                     hint(ListAction::MoveDown),
                     hint(ListAction::Accept)
                 )
             };
             format!(
-                "tab/1–{} section · {}{navigation}\n{}{}R refresh · {}/{} scroll · {} back · q close",
+                "tab/1–{} 分区 · {}{navigation}\n{}{}R 刷新 · {}/{} 滚动 · {} 返回 · q 关闭",
                 self.visible_sections().len(),
                 if self.section == Section::Chats && !self.business() && !self.zoomed {
-                    "s sort · "
+                    "s 排序 · "
                 } else if self.section == Section::Chats && !self.business() {
-                    "s sort · z dashboard · "
+                    "s 排序 · z 仪表板 · "
                 } else if self.zoomed {
-                    "z dashboard · "
+                    "z 仪表板 · "
                 } else {
                     ""
                 },
-                if show_range { "r 7/30d · " } else { "" },
+                if show_range { "r 7/30天 · " } else { "" },
                 if self.group_options().len() < 2 {
                     ""
                 } else if self.section == Section::Summary {
-                    "g view · "
+                    "g 视图 · "
                 } else {
-                    "g group · "
+                    "g 分组 · "
                 },
                 hint(ListAction::PageUp),
                 hint(ListAction::PageDown),
@@ -188,7 +188,7 @@ impl AnalyticsView {
             .flatten()
             .and_then(|history| history.updated_at)
             .and_then(|value| chrono::DateTime::from_timestamp(value, /*nsecs*/ 0))
-            .map(|updated| format!("Updated {} UTC", updated.format("%b %-d %H:%M")));
+            .map(|updated| format!("更新于 {} UTC", updated.format("%b %-d %H:%M")));
         let add_updated = |footer: &mut Vec<Line<'static>>| {
             if let Some(updated) = &updated {
                 let timestamp = Line::from(updated.clone().set_style(secondary_style()));
@@ -260,7 +260,7 @@ impl AnalyticsView {
             ..area
         });
         Line::from(vec![
-            "Analytics".bold(),
+            "分析".bold(),
             self.live
                 .as_ref()
                 .and_then(|live| live.account_label())
@@ -299,7 +299,7 @@ impl AnalyticsView {
             let message = self
                 .account
                 .message()
-                .unwrap_or("Analytics is not available for this account type.");
+                .unwrap_or("此账户类型无法使用分析功能。");
             let lines = textwrap::wrap(message, width)
                 .into_iter()
                 .map(|line| Line::from(line.into_owned()))

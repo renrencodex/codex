@@ -134,7 +134,7 @@ impl ChatWidget {
                     Err(err) => {
                         tracing::warn!("failed to paste image: {err}");
                         self.add_to_history(history_cell::new_error_event(format!(
-                            "Failed to paste image: {err}",
+                            "粘贴图片失败：{err}",
                         )));
                     }
                 }
@@ -163,7 +163,8 @@ impl ChatWidget {
             return;
         }
 
-        const REVIEW_STEER_UNAVAILABLE_MESSAGE: &str = "Steer messages aren't supported during /review. Press Ctrl+C now to cancel the review.";
+        const REVIEW_STEER_UNAVAILABLE_MESSAGE: &str =
+            "/review 期间不支持引导消息。现在按 Ctrl+C 可取消审查。";
 
         if self.chat_keymap.interrupt_turn.is_pressed(key_event)
             && self.review.is_review_mode
@@ -313,7 +314,7 @@ impl ChatWidget {
             return true;
         }
 
-        let message = "Ctrl+L is disabled while a task is in progress.".to_string();
+        let message = "任务进行期间无法使用 Ctrl+L。".to_string();
         self.add_to_history(history_cell::new_error_event(message));
         self.request_redraw();
         false
@@ -338,16 +339,16 @@ impl ChatWidget {
                         self.clipboard_lease = Some(lease);
                     }
                     self.add_to_history(history_cell::new_info_event(
-                        "Copied last message to clipboard".into(),
+                        "已将上一条消息复制到剪贴板".into(),
                         /*hint*/ None,
                     ));
                 }
-                Err(error) => self.add_to_history(history_cell::new_error_event(format!(
-                    "Copy failed: {error}"
-                ))),
+                Err(error) => {
+                    self.add_to_history(history_cell::new_error_event(format!("复制失败：{error}")))
+                }
             },
             _ => self.add_to_history(history_cell::new_error_event(
-                "No agent response to copy".into(),
+                "没有可复制的智能体响应".into(),
             )),
         }
         self.request_redraw();
@@ -357,7 +358,7 @@ impl ChatWidget {
         let mut choices = Vec::new();
         if let Some(status_targets) = &self.transcript.last_status_copy_targets {
             choices.push((
-                "Whole status".to_string(),
+                "完整状态".to_string(),
                 Arc::<str>::from(status_targets.handle.copy_text()),
                 CopyFormat::PlainText,
             ));
@@ -375,7 +376,7 @@ impl ChatWidget {
             .filter(|markdown| !markdown.is_empty())
         {
             choices.push((
-                "Whole response".to_string(),
+                "完整响应".to_string(),
                 Arc::<str>::from(markdown),
                 CopyFormat::Markdown,
             ));
@@ -390,8 +391,8 @@ impl ChatWidget {
                     .filter_map(|target| match target {
                         crate::markdown::CopyTarget::Code { language, content } => Some((
                             language.map_or_else(
-                                || "Code block".to_string(),
-                                |language| format!("{language} code"),
+                                || "代码块".to_string(),
+                                |language| format!("{language} 代码"),
                             ),
                             content,
                             CopyFormat::PlainText,
@@ -405,7 +406,7 @@ impl ChatWidget {
                                 .collect();
                             (!content.trim().is_empty()).then(|| {
                                 (
-                                    "Blockquote".to_string(),
+                                    "引用块".to_string(),
                                     Arc::from(content),
                                     CopyFormat::PlainText,
                                 )
@@ -443,7 +444,7 @@ impl ChatWidget {
             .collect();
 
         self.show_selection_view(SelectionViewParams {
-            title: Some("Copy to clipboard".to_string()),
+            title: Some("复制到剪贴板".to_string()),
             footer_hint: Some(standard_popup_hint_line()),
             items,
             ..Default::default()
@@ -468,9 +469,9 @@ impl ChatWidget {
                 if let Some(lease) = lease {
                     self.clipboard_lease = Some(lease);
                 }
-                self.add_info_message(format!("Copied {label} to clipboard"), /*hint*/ None);
+                self.add_info_message(format!("已将{label}复制到剪贴板"), /*hint*/ None);
             }
-            Err(error) => self.add_error_message(format!("Copy failed: {error}")),
+            Err(error) => self.add_error_message(format!("复制失败：{error}")),
         }
         self.request_redraw();
     }
@@ -487,22 +488,22 @@ impl ChatWidget {
         let tx = self.app_event_tx.clone();
         let existing_name = self.thread_name.as_deref().filter(|name| !name.is_empty());
         let title = if existing_name.is_some() {
-            "Rename thread"
+            "重命名线程"
         } else {
-            "Name thread"
+            "命名线程"
         };
         let suggestion_request = self
             .thread_id
             .map(|thread_id| (thread_id, uuid::Uuid::new_v4()));
         let mut view = CustomPromptView::new(
             title.to_string(),
-            "Type a name and press Enter".to_string(),
+            "输入名称并按 Enter".to_string(),
             /*initial_text*/ existing_name.unwrap_or_default().to_string(),
             /*context_label*/ None,
             Box::new(move |name: String| {
                 let Some(name) = normalize_thread_name(&name) else {
                     tx.send(AppEvent::InsertHistoryCell(Box::new(
-                        history_cell::new_error_event("Thread name cannot be empty.".to_string()),
+                        history_cell::new_error_event("线程名称不能为空。".to_string()),
                     )));
                     return;
                 };
@@ -512,8 +513,8 @@ impl ChatWidget {
         if let Some((_, request_id)) = suggestion_request {
             view = view.with_text_suggestion(
                 request_id,
-                "Generating a title suggestion…".to_string(),
-                "Suggested from this conversation".to_string(),
+                "正在生成标题建议…".to_string(),
+                "根据当前对话建议".to_string(),
             );
         }
         self.bottom_pane.show_text_prompt(view);

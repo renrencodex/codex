@@ -177,18 +177,17 @@ use tracing::debug;
 use tracing::warn;
 
 const DEFAULT_MODEL_DISPLAY_NAME: &str = "loading";
-const TRUSTED_ACCESS_FOR_CYBER_VERIFICATION_WARNING: &str = "Your conversations have multiple flags for possible cybersecurity risk. Responses may take longer because extra safety checks are on. To get authorized for security work, join the Trusted Access for Cyber program: https://chatgpt.com/cyber";
-const MEMORIES_ENABLE_NOTICE: &str = "Memories will be enabled in the next session.";
+const TRUSTED_ACCESS_FOR_CYBER_VERIFICATION_WARNING: &str = "你的对话多次被标记为可能存在网络安全风险。由于启用了额外安全检查，响应可能需要更长时间。如需获得安全工作授权，请加入 Trusted Access for Cyber 计划：https://chatgpt.com/cyber";
+const MEMORIES_ENABLE_NOTICE: &str = "记忆功能将在下个会话中启用。";
 const MEMORIES_DOC_URL: &str = "https://developers.openai.com/codex/memories";
-const PLAN_MODE_REASONING_SCOPE_TITLE: &str = "Apply reasoning change";
-const PLAN_MODE_REASONING_SCOPE_PLAN_ONLY: &str = "Apply to Plan mode override";
-const PLAN_MODE_REASONING_SCOPE_ALL_MODES: &str = "Apply to global default and Plan mode override";
+const PLAN_MODE_REASONING_SCOPE_TITLE: &str = "应用推理设置更改";
+const PLAN_MODE_REASONING_SCOPE_PLAN_ONLY: &str = "应用到计划模式覆盖值";
+const PLAN_MODE_REASONING_SCOPE_ALL_MODES: &str = "应用到全局默认值和计划模式覆盖值";
 const CONNECTORS_SELECTION_VIEW_ID: &str = "connectors-selection";
 const PET_SELECTION_LOADING_VIEW_ID: &str = "pet-selection-loading";
 const AMBIENT_PET_WRAP_GAP_COLUMNS: u16 = 2;
-const TUI_STUB_MESSAGE: &str = "Not available in TUI yet.";
-const PARENT_OWNED_INPUT_MESSAGE: &str =
-    "This sub-agent is controlled by its parent. Direct input is disabled.";
+const TUI_STUB_MESSAGE: &str = "TUI 暂不支持此功能。";
+const PARENT_OWNED_INPUT_MESSAGE: &str = "此子智能体由其父智能体控制，无法直接输入。";
 
 /// Choose the keybinding used to edit the most-recently queued message.
 ///
@@ -509,11 +508,11 @@ use codex_utils_approval_presets::builtin_approval_presets;
 use strum::IntoEnumIterator;
 use unicode_segmentation::UnicodeSegmentation;
 
-const USER_SHELL_COMMAND_HELP_TITLE: &str = "Prefix a command with ! to run it locally";
-const USER_SHELL_COMMAND_HELP_HINT: &str = "Example: !ls";
-const ASK_FOR_APPROVAL_LABEL: &str = "Ask for approval";
-const APPROVE_FOR_ME_LABEL: &str = "Approve for me";
-const AUTO_REVIEW_DESCRIPTION: &str = "Only ask for actions detected as potentially unsafe.";
+const USER_SHELL_COMMAND_HELP_TITLE: &str = "在命令前加 ! 可在本地运行";
+const USER_SHELL_COMMAND_HELP_HINT: &str = "示例：!ls";
+const ASK_FOR_APPROVAL_LABEL: &str = "请求审批";
+const APPROVE_FOR_ME_LABEL: &str = "代我审批";
+const AUTO_REVIEW_DESCRIPTION: &str = "仅对检测为可能不安全的操作发起询问。";
 const DEFAULT_OPENAI_BASE_URL: &str = "https://api.openai.com/v1";
 const DEFAULT_STATUS_LINE_ITEMS: [&str; 3] = ["model-with-reasoning", "current-dir", "thread-name"];
 
@@ -1087,26 +1086,24 @@ impl ChatWidget {
 
     pub(crate) fn open_feature_enable_prompt(&mut self, feature: Feature) {
         let (label, name) = match feature {
-            Feature::Collab => ("Subagents", "subagents"),
-            Feature::MemoryTool => ("Memories", "memories"),
+            Feature::Collab => ("子智能体", "子智能体"),
+            Feature::MemoryTool => ("记忆", "记忆功能"),
             _ => return,
         };
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some(format!("Enable {name}?")),
-            subtitle: Some(format!("{label} are disabled in this TUI session.")),
+            title: Some(format!("启用{name}？")),
+            subtitle: Some(format!("当前 TUI 会话已禁用{label}。")),
             footer_note: (feature == Feature::MemoryTool).then(|| {
                 Line::from(vec![
-                    "Learn more: ".dim(),
+                    "了解详情：".dim(),
                     MEMORIES_DOC_URL.cyan().underlined(),
                 ])
             }),
             footer_hint: Some(standard_popup_hint_line()),
             items: vec![
                 SelectionItem {
-                    name: "Yes, enable".to_string(),
-                    description: Some(
-                        "Save on the server for new threads. This thread is unchanged.".to_string(),
-                    ),
+                    name: "是，启用".to_string(),
+                    description: Some("保存到服务器并应用于新线程；当前线程不受影响。".to_string()),
                     actions: vec![Box::new(move |tx| {
                         tx.send(AppEvent::EnableFeatureForNewThreads(feature));
                     })],
@@ -1114,8 +1111,8 @@ impl ChatWidget {
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: "Not now".to_string(),
-                    description: Some(format!("Keep {name} disabled.")),
+                    name: "暂不启用".to_string(),
+                    description: Some(format!("保持禁用 {name}。")),
                     dismiss_on_select: true,
                     ..Default::default()
                 },
@@ -1510,10 +1507,7 @@ impl ChatWidget {
         self.submit_op(AppCommand::clean_background_terminals());
         self.unified_exec_processes.clear();
         self.sync_unified_exec_footer();
-        self.add_info_message(
-            "Stopping all background terminals.".to_string(),
-            /*hint*/ None,
-        );
+        self.add_info_message("正在停止所有后台终端。".to_string(), /*hint*/ None);
     }
 
     fn plugins_for_mentions(&self) -> Option<&[PluginCapabilitySummary]> {
@@ -1694,9 +1688,9 @@ impl ChatWidget {
 
     pub(crate) fn raw_output_mode_notice(enabled: bool) -> &'static str {
         if enabled {
-            "Raw output mode on: transcript text is shown for clean terminal selection."
+            "已开启原始输出模式：对话文本将以便于终端选择的纯净形式显示。"
         } else {
-            "Raw output mode off: rich transcript rendering restored."
+            "已关闭原始输出模式：恢复富文本对话渲染。"
         }
     }
 
@@ -1761,9 +1755,9 @@ impl ChatWidget {
     pub(crate) fn toggle_vim_mode_and_notify(&mut self) {
         let enabled = self.bottom_pane.toggle_vim_enabled();
         let message = if enabled {
-            "Vim mode enabled."
+            "已启用 Vim 模式。"
         } else {
-            "Vim mode disabled."
+            "已禁用 Vim 模式。"
         };
         self.add_info_message(message.to_string(), /*hint*/ None);
     }
@@ -1857,8 +1851,7 @@ impl ChatWidget {
             )
         {
             self.add_error_message(if self.external_writer_view {
-                "This thread is open elsewhere. Close it there and retry resume to continue."
-                    .to_string()
+                "此线程已在其他位置打开。请先在那里关闭，然后重试恢复。".to_string()
             } else {
                 PARENT_OWNED_INPUT_MESSAGE.to_string()
             });
@@ -2089,8 +2082,8 @@ impl Drop for ChatWidget {
     }
 }
 
-const PLACEHOLDER: &str = "Ask Codex to do anything";
-const SIDE_PLACEHOLDER: &str = "Ask a follow-up question";
+const PLACEHOLDER: &str = "让 Codex 帮你完成任务";
+const SIDE_PLACEHOLDER: &str = "询问后续问题";
 
 // Extract the first bold (Markdown) element in the form **...** from `s`.
 // Returns the inner text if found; otherwise `None`.

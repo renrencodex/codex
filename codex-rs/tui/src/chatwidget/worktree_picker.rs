@@ -35,8 +35,8 @@ impl ChatWidget {
         }
 
         let title = match mode {
-            ManagedWorktreeMode::New => "Where should the new conversation run?",
-            ManagedWorktreeMode::Fork => "Where should the forked conversation run?",
+            ManagedWorktreeMode::New => "新对话应在哪里运行？",
+            ManagedWorktreeMode::Fork => "分叉对话应在哪里运行？",
         };
         let current_name = name.clone();
         self.bottom_pane.show_selection_view(SelectionViewParams {
@@ -44,8 +44,8 @@ impl ChatWidget {
             footer_hint: Some(standard_popup_hint_line()),
             items: vec![
                 SelectionItem {
-                    name: "Current checkout".to_string(),
-                    description: Some("Keep using the current working directory".to_string()),
+                    name: "当前检出".to_string(),
+                    description: Some("继续使用当前工作目录".to_string()),
                     actions: vec![Box::new(move |tx| match mode {
                         ManagedWorktreeMode::New => {
                             tx.send(AppEvent::NewSession {
@@ -62,8 +62,8 @@ impl ChatWidget {
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: "New worktree".to_string(),
-                    description: Some("Create an isolated managed checkout".to_string()),
+                    name: "新建工作树".to_string(),
+                    description: Some("创建隔离的托管检出".to_string()),
                     actions: vec![Box::new(move |tx| {
                         tx.send(AppEvent::StartManagedWorktree {
                             mode,
@@ -81,23 +81,21 @@ impl ChatWidget {
 
     pub(super) fn show_managed_worktree_picker(&mut self) {
         if !self.config.features.enabled(Feature::Worktrees) {
-            self.add_error_message(
-                "Enable worktrees in your Codex configuration to create a worktree.".to_string(),
-            );
+            self.add_error_message("请在 Codex 配置中启用工作树后再创建工作树。".to_string());
             return;
         }
         if !self.managed_worktree_available() {
-            self.add_error_message("Managed worktrees require a local Git repository.".to_string());
+            self.add_error_message("托管工作树需要本地 Git 仓库。".to_string());
             return;
         }
 
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some("Worktrees".to_string()),
+            title: Some("工作树".to_string()),
             footer_hint: Some(standard_popup_hint_line()),
             items: vec![
                 SelectionItem {
-                    name: "Continue current conversation".to_string(),
-                    description: Some("Preserve this conversation in the new checkout".to_string()),
+                    name: "继续当前对话".to_string(),
+                    description: Some("在新检出中保留此对话".to_string()),
                     actions: vec![Box::new(|tx| {
                         tx.send(AppEvent::StartManagedWorktree {
                             mode: ManagedWorktreeMode::Fork,
@@ -108,8 +106,8 @@ impl ChatWidget {
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: "Start new conversation".to_string(),
-                    description: Some("Open a fresh conversation in the new checkout".to_string()),
+                    name: "开始新对话".to_string(),
+                    description: Some("在新检出中打开全新对话".to_string()),
                     actions: vec![Box::new(|tx| {
                         tx.send(AppEvent::StartManagedWorktree {
                             mode: ManagedWorktreeMode::New,
@@ -120,10 +118,8 @@ impl ChatWidget {
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: "Browse worktrees".to_string(),
-                    description: Some(
-                        "Resume an owner thread or copy a working directory".to_string(),
-                    ),
+                    name: "浏览工作树".to_string(),
+                    description: Some("恢复所属线程或复制工作目录".to_string()),
                     actions: vec![Box::new(|tx| tx.send(AppEvent::BrowseManagedWorktrees))],
                     dismiss_on_select: true,
                     ..Default::default()
@@ -147,9 +143,9 @@ impl ChatWidget {
         self.worktree_popup_request_id = Some(request.id);
         self.bottom_pane.show_selection_view(SelectionViewParams {
             view_id: Some(BROWSER_VIEW_ID),
-            title: Some("Managed worktrees".to_string()),
+            title: Some("托管工作树".to_string()),
             items: vec![SelectionItem {
-                name: "Loading worktrees…".to_string(),
+                name: "正在加载工作树…".to_string(),
                 is_disabled: true,
                 ..Default::default()
             }],
@@ -185,17 +181,17 @@ impl ChatWidget {
             Ok(entries) => entries,
             Err(error) => {
                 self.worktree_popup_request_id = None;
-                self.add_error_message(format!("Cannot list managed worktrees: {error}"));
+                self.add_error_message(format!("无法列出托管工作树：{error}"));
                 return;
             }
         };
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some("Managed worktrees".to_string()),
+            title: Some("托管工作树".to_string()),
             subtitle: Some(
                 if entries.is_empty() {
-                    "No worktrees in this repository's configured pool"
+                    "此仓库配置的池中没有工作树"
                 } else {
-                    "Select a worktree to resume, copy its path, or delete it"
+                    "选择工作树以恢复、复制路径或删除"
                 }
                 .to_string(),
             ),
@@ -205,24 +201,21 @@ impl ChatWidget {
                 .map(|entry| {
                     let request = request.clone();
                     let (name, description) = match &entry.owner {
-                        Owner::None => (
-                            entry.cwd.display().to_string(),
-                            "No attached thread".to_string(),
-                        ),
+                        Owner::None => (entry.cwd.display().to_string(), "未关联线程".to_string()),
                         Owner::Unavailable(_) => (
                             entry.cwd.display().to_string(),
-                            "Owner thread unavailable".to_string(),
+                            "所属线程不可用".to_string(),
                         ),
                         Owner::Archived(thread) | Owner::Resumable(thread) => {
                             let status = match &entry.owner {
-                                Owner::Archived(_) => "Archived · ",
+                                Owner::Archived(_) => "已归档 · ",
                                 Owner::Resumable(_) => "",
                                 Owner::None | Owner::Unavailable(_) => unreachable!(),
                             };
                             (
                                 thread.title.clone(),
                                 format!(
-                                    "{status}updated {} · {}",
+                                    "{status}更新于 {} · {}",
                                     worktree_updated_ago(
                                         thread.updated_at,
                                         chrono::Utc::now().timestamp()
@@ -264,7 +257,7 @@ impl ChatWidget {
             Action::Resume(owner) => AppEvent::ResumeSessionByIdOrName(owner.to_string()),
             Action::Copy(cwd) => AppEvent::CopySelection {
                 text: cwd.to_str()?.into(),
-                label: "Worktree working directory".to_string(),
+                label: "工作树工作目录".to_string(),
                 format: crate::clipboard_copy::CopyFormat::PlainText,
             },
             Action::Remove(root) => AppEvent::RemoveManagedWorktree {
@@ -283,7 +276,7 @@ impl ChatWidget {
             let owner = thread.id;
             let request = request.clone();
             items.push(SelectionItem {
-                name: "Resume owner thread".to_string(),
+                name: "恢复所属线程".to_string(),
                 actions: vec![Box::new(move |tx| {
                     tx.send(AppEvent::ManagedWorktreeAction {
                         request: request.clone(),
@@ -297,13 +290,13 @@ impl ChatWidget {
         let cwd = entry.cwd.clone();
         let copy_request = request.clone();
         items.push(SelectionItem {
-            name: "Copy working directory".to_string(),
+            name: "复制工作目录".to_string(),
             is_disabled: entry.cwd.to_str().is_none(),
             disabled_reason: entry
                 .cwd
                 .to_str()
                 .is_none()
-                .then(|| "Path is not valid UTF-8".to_string()),
+                .then(|| "路径不是有效的 UTF-8".to_string()),
             actions: vec![Box::new(move |tx| {
                 tx.send(AppEvent::ManagedWorktreeAction {
                     request: copy_request.clone(),
@@ -317,10 +310,9 @@ impl ChatWidget {
         let root = entry.root.clone();
         let delete_request = request;
         items.push(SelectionItem {
-            name: "Delete worktree".to_string(),
+            name: "删除工作树".to_string(),
             is_disabled: !can_delete,
-            disabled_reason: (!can_delete)
-                .then(|| "Switch to another checkout before deleting this one".to_string()),
+            disabled_reason: (!can_delete).then(|| "请先切换到其他检出再删除此工作树".to_string()),
             actions: vec![Box::new(move |tx| {
                 tx.send(AppEvent::ConfirmManagedWorktreeRemoval {
                     request: delete_request.clone(),
@@ -332,9 +324,9 @@ impl ChatWidget {
         });
         let title = match &entry.owner {
             Owner::Archived(thread) | Owner::Resumable(thread) => {
-                format!("Worktree: {}", thread.title)
+                format!("工作树：{}", thread.title)
             }
-            Owner::None | Owner::Unavailable(_) => "Worktree".to_string(),
+            Owner::None | Owner::Unavailable(_) => "工作树".to_string(),
         };
         self.bottom_pane.show_selection_view(SelectionViewParams {
             title: Some(title),
@@ -350,20 +342,18 @@ impl ChatWidget {
             return;
         }
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some("Delete this worktree?".to_string()),
+            title: Some("删除此工作树？".to_string()),
             subtitle: Some(root.display().to_string()),
             items: vec![
                 SelectionItem {
-                    name: "Cancel".to_string(),
+                    name: "取消".to_string(),
                     actions: vec![],
                     dismiss_on_select: true,
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: "Delete worktree".to_string(),
-                    description: Some(
-                        "Keeps thread history; may disrupt other sessions".to_string(),
-                    ),
+                    name: "删除工作树".to_string(),
+                    description: Some("保留线程历史；可能会影响其他会话".to_string()),
                     actions: vec![Box::new(move |tx| {
                         tx.send(AppEvent::ManagedWorktreeAction {
                             request: request.clone(),
@@ -383,12 +373,12 @@ impl ChatWidget {
 fn worktree_updated_ago(updated_at: i64, now: i64) -> String {
     let seconds = now.saturating_sub(updated_at).max(0);
     if seconds < 60 {
-        "just now".to_string()
+        "刚刚".to_string()
     } else if seconds < 3_600 {
-        format!("{}m ago", seconds / 60)
+        format!("{} 分钟前", seconds / 60)
     } else if seconds < 86_400 {
-        format!("{}h ago", seconds / 3_600)
+        format!("{} 小时前", seconds / 3_600)
     } else {
-        format!("{}d ago", seconds / 86_400)
+        format!("{} 天前", seconds / 86_400)
     }
 }

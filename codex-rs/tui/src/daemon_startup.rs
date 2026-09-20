@@ -12,7 +12,7 @@ const SERVER_FEATURES: [Feature; 4] = [
     Feature::McpOAuthRefreshCoordination,
 ];
 
-pub(super) const FAILURE_HINT: &str = "To work without the background server, rerun the same command with --no-daemon (including resume or fork and its arguments).";
+pub(super) const FAILURE_HINT: &str = "如需在没有后台服务器的情况下工作，请使用 --no-daemon 重新运行同一命令（包括 resume 或 fork 及其参数）。";
 
 pub(super) fn exclusion(
     cli: &Cli,
@@ -26,9 +26,9 @@ pub(super) fn exclusion(
     } else if cli.oss {
         Some("--oss")
     } else if workload_identity_selected {
-        Some("workload identity")
+        Some("工作负载身份认证")
     } else if exec_server_url.is_some() {
-        Some("executor selection (CODEX_EXEC_SERVER_URL)")
+        Some("执行器选择（CODEX_EXEC_SERVER_URL）")
     } else if cli.agents_overview {
         None
     } else if cli.config_profile_v2.is_some() {
@@ -65,9 +65,9 @@ pub(super) fn config_exclusion(
         // shared services they may rely on through a new daemon's CLI overrides.
         || server_features(cli_kv_overrides).values().any(|enabled| !enabled)
     {
-        Some("command-line configuration overrides (-c, --enable, --disable, or --search)")
+        Some("命令行配置覆盖（-c、--enable、--disable 或 --search）")
     } else if !loader_overrides_are_default(loader_overrides) {
-        Some("custom configuration loader")
+        Some("自定义配置加载器")
     } else if strict_config {
         Some("--strict-config")
     } else if bypass_hook_trust {
@@ -116,12 +116,12 @@ pub(super) async fn compatibility_warning(
     if !config.features.enabled(Feature::CodeModeHost)
         && config.code_mode.disable_in_process_fallback
     {
-        return Some("Running without the shared background server: code-mode host fallback policy requires embedded mode.".to_string());
+        return Some("未使用共享后台服务器：代码模式主机的回退策略要求使用嵌入模式。".to_string());
     }
     let check = async {
         let client = app_server_connection::connect(target)
             .await
-            .map_err(|_| "could not connect to check daemon feature settings".to_string())?;
+            .map_err(|_| "无法连接以检查后台服务功能设置".to_string())?;
         let (tx, rx) = tokio::sync::oneshot::channel();
         crate::experimental_features::fetch(
             client.request_handle(),
@@ -131,7 +131,7 @@ pub(super) async fn compatibility_warning(
         );
         let result = rx.await;
         let _ = client.shutdown().await;
-        let features = result.map_err(|_| "daemon feature check was interrupted".to_string())??;
+        let features = result.map_err(|_| "后台服务功能检查被中断".to_string())??;
         // A previous client may have launched this daemon with overrides, even if
         // this client has none. Check effective values, including defaults.
         for feature in SERVER_FEATURES {
@@ -143,7 +143,7 @@ pub(super) async fn compatibility_warning(
                 .is_some_and(|feature| feature.enabled)
                 != enabled
             {
-                return Err(format!("daemon does not report features.{name}={enabled}"));
+                return Err(format!("后台服务未报告 features.{name}={enabled}"));
             }
         }
         Ok::<(), String>(())
@@ -151,5 +151,5 @@ pub(super) async fn compatibility_warning(
     .await;
     check
         .err()
-        .map(|reason| format!("Running without the shared background server: {reason}."))
+        .map(|reason| format!("未使用共享后台服务器：{reason}。"))
 }

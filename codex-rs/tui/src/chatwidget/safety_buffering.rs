@@ -8,9 +8,10 @@ use codex_app_server_protocol::ModelSafetyBufferingUpdatedNotification;
 const SAFETY_BUFFERING_PROMPT_VIEW_ID: &str = "safety-buffering-prompt";
 const SAFETY_BUFFERING_LEARN_MORE_URL: &str = "https://help.openai.com/en/articles/20001326";
 
-const SAFETY_BUFFERING_HEADER: &str = "Giving this request a little extra thought";
-const SAFETY_BUFFERING_MESSAGE_WITH_RETRY: &str = "If you'd rather not wait, retry with a faster model. It may be less capable of handling complex requests.";
-const SAFETY_BUFFERING_FOOTER: &str = "No action is required. Codex will keep waiting, and this menu will close when the response is ready.";
+const SAFETY_BUFFERING_HEADER: &str = "正在进一步思考此请求";
+const SAFETY_BUFFERING_MESSAGE_WITH_RETRY: &str =
+    "如果不想等待，可改用更快的模型重试，但它处理复杂请求的能力可能较弱。";
+const SAFETY_BUFFERING_FOOTER: &str = "无需操作。Codex 将继续等待，并在响应就绪后关闭此菜单。";
 
 struct SafetyBufferingHeader(Vec<Line<'static>>);
 
@@ -175,7 +176,7 @@ impl ChatWidget {
         };
         self.bottom_pane.ensure_status_indicator();
         self.set_status(
-            "Working".to_string(),
+            "正在处理".to_string(),
             Some(status_details),
             StatusDetailsCapitalization::Preserve,
             /*details_max_lines*/ 6,
@@ -196,7 +197,7 @@ impl ChatWidget {
             (faster_model, retry_turn, retry_prompt, thread_id)
         {
             items.push(SelectionItem {
-                name: "Retry with a faster model".to_string(),
+                name: "改用更快的模型重试".to_string(),
                 actions: vec![Box::new(move |tx| {
                     tx.send(AppEvent::ConfirmSafetyBufferedRetry {
                         thread_id,
@@ -212,12 +213,12 @@ impl ChatWidget {
         }
         items.extend([
             SelectionItem {
-                name: "Dismiss and keep waiting".to_string(),
+                name: "关闭菜单并继续等待".to_string(),
                 dismiss_on_select: true,
                 ..Default::default()
             },
             SelectionItem {
-                name: "Learn more".to_string(),
+                name: "了解详情".to_string(),
                 actions: vec![Box::new(|tx| {
                     tx.send(AppEvent::OpenUrlInBrowser {
                         url: SAFETY_BUFFERING_LEARN_MORE_URL.to_string(),
@@ -260,21 +261,25 @@ impl ChatWidget {
         self.bottom_pane.show_selection_view(SelectionViewParams {
             view_id: Some(SAFETY_BUFFERING_PROMPT_VIEW_ID),
             header: Box::new(SafetyBufferingHeader(vec![
-                    "Stop this attempt and retry?".bold().into(),
-                    Line::default(),
-                    "This will stop the current attempt and retry in a new thread. Any file changes or other actions already taken will remain.".dim().into(),
-                    Line::default(),
-                    format!("Your message will be sent again using {model_name}, which may be less capable on complex tasks.").dim().into(),
-                ])),
+                "停止本次尝试并重试？".bold().into(),
+                Line::default(),
+                "这将停止当前尝试，并在新线程中重试。已完成的文件修改及其他操作会保留。"
+                    .dim()
+                    .into(),
+                Line::default(),
+                format!("你的消息将使用 {model_name} 再次发送；该模型处理复杂任务的能力可能较弱。")
+                    .dim()
+                    .into(),
+            ])),
             footer_hint: Some(Line::default()),
             items: vec![
                 SelectionItem {
-                    name: "Keep waiting".to_string(),
+                    name: "继续等待".to_string(),
                     dismiss_on_select: true,
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: "Stop and retry".to_string(),
+                    name: "停止并重试".to_string(),
                     actions: vec![Box::new(move |tx| {
                         tx.send(AppEvent::RetrySafetyBufferedTurn {
                             thread_id,

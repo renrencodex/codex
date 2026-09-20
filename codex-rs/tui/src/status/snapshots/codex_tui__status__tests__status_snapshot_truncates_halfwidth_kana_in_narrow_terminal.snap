@@ -7,18 +7,18 @@ expression: sanitized
 ╭────────────────────────────────────────╮
 │  >_ OpenAI Codex (v0.0.0)              │
 │                                        │
-│ Visit                                  │
+│ 访问                                   │
 │ https://chatgpt.com/codex/settings/usa │
-│ for up-to-date                         │
-│ information on rate limits and credits │
+│ 查看最新的                             │
+│ 速率限制和点数信息                     │
 │                                        │
-│  Model:                ｶﾞﾊﾟｶﾞﾊﾟｶﾞﾊﾟｶﾞ  │
-│  Directory: [[workspace]]              │
-│  Permissions:          Custom (workspa │
-│  Agents.md:            <none>          │
-│  Account:              ｶﾞﾊﾟｶﾞﾊﾟｶﾞﾊﾟ@ex │
-│  Thread name:          ｶﾞﾊﾟｶﾞﾊﾟｶﾞﾊﾟｶﾞ  │
-│  Collaboration mode:   ｶﾞﾊﾟ collaborat │
+│  模型:         ｶﾞﾊﾟｶﾞﾊﾟｶﾞﾊﾟｶﾞﾊﾟ-model  │
+│  目录:         /workspace/tests        │
+│  权限:         自定义（工作区，可访问  │
+│  Agents.md:    <none>                  │
+│  账户:         ｶﾞﾊﾟｶﾞﾊﾟｶﾞﾊﾟ@example.co │
+│  会话名称:     ｶﾞﾊﾟｶﾞﾊﾟｶﾞﾊﾟｶﾞﾊﾟ thread │
+│  协作模式:     ｶﾞﾊﾟ collaboration mode │
 │                                        │
-│  Limits:               data not availa │
+│  限制:         数据尚不可用            │
 ╰────────────────────────────────────────╯

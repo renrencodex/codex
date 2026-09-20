@@ -1336,7 +1336,7 @@ async fn run_ratatui_app(
                 disconnect_info: None,
                 update_action: None,
                 exit_reason: ExitReason::Fatal(format!(
-                    "No saved session found with ID {id_str}. Run `codex {action}` without an ID to choose from existing sessions."
+                    "未找到 ID 为 {id_str} 的已保存会话。请运行不带 ID 的 `codex {action}`，从现有会话中选择。"
                 )),
             })
         };
@@ -2057,7 +2057,7 @@ async fn load_config_or_exit_with_fallback_cwd(
         Ok(config) => config,
         Err(err) => {
             restore_terminal_before_fatal_exit();
-            eprintln!("Error loading configuration: {err}");
+            eprintln!("加载配置时出错：{err}");
             if let Some(worktree) = worktree {
                 worktree.report_startup_failure();
             }
@@ -2130,11 +2130,11 @@ async fn load_bootstrap_config_or_exit(
                 .map(ConfigLoadError::config_error);
             if let Some(config_error) = config_error {
                 eprintln!(
-                    "Error loading config.toml:\n{}",
+                    "加载 config.toml 时出错：\n{}",
                     format_config_error_with_source(config_error)
                 );
             } else {
-                eprintln!("Error loading config.toml: {err}");
+                eprintln!("加载 config.toml 时出错：{err}");
             }
             std::process::exit(1);
         }

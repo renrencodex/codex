@@ -104,9 +104,9 @@ fn reset_credit_options_use_generic_copy_when_backend_copy_is_missing() {
         )),
         vec![ResetCreditOption {
             credit_id: Some("future-credit".to_string()),
-            name: "Full reset".to_string(),
-            detail: Some("Does not expire.".to_string()),
-            description: "Reset your current usage limits.".to_string(),
+            name: "完全重置".to_string(),
+            detail: Some("永不过期。".to_string()),
+            description: "重置当前用量限制。".to_string(),
         }]
     );
 }
@@ -212,7 +212,7 @@ async fn usage_menu_refresh_failure_preserves_disabled_known_zero() {
         Err("backend unavailable".to_string()),
     );
 
-    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("No usage limit resets available."));
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("没有可用的用量限制重置机会。"));
     chat.handle_key_event(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
     assert_matches!(rx.try_recv(), Ok(AppEvent::OpenAnalytics { view: None }));
 }
@@ -473,7 +473,7 @@ async fn rate_limit_reset_confirmation_uses_backend_copy_snapshot() {
             request_id,
             Some("weekly-credit"),
             "Full reset (Weekly + 5 hr)",
-            Some("Expires 09:39 on 18 Jun 2026."),
+            Some("到期时间：2026-06-18 09:39。"),
             "Reset your weekly and 5-hour usage limits.",
         )
     );
@@ -549,7 +549,7 @@ async fn reset_picker_allows_only_one_pending_confirmation() {
     chat.handle_key_event(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
     show_rate_limit_reset_confirmation_from_event(&mut chat, &mut rx);
 
-    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("Second reset · Does not expire."));
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("Second reset · 永不过期。"));
 }
 
 #[tokio::test]
@@ -574,7 +574,7 @@ async fn rate_limit_reset_picker_starts_with_soonest_expiries_and_keeps_all_rows
 
     let rendered = render_bottom_popup(&chat, /*width*/ 80);
     assert!(
-        rendered.contains("Expires 09:39 on 18 Jun 2026."),
+        rendered.contains("到期时间：2026-06-18 09:39。"),
         "{rendered}"
     );
     assert!(!rendered.contains("Full reset ("), "{rendered}");
@@ -595,9 +595,9 @@ async fn rate_limit_reset_picker_starts_with_soonest_expiries_and_keeps_all_rows
             reset_description,
         }) if picker_request_id == request_id
             && credit_id.as_deref() == Some("credit-8")
-            && reset_title == "Full reset"
-            && reset_detail.as_deref() == Some("Expires 09:39 on 26 Jun 2026.")
-            && reset_description == "Reset your current usage limits."
+            && reset_title == "完全重置"
+            && reset_detail.as_deref() == Some("到期时间：2026-06-26 09:39。")
+            && reset_description == "重置当前用量限制。"
     );
 }
 
@@ -722,9 +722,7 @@ async fn no_credit_outcome_disables_reset_entry_in_usage_menu() {
         )),
     ));
     assert_eq!(chat.available_rate_limit_reset_credits, None);
-    assert!(
-        render_bottom_popup(&chat, /*width*/ 80).contains("That reset is no longer available.")
-    );
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("该重置机会已不可用。"));
     chat.handle_key_event(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
     assert_matches!(rx.try_recv(), Ok(AppEvent::OpenRateLimitResetCredits));
 }
@@ -736,7 +734,7 @@ async fn rate_limit_reset_redemption_cannot_be_dismissed_while_in_flight() {
 
     let request_id = chat.show_rate_limit_reset_consuming_popup();
     dismiss_popup(&mut chat);
-    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("Using a reset..."));
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("正在使用重置机会……"));
 
     assert!(finish_reset_consume_outcome(
         &mut chat,
@@ -745,7 +743,7 @@ async fn rate_limit_reset_redemption_cannot_be_dismissed_while_in_flight() {
         ConsumeAccountRateLimitResetCreditOutcome::Reset,
     ));
     dismiss_popup(&mut chat);
-    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("Refreshing..."));
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("正在刷新……"));
 
     assert!(chat.finish_post_consume_reset_credits_refresh(
         request_id,
@@ -764,7 +762,7 @@ async fn rate_limit_reset_redemption_allows_ctrl_c_to_quit_while_in_flight() {
     chat.handle_key_event(KeyEvent::new(KeyCode::Char('c'), KeyModifiers::CONTROL));
 
     assert_matches!(rx.try_recv(), Ok(AppEvent::Exit(ExitMode::ShutdownFirst)));
-    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("Using a reset..."));
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("正在使用重置机会……"));
 }
 
 #[tokio::test]
@@ -783,10 +781,7 @@ async fn already_redeemed_is_an_idempotent_success() {
         Vec::new(),
         Ok(reset_credits(/*available_count*/ 0)),
     ));
-    assert!(
-        render_bottom_popup(&chat, /*width*/ 80)
-            .contains("Usage reset. You have 0 usage limit resets left.")
-    );
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("用量已重置。你还剩 0 次重置机会。"));
 }
 
 #[tokio::test]
@@ -816,8 +811,8 @@ async fn failed_post_consume_refresh_does_not_keep_stale_reset_count() {
     chat.dispatch_command(SlashCommand::Usage);
 
     let rendered = render_bottom_popup(&chat, /*width*/ 80);
-    assert!(rendered.contains("Check reset availability."));
-    assert!(!rendered.contains("You have 2 usage limit resets available."));
+    assert!(rendered.contains("检查是否有可用的重置机会。"));
+    assert!(!rendered.contains("你有 2 次可用的用量限制重置机会。"));
 }
 
 #[tokio::test]
@@ -879,7 +874,7 @@ async fn rate_limit_reset_load_result_updates_popup_beneath_overlay() {
     );
 
     chat.handle_key_event(KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE));
-    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("2 usage limit resets available."));
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("有 2 次可用的重置机会。"));
 }
 
 #[tokio::test]
@@ -905,10 +900,7 @@ async fn rate_limit_reset_success_updates_popup_beneath_overlay() {
     );
 
     chat.handle_key_event(KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE));
-    assert!(
-        render_bottom_popup(&chat, /*width*/ 80)
-            .contains("Usage reset. You have 1 usage limit reset left.")
-    );
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("用量已重置。你还剩 1 次重置机会。"));
 }
 
 #[tokio::test]
@@ -925,9 +917,9 @@ async fn account_change_dismisses_reset_popup_beneath_overlay() {
         request_id,
         Arc::new(AtomicBool::new(true)),
         /*credit_id*/ None,
-        "Full reset".to_string(),
+        "完全重置".to_string(),
         /*reset_detail*/ None,
-        "Reset your current usage limits.".to_string(),
+        "重置当前用量限制。".to_string(),
     ));
     chat.handle_key_event(KeyEvent::new(KeyCode::Up, KeyModifiers::NONE));
     chat.handle_key_event(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));

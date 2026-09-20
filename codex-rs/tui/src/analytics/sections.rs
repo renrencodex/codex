@@ -126,7 +126,7 @@ impl AnalyticsView {
             && (section == Section::Credits
                 || (section == Section::Usage && !self.consumer_attribution()))
         {
-            "Product"
+            "产品"
         } else {
             super::data::GROUP_LABELS[group]
         }

@@ -97,10 +97,7 @@ impl App {
     ) -> Result<AppRunControl> {
         if self.reconnect.offline || self.windows_sandbox_blocks_thread_switch() {
             if let Some((_, checkout)) = &managed_worktree {
-                self.agents_overview_retained_worktree_error(
-                    checkout,
-                    "Could not start the session.",
-                );
+                self.agents_overview_retained_worktree_error(checkout, "无法启动会话。");
             }
             return Ok(AppRunControl::Continue);
         }
@@ -109,10 +106,7 @@ impl App {
             .await
         else {
             if let Some((_, checkout)) = &managed_worktree {
-                self.agents_overview_retained_worktree_error(
-                    checkout,
-                    "Could not load the new session settings.",
-                );
+                self.agents_overview_retained_worktree_error(checkout, "无法加载新会话设置。");
             }
             return Ok(AppRunControl::Continue);
         };
@@ -153,10 +147,10 @@ impl App {
                 if let Some((_, checkout)) = &managed_worktree {
                     self.agents_overview_retained_worktree_error(
                         checkout,
-                        format!("Failed to start session: {error}"),
+                        format!("启动会话失败：{error}"),
                     );
                 } else {
-                    self.add_agents_overview_error(format!("Failed to start session: {error}"));
+                    self.add_agents_overview_error(format!("启动会话失败：{error}"));
                 }
                 return Ok(AppRunControl::Continue);
             }
@@ -171,9 +165,7 @@ impl App {
             let result =
                 if crate::session_resume::cwds_differ(started.session.cwd.as_path(), &checkout.cwd)
                 {
-                    Err(anyhow::anyhow!(
-                        "The server did not apply the worktree directory."
-                    ))
+                    Err(anyhow::anyhow!("服务器未应用工作树目录。"))
                 } else {
                     manager.bind_thread(&checkout.root, &thread_id.to_string())
                 };
@@ -200,10 +192,7 @@ impl App {
             self.agents_overview.blank_sessions.remove(&thread_id);
             let _ = app_server.thread_unsubscribe(thread_id).await;
             if let Some((_, checkout)) = &managed_worktree {
-                self.agents_overview_retained_worktree_error(
-                    checkout,
-                    "Could not open the new session.",
-                );
+                self.agents_overview_retained_worktree_error(checkout, "无法打开新会话。");
             }
         }
         Ok(control)
@@ -227,9 +216,7 @@ impl App {
                 self.environment_manager.as_ref(),
             )
         {
-            self.add_agents_overview_error(
-                "Managed worktrees require local worktree support.".to_string(),
-            );
+            self.add_agents_overview_error("托管工作树需要本地工作树支持。".to_string());
             return;
         }
         let Some((config, _)) = self
@@ -239,10 +226,7 @@ impl App {
             return;
         };
         let setup = async {
-            anyhow::ensure!(
-                !config.active_project.is_untrusted(),
-                "The source project is not trusted."
-            );
+            anyhow::ensure!(!config.active_project.is_untrusted(), "源项目不受信任。");
             let host = crate::legacy_core::config::load_config_toml_with_layer_stack(
                 &self.config.codex_home,
                 /*cwd*/ None,
@@ -284,7 +268,7 @@ impl App {
                     .map_err(|error| error.to_string())
             })
             .await
-            .unwrap_or_else(|error| Err(format!("Worktree creation task failed: {error}")));
+            .unwrap_or_else(|error| Err(format!("工作树创建任务失败：{error}")));
             sender.send(AppEvent::AgentsOverviewWorktreeCreated(result));
         });
     }

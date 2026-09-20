@@ -1,13 +1,12 @@
 ---
 source: tui/src/chatwidget/realtime_settings_tests.rs
-assertion_line: 17
 expression: "render_bottom_popup(&chat, 80)"
 ---
-  Select voice
-  Applies to your next voice conversation.
+  选 择 语 音
+  将 在 下 次 语 音 对 话 中 生 效 。
 
   1. juniper
-› 2. maple (current)
+› 2. maple（ 当 前 ）
   3. spruce
   4. ember
   5. vale
@@ -15,4 +14,4 @@ expression: "render_bottom_popup(&chat, 80)"
   7. arbor
   8. sol
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

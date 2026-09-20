@@ -19,7 +19,7 @@ impl ChatWidget {
                 [question] if !question.title.trim().is_empty() => {
                     truncate_text(question.title.trim(), /*max_graphemes*/ 30)
                 }
-                _ if added_count == 1 => "Question requested".to_string(),
+                _ if added_count == 1 => "收到问题请求".to_string(),
                 _ => format!("{added_count} questions requested"),
             };
             self.notify(Notification::AsyncQuestion { title });

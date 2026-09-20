@@ -95,52 +95,65 @@ pub(crate) enum TerminalTitleItem {
 }
 
 impl TerminalTitleItem {
+    fn label(self) -> &'static str {
+        match self {
+            TerminalTitleItem::AppName => "应用名称",
+            TerminalTitleItem::Project => "项目",
+            TerminalTitleItem::CurrentDir => "当前目录",
+            TerminalTitleItem::Spinner => "活动状态",
+            TerminalTitleItem::Status => "运行状态",
+            TerminalTitleItem::ThreadName => "会话名称",
+            TerminalTitleItem::Thread => "会话标题",
+            TerminalTitleItem::GitBranch => "Git 分支",
+            TerminalTitleItem::ContextRemaining => "上下文剩余量",
+            TerminalTitleItem::ContextUsed => "上下文使用量",
+            TerminalTitleItem::FiveHourLimit => "主要用量限制",
+            TerminalTitleItem::WeeklyLimit => "次要用量限制",
+            TerminalTitleItem::CodexVersion => "Codex 版本",
+            TerminalTitleItem::UsedTokens => "已用令牌",
+            TerminalTitleItem::TotalInputTokens => "输入令牌总数",
+            TerminalTitleItem::TotalOutputTokens => "输出令牌总数",
+            TerminalTitleItem::ThreadCredits => "会话额度",
+            TerminalTitleItem::EstimatedThreadCost => "预计会话费用",
+            TerminalTitleItem::SessionId => "会话 ID",
+            TerminalTitleItem::FastMode => "快速模式",
+            TerminalTitleItem::Model => "模型",
+            TerminalTitleItem::ModelWithReasoning => "模型与推理强度",
+            TerminalTitleItem::Reasoning => "推理强度",
+            TerminalTitleItem::TaskProgress => "任务进度",
+        }
+    }
+
     pub(crate) fn description(self) -> &'static str {
         match self {
-            TerminalTitleItem::AppName => "Codex app name",
-            TerminalTitleItem::Project => "Project name (falls back to current directory name)",
-            TerminalTitleItem::CurrentDir => "Current working directory",
-            TerminalTitleItem::Spinner => {
-                "Spinner while working, action-required message while blocked."
-            }
-            TerminalTitleItem::Status => {
-                "Compact session run-state text (Ready, Working, Thinking)"
-            }
-            TerminalTitleItem::ThreadName => "Current thread name (omitted when unnamed)",
-            TerminalTitleItem::Thread => "Current thread title, or thread identifier when unnamed",
-            TerminalTitleItem::GitBranch => "Current Git branch (omitted when unavailable)",
-            TerminalTitleItem::ContextRemaining => {
-                "Percentage of context window remaining (omitted when unknown)"
-            }
-            TerminalTitleItem::ContextUsed => {
-                "Percentage of context window used (omitted when unknown)"
-            }
-            TerminalTitleItem::FiveHourLimit => {
-                "Remaining usage on the primary usage limit (omitted when unavailable)"
-            }
-            TerminalTitleItem::WeeklyLimit => {
-                "Remaining usage on the secondary usage limit (omitted when unavailable)"
-            }
-            TerminalTitleItem::CodexVersion => "Codex application version",
-            TerminalTitleItem::UsedTokens => "Total tokens used in session (omitted when zero)",
-            TerminalTitleItem::TotalInputTokens => "Total input tokens used in session",
-            TerminalTitleItem::TotalOutputTokens => "Total output tokens used in session",
+            TerminalTitleItem::AppName => "Codex 应用名称",
+            TerminalTitleItem::Project => "项目名称（回退为当前目录名称）",
+            TerminalTitleItem::CurrentDir => "当前工作目录",
+            TerminalTitleItem::Spinner => "工作时显示旋转指示器，受阻时显示需要操作的消息。",
+            TerminalTitleItem::Status => "简洁的会话运行状态（就绪、工作中、思考中）",
+            TerminalTitleItem::ThreadName => "当前会话名称（未命名时省略）",
+            TerminalTitleItem::Thread => "当前会话标题；未命名时显示会话标识符",
+            TerminalTitleItem::GitBranch => "当前 Git 分支（不可用时省略）",
+            TerminalTitleItem::ContextRemaining => "上下文窗口剩余百分比（未知时省略）",
+            TerminalTitleItem::ContextUsed => "上下文窗口已用百分比（未知时省略）",
+            TerminalTitleItem::FiveHourLimit => "主要用量限制的剩余额度（不可用时省略）",
+            TerminalTitleItem::WeeklyLimit => "次要用量限制的剩余额度（不可用时省略）",
+            TerminalTitleItem::CodexVersion => "Codex 应用版本",
+            TerminalTitleItem::UsedTokens => "会话已用令牌总数（为零时省略）",
+            TerminalTitleItem::TotalInputTokens => "会话输入令牌总数",
+            TerminalTitleItem::TotalOutputTokens => "会话输出令牌总数",
             TerminalTitleItem::ThreadCredits => {
-                "Estimated current-thread credits (Enterprise workspaces only; omitted when unavailable)"
+                "当前会话预计额度（仅 Enterprise 工作区；不可用时省略）"
             }
             TerminalTitleItem::EstimatedThreadCost => {
-                "Estimated current-thread cost (Enterprise workspaces only; omitted when unavailable)"
+                "当前会话预计费用（仅 Enterprise 工作区；不可用时省略）"
             }
-            TerminalTitleItem::SessionId => {
-                "Current thread identifier (omitted until thread starts)"
-            }
-            TerminalTitleItem::FastMode => "Whether Fast mode is currently active",
-            TerminalTitleItem::Model => "Current model name",
-            TerminalTitleItem::ModelWithReasoning => "Current model name with reasoning level",
-            TerminalTitleItem::Reasoning => "Current reasoning level",
-            TerminalTitleItem::TaskProgress => {
-                "Latest task progress from update_plan (omitted until available)"
-            }
+            TerminalTitleItem::SessionId => "当前会话标识符（会话开始前省略）",
+            TerminalTitleItem::FastMode => "快速模式当前是否启用",
+            TerminalTitleItem::Model => "当前模型名称",
+            TerminalTitleItem::ModelWithReasoning => "当前模型名称和推理强度",
+            TerminalTitleItem::Reasoning => "当前推理强度",
+            TerminalTitleItem::TaskProgress => "update_plan 的最新任务进度（可用前省略）",
         }
     }
 
@@ -293,8 +306,8 @@ impl TerminalTitleSetupView {
 
         Self {
             picker: MultiSelectPicker::builder(
-                "Configure Terminal Title".to_string(),
-                Some("Select which items to display in the terminal title.".to_string()),
+                "配置终端标题".to_string(),
+                Some("选择要在终端标题中显示的项目。".to_string()),
                 app_event_tx,
             )
             .list_keymap(list_keymap)
@@ -338,7 +351,7 @@ impl TerminalTitleSetupView {
         enabled: bool,
         preview_data: &StatusSurfacePreviewData,
     ) -> MultiSelectItem {
-        let default_name = item.to_string();
+        let default_name = item.label().to_string();
         let default_description = item.description();
         let (name, description) = match item.preview_item() {
             Some(

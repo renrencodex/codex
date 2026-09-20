@@ -25,8 +25,8 @@ impl ChatWidget {
             })
             .collect();
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some("Select voice".to_string()),
-            subtitle: Some("Applies to your next voice conversation.".to_string()),
+            title: Some("选择语音".to_string()),
+            subtitle: Some("将在下次语音对话中生效。".to_string()),
             footer_hint: Some(standard_popup_hint_line()),
             items,
             ..Default::default()
@@ -40,10 +40,7 @@ impl ChatWidget {
     pub(crate) fn on_realtime_voice_saved(&mut self, voice: RealtimeVoice) {
         self.set_realtime_voice(Some(voice));
         self.add_info_message(
-            format!(
-                "Voice set to {}. Applies to your next voice conversation.",
-                voice.wire_name()
-            ),
+            format!("语音已设为 {}，将在下次语音对话中生效。", voice.wire_name()),
             /*hint*/ None,
         );
     }

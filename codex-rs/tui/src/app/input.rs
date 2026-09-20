@@ -161,16 +161,16 @@ impl App {
             Err(external_editor::EditorError::MissingEditor) => {
                 self.chat_widget
                     .add_to_history(history_cell::new_error_event(
-                    "Cannot open external editor: set $VISUAL or $EDITOR before starting Codex."
-                        .to_string(),
-                ));
+                        "无法打开外部编辑器：请在启动 Codex 前设置 $VISUAL 或 $EDITOR。"
+                            .to_string(),
+                    ));
                 self.reset_external_editor_state(tui);
                 return;
             }
             Err(err) => {
                 self.chat_widget
                     .add_to_history(history_cell::new_error_event(format!(
-                        "Failed to open editor: {err}",
+                        "打开编辑器失败：{err}",
                     )));
                 self.reset_external_editor_state(tui);
                 return;
@@ -203,7 +203,7 @@ impl App {
             Err(err) => {
                 self.chat_widget
                     .add_to_history(history_cell::new_error_event(format!(
-                        "Failed to open editor: {err}",
+                        "打开编辑器失败：{err}",
                     )));
             }
         }
@@ -246,7 +246,7 @@ impl App {
         if let Err(err) = self.reflow_transcript_now(tui, terminal_width) {
             tracing::warn!(error = %err, "failed to reflow transcript after raw output mode toggle");
             self.chat_widget
-                .add_error_message(format!("Failed to redraw transcript: {err}"));
+                .add_error_message(format!("重绘对话记录失败：{err}"));
         }
         tui.frame_requester().schedule_frame();
     }
@@ -385,23 +385,23 @@ impl App {
                 let allow_background = running_side_thread_id.is_none()
                     && !self.chat_widget.has_queued_follow_up_messages();
                 self.chat_widget.show_selection_view(SelectionViewParams {
-                    title: Some("Task is still running".to_string()),
-                    subtitle: Some("Choose what happens to the current task.".to_string()),
+                    title: Some("任务仍在运行".to_string()),
+                    subtitle: Some("选择如何处理当前任务。".to_string()),
                     footer_hint: Some(standard_popup_hint_line()),
                     items: [
                         (
-                            "Cancel task",
-                            "Stop the current task and stay in Codex",
+                            "取消任务",
+                            "停止当前任务并留在 Codex",
                             RunningTaskExitAction::CancelTask,
                         ),
                         (
-                            "Run in background",
-                            "Exit Codex and leave the task running",
+                            "在后台运行",
+                            "退出 Codex 并让任务继续运行",
                             RunningTaskExitAction::RunInBackground,
                         ),
                         (
-                            "Exit",
-                            "Stop the current task and exit Codex",
+                            "退出",
+                            "停止当前任务并退出 Codex",
                             RunningTaskExitAction::Exit,
                         ),
                     ]
@@ -526,7 +526,7 @@ impl App {
         {
             if let Err(err) = self.toggle_side_conversation(tui, app_server).await {
                 self.chat_widget
-                    .add_error_message(format!("Failed to switch side conversation: {err}"));
+                    .add_error_message(format!("切换旁路对话失败：{err}"));
             }
             return true;
         }
@@ -575,7 +575,7 @@ impl App {
             if let Err(err) = self.clear_terminal_ui(tui, /*redraw_header*/ false) {
                 tracing::warn!(error = %err, "failed to clear terminal UI");
                 self.chat_widget
-                    .add_error_message(format!("Failed to clear terminal UI: {err}"));
+                    .add_error_message(format!("清除终端界面失败：{err}"));
             } else {
                 self.reset_app_ui_state_after_clear();
                 self.queue_clear_ui_header(tui);

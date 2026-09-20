@@ -2,4 +2,4 @@
 source: tui/src/chatwidget/tests/usage.rs
 expression: rendered
 ---
-• You have 2 usage limit resets available. Run /usage to use one.
+• 你有 2 次可用的用量限制重置机会。运行 /usage 使用。

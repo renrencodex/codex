@@ -161,31 +161,32 @@ impl UnarchivePrompt {
     fn content(&self) -> ColumnRenderable<'static> {
         let mut column = ColumnRenderable::new();
         column.push("");
-        column.push(
-            Paragraph::new("This conversation is archived".bold()).wrap(Wrap { trim: false }),
-        );
+        column.push(Paragraph::new("此对话已归档".bold()).wrap(Wrap { trim: false }));
         column.push(
             Paragraph::new(Line::from(self.thread_id.to_string()).dim()).wrap(Wrap { trim: false }),
         );
         column.push("");
         column.push(selection_option_row(
             /*index*/ 0,
-            format!("Unarchive and {}", self.action.verb()),
+            match self.action {
+                SessionStartAction::Resume(_) => "取消归档并恢复".to_string(),
+                SessionStartAction::Fork(_) => "取消归档并分叉".to_string(),
+            },
             self.highlighted == UnarchiveChoice::Unarchive,
         ));
         column.push(selection_option_row(
             /*index*/ 1,
-            "Cancel".to_string(),
+            "取消".to_string(),
             self.highlighted == UnarchiveChoice::Cancel,
         ));
         column.push("");
         column.push(
             Paragraph::new(Line::from(vec![
-                "Press ".dim(),
+                "按 ".dim(),
                 key_hint::plain(KeyCode::Enter).into(),
-                " to continue or ".dim(),
+                " 继续，或按 ".dim(),
                 key_hint::plain(KeyCode::Esc).into(),
-                " to cancel".dim(),
+                " 取消".dim(),
             ]))
             .wrap(Wrap { trim: false }),
         );

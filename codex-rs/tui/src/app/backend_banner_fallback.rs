@@ -98,13 +98,10 @@ impl App {
             self.sync_active_thread_service_tier_to_cached_session()
                 .await;
             let (prefix, suffix) = match switch.reason {
-                AutomaticModelSwitchReason::UsageLimit => {
-                    ("Automatically switched to", " due to usage limits.")
+                AutomaticModelSwitchReason::UsageLimit => ("因用量限制已自动切换到", "。"),
+                AutomaticModelSwitchReason::UsageRecovered => {
+                    ("已自动切换回", "，因为普通用量已恢复可用。")
                 }
-                AutomaticModelSwitchReason::UsageRecovered => (
-                    "Automatically switched back to",
-                    " because ordinary usage is available again.",
-                ),
             };
             let mut message = format!("{prefix} {}", model_display_name(&target.model));
             if let Some(label) = Self::reasoning_label_for(&target.model, Some(&effort)) {

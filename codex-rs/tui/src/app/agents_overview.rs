@@ -74,37 +74,31 @@ impl App {
         if matches!(self.app_server_target, AppServerTarget::Embedded) {
             let workload_identity_selected = codex_login::is_workload_identity_selected();
             self.chat_widget.show_selection_view(SelectionViewParams {
-                title: Some("Shared agents unavailable".to_string()),
+                title: Some("共享智能体不可用".to_string()),
                 subtitle: Some(
                     if workload_identity_selected {
-                        "The agents dashboard is unavailable while workload identity is active."
+                        "启用工作负载身份时，智能体面板不可用。"
                     } else if cfg!(any(unix, windows)) {
-                        "This session isn’t connected to a shared background server."
+                        "此会话未连接到共享后台服务器。"
                     } else {
-                        "Connect to a remote background server to use the agents dashboard."
+                        "请连接远程后台服务器以使用智能体面板。"
                     }
                     .to_string(),
                 ),
-                footer_note: (cfg!(any(unix, windows)) && !workload_identity_selected).then(|| {
-                    Line::from(
-                        "Starting a background server will not interrupt or move this session."
-                            .dim(),
-                    )
-                }),
+                footer_note: (cfg!(any(unix, windows)) && !workload_identity_selected)
+                    .then(|| Line::from("启动后台服务器不会中断或迁移此会话。".dim())),
                 footer_hint: Some(standard_popup_hint_line_for_keymap(&self.keymap.list)),
                 items: [
                     #[cfg(any(unix, windows))]
                     (!workload_identity_selected).then(|| SelectionItem {
-                        name: "Start background server".to_string(),
-                        description: Some(
-                            "Open `codex agents` in another terminal afterward.".to_string(),
-                        ),
+                        name: "启动后台服务器".to_string(),
+                        description: Some("然后在另一个终端中打开 `codex agents`。".to_string()),
                         actions: vec![Box::new(|tx| tx.send(AppEvent::StartAgentsDaemon))],
                         dismiss_on_select: true,
                         ..Default::default()
                     }),
                     Some(SelectionItem {
-                        name: "Return to this session".to_string(),
+                        name: "返回此会话".to_string(),
                         dismiss_on_select: true,
                         ..Default::default()
                     }),
@@ -227,10 +221,7 @@ impl App {
             && state.renaming
         {
             self.chat_widget.add_info_message(
-                format!(
-                    "The rename target disappeared. Unsubmitted title: {}",
-                    state.input
-                ),
+                format!("重命名目标已消失。尚未提交的标题：{}", state.input),
                 /*hint*/ None,
             );
             state.renaming = false;
@@ -410,7 +401,7 @@ impl App {
                 Ok(thread) => thread,
                 Err(error) => {
                     self.add_agents_overview_error(format!(
-                        "Agent session {root_thread_id} is unavailable: {error}"
+                        "智能体会话 {root_thread_id} 不可用：{error}"
                     ));
                     return Ok(AppRunControl::Continue);
                 }
@@ -452,9 +443,7 @@ impl App {
                 {
                     Ok(config) => config,
                     Err(error) => {
-                        self.add_agents_overview_error(format!(
-                            "Failed to load task settings: {error}"
-                        ));
+                        self.add_agents_overview_error(format!("加载任务设置失败：{error}"));
                         return Ok(AppRunControl::Continue);
                     }
                 }
@@ -499,8 +488,7 @@ impl App {
                             })
                     {
                         self.add_agents_overview_error(
-                            "Cannot resume task without preserving the selected permissions."
-                                .to_string(),
+                            "无法在不保留所选权限的情况下恢复任务。".to_string(),
                         );
                         return Ok(AppRunControl::Continue);
                     }
@@ -553,17 +541,14 @@ impl App {
                             Err(_) => {
                                 tracing::warn!("Failed to load read-only conversation history");
                                 self.add_agents_overview_error(
-                                    "Couldn't load this conversation. Please try again."
-                                        .to_string(),
+                                    "无法加载此对话。请重试。".to_string(),
                                 );
                                 return Ok(AppRunControl::Continue);
                             }
                         }
                     }
                     Err(error) => {
-                        self.add_agents_overview_error(format!(
-                            "Failed to attach to task: {error}"
-                        ));
+                        self.add_agents_overview_error(format!("连接到任务失败：{error}"));
                         return Ok(AppRunControl::Continue);
                     }
                 }
@@ -649,7 +634,7 @@ impl App {
                 )
                 .await
             {
-                self.add_agents_overview_error(format!("Failed to attach to task: {error}"));
+                self.add_agents_overview_error(format!("附加到任务失败：{error}"));
                 return Ok(AppRunControl::Continue);
             }
             // Replacing the widget clears the terminal before the remaining server requests.
@@ -788,9 +773,7 @@ impl App {
             .thread_id()
             .is_some_and(|thread_id| self.pending_server_profiles.contains_key(&thread_id))
         {
-            self.add_agents_overview_error(
-                "Wait for permissions to update before starting a session.".into(),
-            );
+            self.add_agents_overview_error("请等待权限更新后再启动会话。".into());
             return None;
         }
         let remote = app_server.uses_remote_workspace();
@@ -816,7 +799,7 @@ impl App {
         {
             Ok(config) => config,
             Err(error) => {
-                self.add_agents_overview_error(format!("Failed to load project settings: {error}"));
+                self.add_agents_overview_error(format!("加载项目设置失败：{error}"));
                 return None;
             }
         };
@@ -848,9 +831,7 @@ impl App {
                 || config.permissions.profile_workspace_roots()
                     != self.config.permissions.profile_workspace_roots())
         {
-            self.add_agents_overview_error(
-                "Permission profile has different settings.".to_string(),
-            );
+            self.add_agents_overview_error("权限配置文件的设置不同。".to_string());
             return None;
         }
         // New sessions use the destination settings plus explicit user choices, not
@@ -909,9 +890,7 @@ impl App {
             }
             Ok(None) => {}
             Err(error) => {
-                self.add_agents_overview_error(format!(
-                    "Failed to load new session settings: {error}"
-                ));
+                self.add_agents_overview_error(format!("加载新会话设置失败：{error}"));
                 return None;
             }
         }
@@ -974,9 +953,7 @@ impl App {
             {
                 Ok(turn_id) => turn_id,
                 Err(error) => {
-                    self.add_agents_overview_error(format!(
-                        "Failed to stop background task: {error}"
-                    ));
+                    self.add_agents_overview_error(format!("停止后台任务失败：{error}"));
                     self.refresh_agents_overview_threads(app_server);
                     return;
                 }
@@ -986,7 +963,7 @@ impl App {
             return;
         };
         if let Err(error) = app_server.turn_interrupt(thread_id, turn_id).await {
-            self.add_agents_overview_error(format!("Failed to stop background task: {error}"));
+            self.add_agents_overview_error(format!("停止后台任务失败：{error}"));
             self.refresh_agents_overview_threads(app_server);
         }
     }

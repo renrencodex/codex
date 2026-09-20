@@ -4,15 +4,15 @@ expression: rendered
 ---
 /mcp
 
-🔌  MCP Tools
+🔌  MCP 工具
 
-  • auth: authentication required (0 tools)
-  • cancelled: cancelled (0 tools)
-  • connected-empty: connected (0 tools)
-  • deferred: not started (0 tools)
-  • disabled: disabled (0 tools)
-  • failed: failed (0 tools)
-  • starting: starting (0 tools)
-  • unknown: unknown (0 tools)
+  • auth: 需要身份验证（0 个工具）
+  • cancelled: 已取消（0 个工具）
+  • connected-empty: 已连接（0 个工具）
+  • deferred: 未启动（0 个工具）
+  • disabled: 已停用（0 个工具）
+  • failed: 失败（0 个工具）
+  • starting: 正在启动（0 个工具）
+  • unknown: 未知（0 个工具）
 
-  Use /mcp verbose for tools and resources.
+  使用 /mcp verbose 查看工具和资源。

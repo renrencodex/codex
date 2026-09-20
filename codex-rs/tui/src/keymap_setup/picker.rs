@@ -21,6 +21,7 @@ use crate::style::accent_style;
 use super::actions::KEYMAP_ACTIONS;
 use super::actions::KeymapActionFilter;
 use super::actions::action_label;
+use super::actions::context_label;
 use super::actions::format_action_binding_summary;
 use super::has_custom_binding;
 
@@ -39,14 +40,14 @@ struct KeymapActionRow {
     context_label: &'static str,
     action: &'static str,
     label: String,
-    description: &'static str,
+    description: String,
     binding_summary: String,
     custom_binding: bool,
 }
 
 impl KeymapActionRow {
     fn is_unbound(&self) -> bool {
-        self.binding_summary == "unbound"
+        self.binding_summary == "未绑定"
     }
 }
 
@@ -84,26 +85,26 @@ const KEYMAP_COMMON_ACTIONS: &[(&str, &str)] = &[
 const KEYMAP_CONTEXT_TABS: &[KeymapContextTab] = &[
     KeymapContextTab {
         id: "app-shortcuts",
-        label: "App",
-        description: "Global and chat-level shortcuts.",
+        label: "应用",
+        description: "全局和聊天级快捷键。",
         contexts: &["global", "chat"],
     },
     KeymapContextTab {
         id: "composer-shortcuts",
-        label: "Composer",
-        description: "Composer submission and queue shortcuts.",
+        label: "输入框",
+        description: "输入框的提交和排队快捷键。",
         contexts: &["composer"],
     },
     KeymapContextTab {
         id: "editor-shortcuts",
-        label: "Editor",
-        description: "Inline editor movement and editing shortcuts.",
+        label: "编辑器",
+        description: "行内编辑器的移动和编辑快捷键。",
         contexts: &["editor"],
     },
     KeymapContextTab {
         id: "vim-shortcuts",
         label: "Vim",
-        description: "Vim normal-mode and operator shortcuts.",
+        description: "Vim 普通模式和操作符快捷键。",
         contexts: &[
             "vim_normal",
             "vim_operator",
@@ -113,20 +114,20 @@ const KEYMAP_CONTEXT_TABS: &[KeymapContextTab] = &[
     },
     KeymapContextTab {
         id: "navigation-shortcuts",
-        label: "Navigation",
-        description: "Pager and selection-list navigation shortcuts.",
+        label: "导航",
+        description: "分页器和选择列表的导航快捷键。",
         contexts: &["pager", "list"],
     },
     KeymapContextTab {
         id: "agents-shortcuts",
-        label: "Agents",
-        description: "Shared agents dashboard shortcuts.",
+        label: "智能体",
+        description: "共享智能体面板快捷键。",
         contexts: &["agents"],
     },
     KeymapContextTab {
         id: "approval-shortcuts",
-        label: "Approval",
-        description: "Approval prompt shortcuts.",
+        label: "审批",
+        description: "审批提示快捷键。",
         contexts: &["approval"],
     },
 ];
@@ -209,32 +210,24 @@ fn build_keymap_picker_params_for_action(
     let mut tabs = Vec::new();
     tabs.push(SelectionTab {
         id: KEYMAP_ALL_TAB_ID.to_string(),
-        label: "All".to_string(),
+        label: "全部".to_string(),
         header: keymap_header(
-            "All configurable shortcuts.".to_string(),
-            format!("{total} actions, {custom_count} customized, {unbound_count} unbound."),
+            "所有可配置快捷键。".to_string(),
+            format!("共 {total} 个操作，{custom_count} 个已自定义，{unbound_count} 个未绑定。"),
         ),
-        items: keymap_selection_items(
-            rows.iter(),
-            "No shortcuts available",
-            "No configurable shortcuts are available.",
-        ),
+        items: keymap_selection_items(rows.iter(), "没有可用快捷键", "没有可配置的快捷键。"),
     });
 
     let common_rows = keymap_common_rows(&rows);
     let common_count = common_rows.len();
     tabs.push(SelectionTab {
         id: KEYMAP_COMMON_TAB_ID.to_string(),
-        label: "Common".to_string(),
+        label: "常用".to_string(),
         header: keymap_header(
-            "Frequently customized shortcuts.".to_string(),
+            "经常自定义的快捷键。".to_string(),
             action_count_line(common_count),
         ),
-        items: keymap_selection_items(
-            common_rows,
-            "No common shortcuts",
-            "No common shortcut actions are available.",
-        ),
+        items: keymap_selection_items(common_rows, "没有常用快捷键", "没有可用的常用快捷键操作。"),
     });
 
     let custom_rows = rows
@@ -243,15 +236,15 @@ fn build_keymap_picker_params_for_action(
         .collect::<Vec<_>>();
     tabs.push(SelectionTab {
         id: KEYMAP_CUSTOM_TAB_ID.to_string(),
-        label: format!("Customized ({custom_count})"),
+        label: format!("已自定义（{custom_count}）"),
         header: keymap_header(
-            "Root-level shortcut overrides.".to_string(),
+            "根级快捷键覆盖。".to_string(),
             action_count_line(custom_count),
         ),
         items: keymap_selection_items(
             custom_rows,
-            "No customized shortcuts",
-            "No root-level keymap overrides have been configured.",
+            "没有自定义快捷键",
+            "尚未配置根级按键映射覆盖。",
         ),
     });
 
@@ -261,15 +254,15 @@ fn build_keymap_picker_params_for_action(
         .collect::<Vec<_>>();
     tabs.push(SelectionTab {
         id: KEYMAP_UNBOUND_TAB_ID.to_string(),
-        label: format!("Unbound ({unbound_count})"),
+        label: format!("未绑定（{unbound_count}）"),
         header: keymap_header(
-            "Actions without an active shortcut.".to_string(),
+            "没有有效快捷键的操作。".to_string(),
             action_count_line(unbound_count),
         ),
         items: keymap_selection_items(
             unbound_rows,
-            "No unbound shortcuts",
-            "Every configurable action currently has a shortcut.",
+            "没有未绑定的快捷键",
+            "当前每个可配置操作都有快捷键。",
         ),
     });
 
@@ -283,11 +276,7 @@ fn build_keymap_picker_params_for_action(
             id: tab.id.to_string(),
             label: tab.label.to_string(),
             header: keymap_header(tab.description.to_string(), action_count_line(count)),
-            items: keymap_selection_items(
-                tab_rows,
-                "No shortcuts in this group",
-                "No configurable actions are available in this group.",
-            ),
+            items: keymap_selection_items(tab_rows, "此组中没有快捷键", "此组中没有可配置的操作。"),
         });
     }
     tabs.push(keymap_debug_tab());
@@ -300,7 +289,7 @@ fn build_keymap_picker_params_for_action(
         tabs,
         initial_tab_id: Some(KEYMAP_ALL_TAB_ID.to_string()),
         is_searchable: true,
-        search_placeholder: Some("Type to search shortcuts".to_string()),
+        search_placeholder: Some("输入内容以搜索快捷键".to_string()),
         col_width_mode: ColumnWidthMode::AutoAllRows,
         row_display: SelectionRowDisplay::SingleLine,
         name_column_width,
@@ -312,20 +301,16 @@ fn build_keymap_picker_params_for_action(
 fn keymap_debug_tab() -> SelectionTab {
     SelectionTab {
         id: KEYMAP_DEBUG_TAB_ID.to_string(),
-        label: "Debug".to_string(),
+        label: "调试".to_string(),
         header: keymap_header(
-            "Inspect keypresses from your terminal.".to_string(),
-            "See the key Codex detects and any shortcuts assigned to it.".to_string(),
+            "检查终端发送的按键。".to_string(),
+            "查看 Codex 检测到的按键及分配给它的快捷键。".to_string(),
         ),
         items: vec![SelectionItem {
-            name: "Inspect keypresses".to_string(),
-            description: Some(
-                "Press Enter to start. Then press any key to inspect it; Ctrl+C exits."
-                    .to_string(),
-            ),
+            name: "检查按键".to_string(),
+            description: Some("按 Enter 开始，然后按任意键进行检查；Ctrl+C 退出。".to_string()),
             selected_description: Some(
-                "Open a live inspector that shows the detected key, config key, and matching actions."
-                    .to_string(),
+                "打开实时检查器，显示检测到的按键、配置键和匹配操作。".to_string(),
             ),
             actions: vec![Box::new(|tx| {
                 tx.send(AppEvent::OpenKeymapDebug);
@@ -347,10 +332,10 @@ fn build_keymap_rows(
         .filter(|descriptor| descriptor.is_visible(action_filter))
         .map(|descriptor| KeymapActionRow {
             context: descriptor.context,
-            context_label: descriptor.context_label,
+            context_label: context_label(descriptor.context),
             action: descriptor.action,
             label: action_label(descriptor.action),
-            description: descriptor.description,
+            description: format!("配置“{}”操作的快捷键。", action_label(descriptor.action)),
             binding_summary: format_action_binding_summary(
                 runtime_keymap,
                 descriptor.context,
@@ -401,9 +386,9 @@ fn keymap_selection_item(row: &KeymapActionRow) -> SelectionItem {
     let context = row.context.to_string();
     let action = row.action.to_string();
     let source = if row.custom_binding {
-        "Custom"
+        "自定义"
     } else {
-        "Default"
+        "默认"
     };
     let search_value = format!(
         "{} {} {} {} {} {}",
@@ -436,9 +421,12 @@ fn keymap_row_prefix(row: &KeymapActionRow) -> Vec<Span<'static>> {
 
     vec![
         format!(
-            "{:<width$} ",
+            "{}{} ",
             row.context_label,
-            width = KEYMAP_CONTEXT_LABEL_WIDTH
+            " ".repeat(
+                KEYMAP_CONTEXT_LABEL_WIDTH
+                    .saturating_sub(UnicodeWidthStr::width(row.context_label))
+            )
         )
         .dim(),
         indicator,
@@ -448,32 +436,29 @@ fn keymap_row_prefix(row: &KeymapActionRow) -> Vec<Span<'static>> {
 
 fn keymap_header(description: String, summary: String) -> Box<dyn Renderable> {
     let mut header = ColumnRenderable::new();
-    header.push(Line::from("Keymap".bold()));
+    header.push(Line::from("按键映射".bold()));
     header.push(Line::from(description.dim()));
     header.push(Line::from(summary.dim()));
     Box::new(header)
 }
 
 fn action_count_line(count: usize) -> String {
-    match count {
-        1 => "1 action.".to_string(),
-        _ => format!("{count} actions."),
-    }
+    format!("{count} 个操作。")
 }
 
 fn keymap_picker_hint_line() -> Line<'static> {
     let style = accent_style();
     Line::from(vec![
         "left/right".set_style(style),
-        " group · ".dim(),
+        " 分组 · ".dim(),
         "enter".set_style(style),
-        " edit shortcut · ".dim(),
+        " 编辑快捷键 · ".dim(),
         "*".set_style(style),
-        " custom · ".dim(),
+        " 自定义 · ".dim(),
         "-".set_style(style),
-        " unbound · ".dim(),
+        " 未绑定 · ".dim(),
         "esc".set_style(style),
-        " close".dim(),
+        " 关闭".dim(),
     ])
 }
 
@@ -481,8 +466,8 @@ fn keymap_debug_hint_line() -> Line<'static> {
     let style = accent_style();
     Line::from(vec![
         "enter".set_style(style),
-        " start inspector · ".dim(),
+        " 启动检查器 · ".dim(),
         "esc".set_style(style),
-        " close".dim(),
+        " 关闭".dim(),
     ])
 }

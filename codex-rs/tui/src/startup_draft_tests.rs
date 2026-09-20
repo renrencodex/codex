@@ -226,11 +226,11 @@ async fn startup_draft_hydrates_its_header_without_moving_the_composer() {
 
     assert_eq!(
         pump.header.raw_lines().last().map(ToString::to_string),
-        Some("directory: loading".to_string())
+        Some("目录：loading".to_string())
     );
     pump.apply_config(&config);
     let expected_directory = format!(
-        "directory: {}",
+        "目录：{}",
         crate::history_cell::SessionHeaderHistoryCell::format_directory_inner(
             config.cwd.as_path(),
             /*max_width*/ None,

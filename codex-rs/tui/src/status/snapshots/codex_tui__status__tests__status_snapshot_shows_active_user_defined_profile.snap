@@ -4,18 +4,18 @@ expression: sanitized
 ---
 /status
 
-╭───────────────────────────────────────────────────────────────────────╮
-│  >_ OpenAI Codex (v0.0.0)                                             │
-│                                                                       │
-│ Visit https://chatgpt.com/codex/settings/usage for up-to-date         │
-│ information on rate limits and credits                                │
-│                                                                       │
-│  Model:            gpt-5.1-codex-max (reasoning none, summaries auto) │
-│  Directory: [[workspace]]                                             │
-│  Permissions:      Profile locked (read-only, Ask for approval)       │
-│  Agents.md:        <none>                                             │
-│                                                                       │
-│  Token usage:      0 total  (0 input + 0 output)                      │
-│  Context window:   100% left (0 used / 272K)                          │
-│  Limits:           data not available yet                             │
-╰───────────────────────────────────────────────────────────────────────╯
+╭─────────────────────────────────────────────────────────────────╮
+│  >_ OpenAI Codex (v0.0.0)                                       │
+│                                                                 │
+│ 访问 https://chatgpt.com/codex/settings/usage 查看最新的        │
+│ 速率限制和点数信息                                              │
+│                                                                 │
+│  模型:         gpt-5.1-codex-max (推理强度 none, 推理摘要 auto) │
+│  目录:         /workspace/tests                                 │
+│  权限:         配置 locked（只读，请求审批）                    │
+│  Agents.md:    <none>                                           │
+│                                                                 │
+│  Token 用量:   0 总计  (0 输入 + 0 输出)                        │
+│  上下文窗口:   剩余 100% (0 已使用 / 272K)                      │
+│  限制:         数据尚不可用                                     │
+╰─────────────────────────────────────────────────────────────────╯

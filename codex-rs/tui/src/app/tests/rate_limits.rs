@@ -303,12 +303,12 @@ async fn stale_rate_limit_reads_preserve_newer_workspace_hard_stop_for_every_ori
 
         let popup = render_bottom_popup(&app.chat_widget, /*width*/ 100);
         match origin_name {
-            "usage" => assert!(popup.contains("No usage limit resets available.")),
+            "usage" => assert!(popup.contains("没有可用的用量限制重置机会。")),
             "reset-picker" => {
-                assert!(popup.contains("You don't have any usage limit resets available."));
+                assert!(popup.contains("你没有可用的用量限制重置机会。"));
             }
             "reset-consume" => {
-                assert!(popup.contains("Usage reset. You have 0 usage limit resets left."));
+                assert!(popup.contains("用量已重置。你还剩 0 次重置机会。"));
             }
             "startup" | "status" => {}
             _ => unreachable!("unknown refresh origin"),
@@ -316,13 +316,13 @@ async fn stale_rate_limit_reads_preserve_newer_workspace_hard_stop_for_every_ori
 
         let status = render_status_output(&mut app, &mut app_event_rx);
         assert!(
-            status.contains("80% left"),
+            status.contains("剩余 80%"),
             "expected {origin_name} to preserve the last account usage snapshot, got: {status}"
         );
         deliver_usage_limit_error(&mut app);
         let popup = render_bottom_popup(&app.chat_widget, /*width*/ 100);
         assert!(
-            popup.contains("Request a limit increase from your owner"),
+            popup.contains("请向所有者申请提高限制"),
             "expected {origin_name} to preserve workspace error routing, got: {popup}"
         );
 
@@ -360,9 +360,7 @@ async fn stale_rate_limit_read_does_not_dismiss_visible_workspace_advisory() -> 
         turn_completed_notification(ThreadId::new(), "turn-1", TurnStatus::Completed),
         /*replay_kind*/ None,
     );
-    assert!(
-        render_bottom_popup(&app.chat_widget, /*width*/ 100).contains("Approaching rate limits")
-    );
+    assert!(render_bottom_popup(&app.chat_widget, /*width*/ 100).contains("即将达到速率限制"));
 
     Box::pin(app.handle_event(
         &mut tui,
@@ -380,9 +378,7 @@ async fn stale_rate_limit_read_does_not_dismiss_visible_workspace_advisory() -> 
     ))
     .await?;
 
-    assert!(
-        render_bottom_popup(&app.chat_widget, /*width*/ 100).contains("Approaching rate limits")
-    );
+    assert!(render_bottom_popup(&app.chat_widget, /*width*/ 100).contains("即将达到速率限制"));
     app_server.shutdown().await?;
     Ok(())
 }
@@ -430,13 +426,13 @@ async fn post_hard_stop_rate_limit_read_clears_recovered_workspace_limit() -> Re
 
     let status = render_status_output(&mut app, &mut app_event_rx);
     assert!(
-        status.contains("100% left"),
+        status.contains("剩余 100%"),
         "expected recovered limits, got: {status}"
     );
     deliver_usage_limit_error(&mut app);
     let popup = render_bottom_popup(&app.chat_widget, /*width*/ 100);
     assert!(
-        !popup.contains("Request a limit increase from your owner"),
+        !popup.contains("请向所有者申请提高限制"),
         "expected recovered state to clear workspace error routing, got: {popup}"
     );
 

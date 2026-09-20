@@ -63,19 +63,19 @@ impl PetNotificationKind {
 
     fn label(self) -> &'static str {
         match self {
-            Self::Running => "Running",
-            Self::Waiting => "Needs input",
-            Self::Review => "Ready",
-            Self::Failed => "Blocked",
+            Self::Running => "运行中",
+            Self::Waiting => "需要输入",
+            Self::Review => "已就绪",
+            Self::Failed => "已阻塞",
         }
     }
 
     fn fallback_body(self) -> &'static str {
         match self {
-            Self::Running => "Thinking",
-            Self::Waiting => "Needs input",
-            Self::Review => "Ready",
-            Self::Failed => "Blocked",
+            Self::Running => "思考中",
+            Self::Waiting => "需要输入",
+            Self::Review => "已就绪",
+            Self::Failed => "已阻塞",
         }
     }
 

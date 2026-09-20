@@ -1,10 +1,10 @@
 ---
-source: tui/src/app.rs
+source: tui/src/app/tests.rs
 expression: rendered
 ---
-╭────────────────────────────────────────────────────╮
-│ >_ OpenAI Codex (v<VERSION>)                       │
-│                                                    │
-│ model:     gpt-5.4 xhigh   fast   /model to change │
-│ directory: /tmp/project                            │
-╰────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────╮
+│ >_ OpenAI Codex (v<VERSION>)              │
+│                                           │
+│ 模型： gpt-5.4 xhigh   快速   /model 更改 │
+│ 目录： /tmp/project                       │
+╰───────────────────────────────────────────╯

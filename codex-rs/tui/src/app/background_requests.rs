@@ -334,7 +334,7 @@ impl App {
             let source_for_event = source.clone();
             let result = fetch_marketplace_add(request_handle, cwd, source)
                 .await
-                .map_err(|err| format!("Failed to add marketplace: {err}"));
+                .map_err(|err| format!("添加市场失败：{err}"));
             app_event_tx.send(AppEvent::MarketplaceAddLoaded {
                 cwd: cwd_for_event,
                 source: source_for_event,
@@ -357,7 +357,7 @@ impl App {
             let marketplace_name_for_event = marketplace_name.clone();
             let result = fetch_marketplace_remove(request_handle, marketplace_name)
                 .await
-                .map_err(|err| format!("Failed to remove marketplace: {err}"));
+                .map_err(|err| format!("移除市场失败：{err}"));
             app_event_tx.send(AppEvent::MarketplaceRemoveLoaded {
                 cwd: cwd_for_event,
                 marketplace_name: marketplace_name_for_event,
@@ -379,7 +379,7 @@ impl App {
             let cwd_for_event = cwd.clone();
             let result = fetch_marketplace_upgrade(request_handle, marketplace_name)
                 .await
-                .map_err(|err| format!("Failed to upgrade marketplace: {err}"));
+                .map_err(|err| format!("升级市场失败：{err}"));
             app_event_tx.send(AppEvent::MarketplaceUpgradeLoaded {
                 cwd: cwd_for_event,
                 result,
@@ -403,7 +403,7 @@ impl App {
             let plugin_name_for_event = plugin_name.clone();
             let result = fetch_plugin_install(request_handle, location, plugin_name)
                 .await
-                .map_err(|err| format!("Failed to install plugin: {err}"));
+                .map_err(|err| format!("安装插件失败：{err}"));
             app_event_tx.send(AppEvent::PluginInstallLoaded {
                 cwd: cwd_for_event,
                 location: location_for_event,
@@ -428,7 +428,7 @@ impl App {
             let plugin_id_for_event = plugin_id.clone();
             let result = fetch_plugin_uninstall(request_handle, plugin_id)
                 .await
-                .map_err(|err| format!("Failed to uninstall plugin: {err}"));
+                .map_err(|err| format!("卸载插件失败：{err}"));
             app_event_tx.send(AppEvent::PluginUninstallLoaded {
                 cwd: cwd_for_event,
                 plugin_id: plugin_id_for_event,
@@ -470,7 +470,7 @@ impl App {
             let result = write_plugin_enabled(request_handle, plugin_id, enabled)
                 .await
                 .map(|_| ())
-                .map_err(|err| format!("Failed to update plugin config: {err}"));
+                .map_err(|err| format!("更新插件配置失败：{err}"));
             app_event_tx.send(AppEvent::PluginEnabledSet {
                 cwd: cwd_for_event,
                 plugin_id: plugin_id_for_event,
@@ -508,12 +508,7 @@ impl App {
             let result = write_hook_enabled(request_handle, key, enabled)
                 .await
                 .map(|_| ())
-                .map_err(|err| {
-                    format!(
-                        "Failed to update hook config: {}",
-                        format_config_error(&err)
-                    )
-                });
+                .map_err(|err| format!("更新 hook 配置失败：{}", format_config_error(&err)));
             app_event_tx.send(AppEvent::HookEnabledSet {
                 key: key_for_event,
                 enabled,
@@ -534,7 +529,7 @@ impl App {
             let result = write_hook_trust(request_handle, key, current_hash)
                 .await
                 .map(|_| ())
-                .map_err(|err| format!("Failed to trust hook: {}", format_config_error(&err)));
+                .map_err(|err| format!("信任 hook 失败：{}", format_config_error(&err)));
             app_event_tx.send(AppEvent::HookTrusted { result });
         });
     }
@@ -550,7 +545,7 @@ impl App {
             let result = write_hook_trusts(request_handle, updates)
                 .await
                 .map(|_| ())
-                .map_err(|err| format!("Failed to trust hooks: {}", format_config_error(&err)));
+                .map_err(|err| format!("信任 hooks 失败：{}", format_config_error(&err)));
             app_event_tx.send(AppEvent::HookTrusted { result });
         });
     }
@@ -631,7 +626,7 @@ impl App {
             Err(err) => self
                 .chat_widget
                 .add_to_history(history_cell::new_error_event(format!(
-                    "Failed to upload feedback: {err}"
+                    "上传反馈失败：{err}"
                 ))),
         }
     }
@@ -711,7 +706,7 @@ impl App {
             Ok(statuses) => statuses,
             Err(err) => {
                 self.chat_widget
-                    .add_error_message(format!("Failed to load MCP inventory: {err}"));
+                    .add_error_message(format!("加载 MCP 清单失败：{err}"));
                 return;
             }
         };
@@ -942,19 +937,19 @@ pub(super) async fn fetch_additional_plugin_remote_sections(
     if !remote_plugin_enabled {
         sections.push((
             "vertical",
-            "OpenAI Curated",
+            "OpenAI 精选",
             vec![PluginListMarketplaceKind::Vertical],
         ));
     }
     sections.push((
         "workspace",
-        "Workspace",
+        "工作区",
         vec![PluginListMarketplaceKind::WorkspaceDirectory],
     ));
     if plugin_sharing_enabled {
         sections.push((
             "shared-with-me",
-            "Shared with me",
+            "与我共享",
             vec![PluginListMarketplaceKind::SharedWithMe],
         ));
     } else {
@@ -995,24 +990,24 @@ fn plugin_remote_section_error_message(label: &str, err: &str) -> String {
 fn plugin_remote_section_error_next_step(label: &str, err: &str) -> &'static str {
     let err = err.to_ascii_lowercase();
     if err.contains("api key auth is not supported") {
-        "Sign in with ChatGPT auth; API key auth cannot load remote plugin catalogs."
+        "请使用 ChatGPT 身份验证登录；API key 身份验证无法加载远程插件目录。"
     } else if err.contains("authentication required")
         || err.contains("not signed in")
         || err.contains("not logged in")
     {
-        "Sign in to ChatGPT, then try loading this section again."
+        "请登录 ChatGPT，然后重新加载此部分。"
     } else if err.contains("codex plugins are disabled")
         || err.contains("plugin sharing is disabled")
         || err.contains("plugin sharing is not enabled")
         || err.contains("feature disabled")
     {
-        "Ask a workspace admin to enable Codex plugins or plugin sharing."
+        "请让工作区管理员启用 Codex 插件或插件共享。"
     } else if err.contains("workspace") && (err.contains("access") || err.contains("mismatch")) {
-        "Switch to the matching workspace or ask the sharer for access."
+        "请切换到匹配的工作区，或向共享者申请访问权限。"
     } else if err.contains("not found") || err.contains("status 404") {
-        "Check that you are signed in to the correct workspace and still have access."
+        "请确认已登录正确的工作区且仍有访问权限。"
     } else if err.contains("old build") || err.contains("update codex") || err.contains("stale") {
-        "Update Codex, then try opening the shared plugin again."
+        "请更新 Codex，然后重新打开共享插件。"
     } else if err.contains("service unavailable")
         || err.contains("temporarily unavailable")
         || err.contains("status 503")
@@ -1020,11 +1015,14 @@ fn plugin_remote_section_error_next_step(label: &str, err: &str) -> &'static str
         || err.contains("request")
         || err.contains("status")
     {
-        "Try again later; local plugin functionality is still available."
+        "请稍后重试；本地插件功能仍然可用。"
     } else if err.contains("disabled by admin") || err.contains("admin disabled") {
-        "Ask a workspace admin to confirm plugin access."
-    } else if label == "Shared with me" && err.contains("plugin") && err.contains("disabled") {
-        "Ask the sharer or a workspace admin to confirm plugin access."
+        "请让工作区管理员确认插件访问权限。"
+    } else if matches!(label, "Shared with me" | "与我共享")
+        && err.contains("plugin")
+        && err.contains("disabled")
+    {
+        "请让共享者或工作区管理员确认插件访问权限。"
     } else {
         ""
     }
@@ -1033,8 +1031,8 @@ fn plugin_remote_section_error_next_step(label: &str, err: &str) -> &'static str
 fn plugin_sharing_disabled_remote_section_error() -> PluginRemoteSectionError {
     PluginRemoteSectionError {
         section_id: "shared-with-me".to_string(),
-        label: "Shared with me".to_string(),
-        message: "Plugin sharing is disabled for this Codex session. Enable plugin sharing to load shared plugins.".to_string(),
+        label: "与我共享".to_string(),
+        message: "此 Codex 会话已停用插件共享。启用插件共享后才能加载共享插件。".to_string(),
     }
 }
 

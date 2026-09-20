@@ -60,12 +60,12 @@ impl ExternalWriterNotice {
         let title: Line<'static> = vec![
             "🔒".into(),
             "  ".into(),
-            "This conversation is open in another app".bold(),
+            "此对话已在另一个应用中打开".bold(),
         ]
         .into();
         let retry: Line<'static> = vec![
             Span::styled("R", crate::style::accent_style()),
-            " to Retry".into(),
+            " 重试".into(),
         ]
         .into();
         let mut lines = word_wrap_lines(&[title], usize::from(width));
@@ -77,9 +77,7 @@ impl ExternalWriterNotice {
             lines.push(retry);
         }
         lines.extend(word_wrap_lines(
-            &[Line::from(
-                "Close it there and press R to continue here.".dim(),
-            )],
+            &[Line::from("请先在那里关闭，然后按 R 在此处继续。".dim())],
             RtOptions::new(usize::from(width))
                 .initial_indent("    ".into())
                 .subsequent_indent("    ".into()),

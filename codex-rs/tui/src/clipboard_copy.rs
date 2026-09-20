@@ -230,7 +230,7 @@ fn arboard_copy(_text: &str, _html: Option<&str>) -> Result<Option<ClipboardLeas
 #[cfg(target_os = "linux")]
 fn wsl_clipboard_copy(text: &str) -> Result<(), String> {
     let executable = codex_utils_path::system_executable("powershell.exe")
-        .ok_or_else(|| "PowerShell is unavailable in the system PATH".to_string())?;
+        .ok_or_else(|| "系统 PATH 中没有可用的 PowerShell".to_string())?;
     let path = codex_utils_path::system_path()
         .map_err(|error| format!("failed to resolve system PATH: {error}"))?;
     let mut child = std::process::Command::new(executable)
@@ -279,7 +279,7 @@ fn wsl_clipboard_copy(text: &str) -> Result<(), String> {
 
 #[cfg(not(target_os = "linux"))]
 fn wsl_clipboard_copy(_text: &str) -> Result<(), String> {
-    Err("WSL clipboard fallback unavailable on this platform".to_string())
+    Err("此平台无法使用 WSL 剪贴板回退方案".to_string())
 }
 
 /// RAII guard that redirects stderr (fd 2) to `/dev/null` on creation and
@@ -373,7 +373,7 @@ fn osc52_sequence(text: &str, tmux: bool) -> Result<String, String> {
     let raw_bytes = text.len();
     if raw_bytes > OSC52_MAX_RAW_BYTES {
         return Err(format!(
-            "OSC 52 payload too large ({raw_bytes} bytes; max {OSC52_MAX_RAW_BYTES})"
+            "OSC 52 负载过大（{raw_bytes} 字节；最大 {OSC52_MAX_RAW_BYTES}）"
         ));
     }
 

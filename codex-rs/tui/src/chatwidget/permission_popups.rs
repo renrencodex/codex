@@ -71,14 +71,22 @@ impl ChatWidget {
                 continue;
             }
             let base_name = if preset.id == "auto" && windows_degraded_sandbox_enabled {
-                format!("{ASK_FOR_APPROVAL_LABEL} (non-admin sandbox)")
+                format!("{ASK_FOR_APPROVAL_LABEL}（非管理员沙箱）")
             } else if preset.id == "auto" {
                 ASK_FOR_APPROVAL_LABEL.to_string()
             } else {
-                preset.label.to_string()
+                match preset.id {
+                    "full-access" => "完全访问".to_string(),
+                    "read-only" => "只读".to_string(),
+                    _ => preset.label.to_string(),
+                }
             };
-            let base_description =
-                Some(preset.description.replace(" (Identical to Agent mode)", ""));
+            let base_description = Some(match preset.id {
+                "auto" => "允许在工作区内读写和运行命令；需要时请求审批。".to_string(),
+                "full-access" => "允许不受沙箱限制地访问系统。".to_string(),
+                "read-only" => "仅允许读取；修改文件或执行受限操作时请求审批。".to_string(),
+                _ => preset.description.replace(" (Identical to Agent mode)", ""),
+            });
             let approval_disabled_reason = match self
                 .config
                 .permissions
@@ -164,7 +172,7 @@ impl ChatWidget {
 
         let footer_note = show_elevate_sandbox_hint.then(|| {
             vec![
-                "The non-admin sandbox protects your files and prevents network access under most circumstances. However, it carries greater risk if prompt injected. To upgrade to the default sandbox, run ".dim(),
+                "非管理员沙箱通常可以保护文件并阻止网络访问，但受到提示注入时风险更高。要升级到默认沙箱，请运行 ".dim(),
                 "/setup-default-sandbox".cyan(),
                 ".".dim(),
             ]
@@ -172,7 +180,7 @@ impl ChatWidget {
         });
 
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some("Update Model Permissions".to_string()),
+            title: Some("更新模型权限".to_string()),
             footer_note,
             footer_hint: Some(standard_popup_hint_line()),
             items,
@@ -184,19 +192,19 @@ impl ChatWidget {
     pub(crate) fn open_auto_review_denials_popup(&mut self) {
         if self.review.recent_auto_review_denials.is_empty() {
             self.add_info_message(
-                "No recent auto-review denials in this thread.".to_string(),
-                Some("Denials are recorded after auto-review rejects an action.".to_string()),
+                "此会话中没有最近被自动审查拒绝的操作。".to_string(),
+                Some("自动审查拒绝操作后会在此记录。".to_string()),
             );
             return;
         }
         let Some(thread_id) = self.thread_id() else {
-            self.add_error_message("That thread is no longer available.".to_string());
+            self.add_error_message("该会话已不可用。".to_string());
             return;
         };
 
         let mut items = vec![SelectionItem {
-            name: "Action".to_string(),
-            description: Some("Rationale".to_string()),
+            name: "操作".to_string(),
+            description: Some("理由".to_string()),
             is_disabled: true,
             search_value: Some(String::new()),
             ..Default::default()
@@ -208,10 +216,7 @@ impl ChatWidget {
                 .map(|event| {
                     let id = event.id.clone();
                     let summary = auto_review_denials::action_summary(&event.action);
-                    let rationale = event
-                        .rationale
-                        .as_deref()
-                        .unwrap_or("Auto-review did not include a rationale.");
+                    let rationale = event.rationale.as_deref().unwrap_or("自动审查未提供理由。");
                     SelectionItem {
                         name: summary.clone(),
                         description: Some(rationale.to_string()),
@@ -230,8 +235,8 @@ impl ChatWidget {
         );
 
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some("Auto-review Denials".to_string()),
-            subtitle: Some("Select a denied action to approve.".to_string()),
+            title: Some("自动审查拒绝记录".to_string()),
+            subtitle: Some("选择要批准重试的操作。".to_string()),
             footer_hint: Some(standard_popup_hint_line()),
             items,
             is_searchable: true,
@@ -243,7 +248,7 @@ impl ChatWidget {
 
     pub(crate) fn approve_recent_auto_review_denial(&mut self, thread_id: ThreadId, id: String) {
         let Some(event) = self.review.recent_auto_review_denials.take(&id) else {
-            self.add_error_message("That auto-review denial is no longer available.".to_string());
+            self.add_error_message("该自动审查拒绝记录已不可用。".to_string());
             return;
         };
 
@@ -252,11 +257,8 @@ impl ChatWidget {
             op: AppCommand::approve_guardian_denied_action(event),
         });
         self.add_info_message(
-            "Approval recorded for one retry of the selected auto-review denial.".to_string(),
-            Some(
-                "The model will see the approval context; the retry still goes through auto-review."
-                    .to_string(),
-            ),
+            "已批准重试一次所选的自动审查拒绝操作。".to_string(),
+            Some("模型会看到审批上下文；重试仍会经过自动审查。".to_string()),
         );
     }
 
@@ -287,10 +289,7 @@ impl ChatWidget {
             ));
             tx.send(AppEvent::UpdateApprovalsReviewer(approvals_reviewer));
             tx.send(AppEvent::InsertHistoryCell(Box::new(
-                history_cell::new_info_event(
-                    format!("Permissions updated to {label}"),
-                    /*hint*/ None,
-                ),
+                history_cell::new_info_event(format!("权限已更新为{label}"), /*hint*/ None),
             )));
         })]
     }
@@ -425,7 +424,12 @@ impl ChatWidget {
         return_to_permissions: bool,
         profile_selection: Option<PermissionProfileSelection>,
     ) {
-        let selected_name = preset.label.to_string();
+        let selected_name = match preset.id {
+            "full-access" => "完全访问".to_string(),
+            "read-only" => "只读".to_string(),
+            "auto" => ASK_FOR_APPROVAL_LABEL.to_string(),
+            _ => preset.label.to_string(),
+        };
         let approval = AskForApproval::from(preset.approval);
         let is_cyber_model = self.model_catalog.try_list_models().is_ok_and(|models| {
             models.iter().any(|model| {
@@ -433,30 +437,30 @@ impl ChatWidget {
                     && model.model_specialty.as_deref() == Some(MODEL_SPECIALTY_CYBER)
             })
         });
-        let title_line = Line::from("Enable full access?").bold();
+        let title_line = Line::from("要启用完全访问吗？").bold();
         let info_lines = if is_cyber_model {
             let recommendation = if auto_review_available(&self.config) {
-                "We strongly recommend selecting \"Approve for me\" instead, and customizing the reviewer policy for your use case."
+                "强烈建议改选“代我审批”，并根据你的使用场景自定义审查策略。"
             } else {
-                "We strongly recommend selecting \"Ask for approval\" instead."
+                "强烈建议改选“请求审批”。"
             };
             vec![
                 Line::default(),
                 Line::from(
-                    "When Codex runs with full access, it can edit any file on your computer and run commands with network, without your approval.",
+                    "Codex 以完全访问模式运行时，无需你的批准即可编辑计算机上的任何文件，并运行可访问网络的命令。",
                 ),
                 Line::default(),
                 Line::from(vec![
-                    "Cyber models carry a higher risk of dangerous actions.".red(),
-                    " Ensure proper safeguards are in place before granting full access. ".into(),
+                    "网络安全模型执行危险操作的风险更高。".red(),
+                    " 授予完全访问前，请确保已采取适当的安全措施。".into(),
                     recommendation.into(),
                 ]),
             ]
         } else {
             vec![Line::from(vec![
-                "When Codex runs with full access, it can edit any file on your computer and run commands with network, without your approval. "
+                "Codex 以完全访问模式运行时，无需你的批准即可编辑计算机上的任何文件，并运行可访问网络的命令。"
                     .into(),
-                "Exercise caution when enabling full access. This significantly increases the risk of data loss, leaks, or unexpected behavior."
+                "启用完全访问时请谨慎，这会显著增加数据丢失、泄露或意外行为的风险。"
                     .red(),
             ])]
         };
@@ -490,15 +494,15 @@ impl ChatWidget {
 
         let items = vec![
             SelectionItem {
-                name: "Yes, continue anyway".to_string(),
-                description: Some("Apply full access for this session".to_string()),
+                name: "是，仍然继续".to_string(),
+                description: Some("为此会话应用完全访问".to_string()),
                 actions: accept_actions,
                 dismiss_on_select: true,
                 ..Default::default()
             },
             SelectionItem {
-                name: "Cancel".to_string(),
-                description: Some("Go back without enabling full access".to_string()),
+                name: "取消".to_string(),
+                description: Some("返回且不启用完全访问".to_string()),
                 actions: deny_actions,
                 dismiss_on_select: true,
                 ..Default::default()

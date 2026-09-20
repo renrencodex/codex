@@ -64,16 +64,14 @@ impl PetImageUnsupportedReason {
     fn message(self) -> &'static str {
         match self {
             Self::Tmux => {
-                "Pets are disabled in tmux. Terminal images don’t stay pane-local in tmux and can corrupt scrollback or move between panes. Run Codex outside tmux to use pets."
+                "tmux 中已禁用宠物。终端图片无法稳定限制在 tmux 窗格内，可能破坏回滚内容或移到其他窗格。请在 tmux 外运行 Codex 以使用宠物。"
             }
             Self::Zellij => {
-                "Pets are disabled in Zellij. Terminal images don’t stay reliably pane-local in Zellij. Run Codex outside Zellij to use pets."
+                "Zellij 中已禁用宠物。终端图片无法稳定限制在 Zellij 窗格内。请在 Zellij 外运行 Codex 以使用宠物。"
             }
-            Self::Iterm2TooOld => {
-                "Pets require iTerm2 3.6 or newer. Upgrade iTerm2 to use terminal pets."
-            }
+            Self::Iterm2TooOld => "宠物需要 iTerm2 3.6 或更高版本。请升级 iTerm2 后使用终端宠物。",
             Self::Terminal => {
-                "Pets aren’t available in this terminal. Terminal pets need image support, and this terminal environment doesn’t expose a supported image protocol. Try a terminal with Kitty graphics or Sixel support, or run Codex outside tmux."
+                "此终端无法使用宠物。终端宠物需要图片支持，但当前终端环境未提供受支持的图片协议。请尝试支持 Kitty 图形或 Sixel 的终端，或在 tmux 外运行 Codex。"
             }
         }
     }

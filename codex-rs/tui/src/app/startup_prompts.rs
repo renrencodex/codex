@@ -54,7 +54,7 @@ pub(super) fn skill_load_warning_messages(errors: &[SkillErrorInfo]) -> Vec<Stri
 
     let error_count = errors.len();
     let mut messages = vec![format!(
-        "Skipped loading {error_count} skill(s) due to invalid SKILL.md files."
+        "因 SKILL.md 文件无效，已跳过加载 {error_count} 个技能。"
     )];
     messages.extend(
         errors
@@ -85,8 +85,8 @@ pub(super) fn project_config_warning(config: &Config) -> Option<String> {
     }
 
     let mut message = concat!(
-        "Project-local config, hooks, and exec policies are disabled in the following folders ",
-        "until the project is trusted, but skills still load.\n",
+        "以下文件夹中的项目本地配置、hooks 和执行策略已停用：",
+        "在项目信任前不会生效，但技能仍会加载。\n",
     )
     .to_string();
     for (index, (folder, reason)) in disabled_folders.iter().enumerate() {

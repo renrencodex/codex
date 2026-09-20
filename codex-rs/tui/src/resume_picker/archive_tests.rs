@@ -157,9 +157,9 @@ fn archive_footer_shows_shortcut_for_resume_sessions() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    insta::assert_snapshot!(footer, @r"
-     enter resume   ctrl+a archive   esc start new   ctrl+c quit   tab focus sort/filter   ←/→ change option
-     ctrl+o dense view   ctrl+t transcript   ctrl+e expand   ↑/↓ browse
+    insta::assert_snapshot!(footer, @"
+    enter 恢复   ctrl+a 归档   esc 开始新会话   ctrl+c 退出   tab 聚焦排序/筛选   ←/→ 更改选项
+    ctrl+o 紧凑视图   ctrl+t 对话记录   ctrl+e 展开   ↑/↓ 浏览
     ");
 }
 
@@ -207,13 +207,13 @@ fn archived_status_preserves_directory_filter_and_hides_archive_shortcut() {
         .map(|line| line.to_string())
         .collect::<Vec<_>>()
         .join("\n");
-    insta::assert_snapshot!(footer, @r"
-     enter restore   esc start new   ctrl+c quit   tab focus sort/filter   ←/→ change option
-     ctrl+o dense view   ctrl+t transcript   ctrl+e expand   ↑/↓ browse
+    insta::assert_snapshot!(footer, @"
+    enter 恢复归档   esc 开始新会话   ctrl+c 退出   tab 聚焦排序/筛选   ←/→ 更改选项
+    ctrl+o 紧凑视图   ctrl+t 对话记录   ctrl+e 展开   ↑/↓ 浏览
     ");
     insta::assert_snapshot!(
         super::super::toolbar_line(&state, /*compact*/ true).to_string(),
-        @"Filter:[Cwd] [Archived] Sort:[Updated]"
+        @"筛选：[当前目录] [已归档] 排序：[更新时间]"
     );
 
     state.toggle_filter_mode();

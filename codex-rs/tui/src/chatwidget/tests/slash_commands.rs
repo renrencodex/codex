@@ -399,13 +399,13 @@ async fn assert_cancelled_queued_menu_drains_next_input(
 async fn queued_slash_menu_cancel_drains_next_input() {
     assert_cancelled_queued_menu_drains_next_input(
         "/model",
-        "Select Model",
+        "选择模型",
         KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE),
     )
     .await;
     assert_cancelled_queued_menu_drains_next_input(
         "/permissions",
-        "Update Model Permissions",
+        "更新模型权限",
         KeyEvent::new(KeyCode::Char('c'), KeyModifiers::CONTROL),
     )
     .await;
@@ -428,7 +428,7 @@ async fn queued_settings_selection_applies_before_next_input() {
 
     let popup = render_bottom_popup(&chat, /*width*/ 80);
     assert!(
-        popup.contains("Select Model and Effort"),
+        popup.contains("选择模型和推理强度"),
         "expected model menu to open; popup:\n{popup}"
     );
 
@@ -643,7 +643,7 @@ async fn queued_unknown_slash_reports_error_when_dequeued() {
     let drain = chat.submit_queued_slash_prompt(UserMessage::from("/worktree").into());
     assert_matches!(drain, QueueDrain::Continue);
     assert!(drain_insert_history(&mut rx).iter().any(|lines| {
-        lines_to_single_string(lines).contains("Managed worktrees require a local Git repository.")
+        lines_to_single_string(lines).contains("托管工作树需要本地 Git 仓库。")
     }));
 }
 
@@ -876,7 +876,7 @@ async fn goal_control_slash_command_without_thread_shows_full_usage() {
     assert_eq!(cells.len(), 1, "expected goal usage message");
     insta::assert_snapshot!(
         lines_to_single_string(&cells[0]),
-        @"• Usage: /goal [<objective>|clear|edit|pause|resume] The session must start before you can change a goal."
+        @"• Usage: /goal [<objective>|clear|edit|pause|resume] 会话开始后才能更改目标。"
     );
 }
 
@@ -1321,8 +1321,8 @@ async fn slash_rename_without_existing_thread_name_starts_empty() {
     chat.dispatch_command(SlashCommand::Rename);
 
     let popup = render_bottom_popup(&chat, /*width*/ 80);
-    assert!(popup.contains("Name thread"));
-    assert!(popup.contains("Type a name and press Enter"));
+    assert!(popup.contains("命名线程"));
+    assert!(popup.contains("输入名称并按 Enter"));
 
     chat.handle_key_event(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
 
@@ -1451,7 +1451,7 @@ async fn usage_command_runs_with_backend_auth_from_widget_init() {
     )
     .await;
 
-    chat.dispatch_command_with_args(SlashCommand::Usage, "daily".to_string(), Vec::new());
+    chat.dispatch_command_with_args(SlashCommand::Usage, "每日".to_string(), Vec::new());
 
     assert_matches!(
         rx.try_recv(),
@@ -1516,7 +1516,7 @@ async fn no_op_stub_slash_command_is_available_from_local_recall() {
         .collect::<Vec<_>>()
         .join("\n");
     assert!(
-        rendered.contains("Memory maintenance"),
+        rendered.contains("内存维护"),
         "expected stub message, got: {rendered:?}"
     );
     assert_eq!(recall_latest_after_clearing(&mut chat), "/debug-m-drop");
@@ -1810,7 +1810,7 @@ async fn slash_copy_picker_copies_status_fields_and_preserves_source_after_copyi
     );
     let expected = [
         ("Whole status", whole_status.as_str()),
-        ("Model", "gpt-5.5"),
+        ("模型", "gpt-5.5"),
         ("Directory", directory.as_str()),
         ("Thread name", "Clipboard example"),
         ("Session ID", session_id),
@@ -1845,14 +1845,14 @@ async fn slash_copy_status_omits_missing_fields_and_copies_full_directory() {
 
     chat.dispatch_command(SlashCommand::Copy);
     let popup = render_bottom_popup(&chat, /*width*/ 80);
-    assert!(popup.contains("2. Model"));
+    assert!(popup.contains("2. 模型"));
     assert!(popup.contains("3. Directory"));
-    assert!(!popup.contains("Thread name"));
-    assert!(!popup.contains("Session ID"));
+    assert!(!popup.contains("会话名称"));
+    assert!(!popup.contains("会话 ID"));
     chat.handle_key_event(KeyEvent::new(KeyCode::Char('3'), KeyModifiers::NONE));
     assert_eq!(
         next_copy_selection(&mut rx),
-        (directory, "Directory".to_string())
+        (directory, "目录".to_string())
     );
 }
 
@@ -2278,11 +2278,11 @@ async fn slash_keymap_debug_opens_keypress_inspector() {
     chat.dispatch_command_with_args(SlashCommand::Keymap, "debug".to_string(), Vec::new());
 
     let popup = render_bottom_popup(&chat, /*width*/ 80);
-    assert!(popup.contains("Keypress Inspector"));
+    assert!(popup.contains("按键检查器"));
     assert!(popup.contains("Waiting for a keypress"));
     chat.handle_key_event(KeyEvent::new(KeyCode::Char('o'), KeyModifiers::CONTROL));
     let popup = render_bottom_popup(&chat, /*width*/ 100);
-    assert!(popup.contains("global.copy (Copy)"));
+    assert!(popup.contains("global.copy (复制)"));
     assert!(
         drain_insert_history(&mut rx).is_empty(),
         "debug inspector should open without transcript messages"
@@ -2297,7 +2297,7 @@ async fn slash_keymap_debug_can_inspect_app_shortcuts() {
     chat.dispatch_command_with_args(SlashCommand::Keymap, "debug".to_string(), Vec::new());
 
     for (key, expected_action) in [
-        ('t', "global.open_transcript (Open Transcript)"),
+        ('t', "global.open_transcript (打开对话记录)"),
         ('l', "global.clear_terminal (Clear Terminal)"),
         ('g', "global.open_external_editor (Open External Editor)"),
     ] {
@@ -2330,7 +2330,7 @@ async fn slash_keymap_invalid_args_show_usage() {
         .collect::<Vec<_>>()
         .join("\n");
     assert!(
-        rendered.contains("Usage: /keymap [debug]"),
+        rendered.contains("用法：/keymap [debug]"),
         "expected usage message, got: {rendered:?}"
     );
     assert_eq!(recall_latest_after_clearing(&mut chat), "/keymap nope");
@@ -2511,7 +2511,7 @@ async fn queued_follow_up_suppresses_agent_turn_complete_notification() {
     let (mut chat, _rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
     chat.thread_id = Some(ThreadId::new());
     handle_turn_started(&mut chat, "turn-1");
-    chat.queue_user_message("Continue".into());
+    chat.queue_user_message("继续".into());
 
     complete_turn_with_message(&mut chat, "turn-1", Some("Still working"));
 
@@ -2533,7 +2533,7 @@ async fn queued_menu_slash_keeps_agent_turn_complete_notification() {
         chat.pending_notification,
         Some(Notification::AgentTurnComplete { ref response }) if response == "Done"
     );
-    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("Select Model"));
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("选择模型"));
     assert_matches!(op_rx.try_recv(), Err(TryRecvError::Empty));
 }
 
@@ -2557,7 +2557,7 @@ async fn slash_stop_submits_background_terminal_cleanup() {
     assert_eq!(cells.len(), 1, "expected cleanup confirmation message");
     let rendered = lines_to_single_string(&cells[0]);
     assert!(
-        rendered.contains("Stopping all background terminals."),
+        rendered.contains("正在停止所有后台终端。"),
         "expected cleanup confirmation, got {rendered:?}"
     );
 }
@@ -2686,7 +2686,7 @@ async fn slash_memory_drop_reports_stubbed_feature() {
     match event {
         AppEvent::InsertHistoryCell(cell) => {
             let rendered = lines_to_single_string(&cell.display_lines(/*width*/ 80));
-            assert!(rendered.contains("Memory maintenance: Not available in TUI yet."));
+            assert!(rendered.contains("内存维护: TUI 暂不支持此功能。"));
         }
         other => panic!("expected InsertHistoryCell error, got {other:?}"),
     }
@@ -2704,7 +2704,7 @@ async fn slash_mcp_requests_inventory_via_app_server() {
 
     chat.dispatch_command(SlashCommand::Mcp);
 
-    assert!(active_blob(&chat).contains("Loading MCP inventory"));
+    assert!(active_blob(&chat).contains("正在加载 MCP 清单"));
     assert_matches!(
         rx.try_recv(),
         Ok(AppEvent::FetchMcpInventory {
@@ -2723,7 +2723,7 @@ async fn slash_mcp_verbose_requests_full_inventory_via_app_server() {
 
     submit_composer_text(&mut chat, "/mcp verbose");
 
-    assert!(active_blob(&chat).contains("Loading MCP inventory"));
+    assert!(active_blob(&chat).contains("正在加载 MCP 清单"));
     assert_matches!(
         rx.try_recv(),
         Ok(AppEvent::FetchMcpInventory {
@@ -2747,7 +2747,7 @@ async fn slash_mcp_invalid_args_show_usage() {
         .collect::<Vec<_>>()
         .join("\n");
     assert!(
-        rendered.contains("Usage: /mcp [verbose]"),
+        rendered.contains("用法：/mcp [verbose]"),
         "expected usage message, got: {rendered:?}"
     );
     assert_eq!(recall_latest_after_clearing(&mut chat), "/mcp full");
@@ -2761,7 +2761,7 @@ async fn slash_memories_opens_memory_menu() {
 
     chat.dispatch_command(SlashCommand::Memories);
 
-    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("Use memories"));
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("使用记忆"));
     assert_matches!(rx.try_recv(), Err(TryRecvError::Empty));
     assert!(op_rx.try_recv().is_err(), "expected no core op to be sent");
 }
@@ -2776,7 +2776,7 @@ async fn slash_memory_update_reports_stubbed_feature() {
     match event {
         AppEvent::InsertHistoryCell(cell) => {
             let rendered = lines_to_single_string(&cell.display_lines(/*width*/ 80));
-            assert!(rendered.contains("Memory maintenance: Not available in TUI yet."));
+            assert!(rendered.contains("内存维护: TUI 暂不支持此功能。"));
         }
         other => panic!("expected InsertHistoryCell error, got {other:?}"),
     }
@@ -3087,11 +3087,11 @@ async fn slash_pwd_and_cwd_alias_display_current_working_directory_from_composer
         let [cell]: [_; 1] = drain_insert_history(&mut rx).try_into().expect("one cell");
         output.push(normalize_snapshot_paths(lines_to_single_string(&cell)));
     }
-    insta::assert_snapshot!(output.join(""), @r"
-• Current working directory: /tmp/project
-• Current working directory: /tmp/project
-■ Usage: /pwd
-");
+    insta::assert_snapshot!(output.join(""), @"
+    • 当前工作目录：/tmp/project
+    • 当前工作目录：/tmp/project
+    ■ 用法：/pwd
+    ");
 }
 
 #[tokio::test]

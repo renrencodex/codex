@@ -15,20 +15,24 @@ impl AgentsOverviewView {
                     .join("  "),
             )
         } else if state.editing_metadata() && state.connection_notice.is_some() {
-            Some("esc cancel · actions paused until reconnected".into())
+            Some("esc 取消 · 重新连接前操作已暂停".into())
         } else if state.editing_metadata() {
             Some(format!(
-                "{} {}  esc cancel",
+                "{} {}  esc 取消",
                 self.keymap
                     .primary_hint(ListAction::Accept)
                     .map(crate::key_hint::ShortcutHint::display_label)
                     .unwrap_or_default(),
-                if state.renaming { "rename" } else { "open" }
+                if state.renaming {
+                    "重命名"
+                } else {
+                    "打开"
+                }
             ))
         } else if state.connection_notice.is_some() {
-            Some("ctrl+c quit · actions paused until the list is refreshed".into())
+            Some("ctrl+c 退出 · 刷新列表前操作已暂停".into())
         } else if state.creating_worktree {
-            Some("Creating worktree…  ctrl+c quit".into())
+            Some("正在创建工作树…  ctrl+c 退出".into())
         } else {
             None
         };
@@ -41,13 +45,13 @@ impl AgentsOverviewView {
         }
         if width < 24 {
             let hints = [
-                ("new_task", &self.agents_keymap.new_task, "new"),
+                ("new_task", &self.agents_keymap.new_task, "新建"),
                 (
                     "new_worktree",
                     &self.agents_keymap.new_worktree,
-                    "new worktree",
+                    "新建工作树",
                 ),
-                ("search", &self.agents_keymap.search, "search"),
+                ("search", &self.agents_keymap.search, "搜索"),
             ]
             .into_iter()
             .filter(|(action, _, _)| *action != "new_worktree" || self.worktrees_enabled)
@@ -57,7 +61,7 @@ impl AgentsOverviewView {
                     .map(|hint| format!("{} {label}", hint.display_label()))
             });
             return hints
-                .chain(["ctrl+c quit".into()])
+                .chain(["ctrl+c 退出".into()])
                 .flat_map(|hint| {
                     textwrap::wrap(&hint, usize::from(width.max(1)))
                         .into_iter()
@@ -102,7 +106,7 @@ impl AgentsOverviewView {
         );
         let mut hints: Vec<Line<'static>> = Vec::new();
         if !navigation_hint.is_empty() {
-            hints.push(vec![navigation_hint.bold(), " navigate".dim()].into());
+            hints.push(vec![navigation_hint.bold(), " 导航".dim()].into());
         }
         let mut add_hint = |hint: Option<ShortcutHint>, label: &'static str, enabled: bool| {
             if let Some(hint) = hint {
@@ -123,49 +127,49 @@ impl AgentsOverviewView {
         add_hint(
             self.agents_keymap
                 .primary_hint("resume", &self.agents_keymap.resume),
-            "resume",
+            "恢复",
             true,
         );
         let open_hint = list_hint(ListAction::Accept);
-        add_hint(open_hint, "open", true);
+        add_hint(open_hint, "打开", true);
         add_hint(
             self.agents_keymap
                 .primary_hint("new_task", &self.agents_keymap.new_task),
-            "new",
+            "新建",
             true,
         );
         add_hint(
             self.agents_keymap
                 .primary_hint("new_worktree", &self.agents_keymap.new_worktree),
-            "new worktree",
+            "新建工作树",
             self.worktrees_enabled,
         );
         add_hint(
             self.agents_keymap
                 .primary_hint("search", &self.agents_keymap.search),
-            "search",
+            "搜索",
             true,
         );
         add_hint(
             self.agents_keymap
                 .primary_hint("toggle_grouping", &self.agents_keymap.toggle_grouping),
             match self.state().grouping {
-                AgentsOverviewGrouping::Project => "group: project",
-                AgentsOverviewGrouping::Status => "group: status",
-                AgentsOverviewGrouping::Model => "group: model",
+                AgentsOverviewGrouping::Project => "分组：项目",
+                AgentsOverviewGrouping::Status => "分组：状态",
+                AgentsOverviewGrouping::Model => "分组：模型",
             },
             true,
         );
         add_hint(
             self.agents_keymap
                 .primary_hint("rename", &self.agents_keymap.rename),
-            "rename",
+            "重命名",
             true,
         );
         add_hint(
             self.agents_keymap
                 .primary_hint("stop", &self.agents_keymap.stop),
-            "stop",
+            "停止",
             self.selected_row()
                 .is_some_and(|row| matches!(row.thread.status, ThreadStatus::Active { .. })),
         );
@@ -176,14 +180,19 @@ impl AgentsOverviewView {
         ] {
             add_hint(
                 self.agents_keymap.primary_hint(action, bindings),
-                action,
+                match action {
+                    "hide" => "隐藏",
+                    "archive" => "归档",
+                    "delete" => "删除",
+                    _ => action,
+                },
                 self.selected_row().is_some(),
             );
         }
         if self.state().editing_metadata() {
-            add_hint(list_hint(ListAction::Cancel), "cancel", true);
+            add_hint(list_hint(ListAction::Cancel), "取消", true);
         }
-        hints.push(vec!["ctrl+c".bold(), " quit".dim()].into());
+        hints.push(vec!["ctrl+c".bold(), " 退出".dim()].into());
         let separator = if hints.iter().map(Line::width).sum::<usize>()
             + hints.len().saturating_sub(1) * 2
             <= usize::from(width)
@@ -224,9 +233,9 @@ impl Renderable for AgentsOverviewView {
             return None;
         }
         let (label, input) = if state.searching {
-            ("  Search › ", &state.search)
+            ("  搜索 › ", &state.search)
         } else {
-            ("  Rename › ", &state.input)
+            ("  重命名 › ", &state.input)
         };
         let x = area
             .x
@@ -247,7 +256,7 @@ impl Renderable for AgentsOverviewView {
             let header = inset(header);
             let lines = textwrap::wrap(notice, usize::from(header.width.max(1)));
             if lines.len() > usize::from(header.height) {
-                Line::from("Old srv".cyan()).render(header, buf);
+                Line::from("旧服务器".cyan()).render(header, buf);
             } else {
                 for (offset, line) in lines.iter().enumerate() {
                     Line::from(line.as_ref().cyan()).render(
@@ -257,7 +266,7 @@ impl Renderable for AgentsOverviewView {
                 }
             }
         } else {
-            Line::from("Agent command center".bold()).render(inset(header), buf);
+            Line::from("智能体指挥中心".bold()).render(inset(header), buf);
         }
         let (needs_you, working, ready) = self.rows.iter().fold((0, 0, 0), |counts, row| {
             let (needs_you, working, ready) = counts;
@@ -268,15 +277,15 @@ impl Renderable for AgentsOverviewView {
                 AgentsOverviewGroup::Finished => counts,
             }
         });
-        let attention = format!("{needs_you} need input");
+        let attention = format!("{needs_you} 个需要输入");
         if self.state().creating_worktree {
-            Line::from("Creating worktree…".cyan()).render(inset(summary), buf);
+            Line::from("正在创建工作树…".cyan()).render(inset(summary), buf);
         } else if let Some(notice) = self.state().connection_notice {
             Line::from(notice.cyan()).render(inset(summary), buf);
         } else if self.state().refresh_failed {
-            Line::from("Error loading tasks".red()).render(inset(summary), buf);
+            Line::from("加载任务时出错".red()).render(inset(summary), buf);
         } else {
-            Line::from(format!("{attention}   {working} working   {ready} ready").dim())
+            Line::from(format!("{attention}   {working} 个工作中   {ready} 个已就绪").dim())
                 .render(inset(summary), buf);
         }
         Line::from("─".repeat(usize::from(area.width.saturating_sub(4))).dim())
@@ -301,9 +310,9 @@ impl Renderable for AgentsOverviewView {
         }
         let state = self.state();
         let (label, input) = if state.searching {
-            ("Search › ", &state.search)
+            ("搜索 › ", &state.search)
         } else {
-            ("Rename › ", &state.input)
+            ("重命名 › ", &state.input)
         };
         let available_width = usize::from(inset(prompt).width)
             .saturating_sub(label.width())

@@ -2,10 +2,10 @@
 source: tui/src/chatwidget/tests/goal_menu.rs
 expression: rendered_goal_summary(&mut rx)
 ---
-Goal
-Status: paused
-Objective: Keep improving the bare goal command until it feels calm and useful.
-Time used: 1m
-Tokens used: 12.5K
+目标
+状态：已暂停
+内容：Keep improving the bare goal command until it feels calm and useful.
+已用时间：1m
+已用 Token：12.5K
 
-Commands: /goal edit, /goal resume, /goal clear
+命令：/goal edit、/goal resume、/goal clear

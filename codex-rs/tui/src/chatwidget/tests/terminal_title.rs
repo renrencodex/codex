@@ -56,9 +56,9 @@ async fn goal_clock_refresh_redraws_only_when_elapsed_label_changes() {
             .map(|span| span.content.as_ref())
             .collect::<String>()
     });
-    insta::assert_snapshot!(labels.join("\n"), @r"
-    Pursuing goal (1m)
-    Pursuing goal (2m)
+    insta::assert_snapshot!(labels.join("\n"), @"
+    正在执行目标（1m）
+    正在执行目标（2m）
     ");
 }
 
@@ -111,7 +111,7 @@ async fn terminal_title_shows_action_required_while_exec_approval_is_pending() {
 
     assert_eq!(
         chat.last_terminal_title,
-        Some("[ ! ] Action Required | project".to_string())
+        Some("[ ! ] 需要操作 | project".to_string())
     );
     assert!(!chat.should_animate_terminal_title_spinner());
 
@@ -198,7 +198,7 @@ async fn terminal_title_action_required_blinks_when_animations_are_enabled() {
 
     assert_eq!(
         chat.last_terminal_title,
-        Some("[ . ] Action Required | project".to_string())
+        Some("[ . ] 需要操作 | project".to_string())
     );
     assert!(chat.should_animate_terminal_title_action_required());
 }
@@ -235,7 +235,7 @@ async fn terminal_title_activity_indicators_do_not_animate_when_animations_are_d
 
     assert_eq!(
         chat.last_terminal_title,
-        Some("[ ! ] Action Required | project".to_string())
+        Some("[ ! ] 需要操作 | project".to_string())
     );
     assert!(!chat.should_animate_terminal_title_action_required());
 }

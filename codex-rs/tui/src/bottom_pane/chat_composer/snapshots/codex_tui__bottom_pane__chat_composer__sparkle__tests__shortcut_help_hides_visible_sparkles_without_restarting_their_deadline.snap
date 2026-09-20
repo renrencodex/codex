@@ -7,47 +7,47 @@ initial:
                             ⠈     ⢀     ⠁                 ⠂
 ›⠁Ask Codex to do anything         ⠈      ⠁
        ⢀            ⠠     ⠄         ⠠          ⢀    ⠠     ⡀
-  ? for shortcuts                                            100% context left
+  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%
 shortcut help:
 
 › Ask Codex to do anything
 
-  / for commands                             ! for shell commands
-  ctrl + j for newline                       tab to submit message
-  @ for file paths                           ctrl + v to paste images
-  ctrl + g to edit in external editor        esc esc to edit previous message
-  ctrl + r search history                    ctrl + c to exit
-  ⌥ + , reasoning down                       ⌥ + . reasoning up
-  ctrl + t to view transcript
+  / 输 入 命 令                          ! 输 入  Shell 命 令
+  ctrl + j 插 入 换 行                   tab 提 交 消 息
+  @ 插 入 文 件 路 径                      ctrl + v 粘 贴 图 片
+  ctrl + g 在 外 部 编 辑 器 中 编 辑         esc esc 编 辑 上 一 条 消 息
+  ctrl + r 搜 索 历 史                   ctrl + c 退 出
+  ⌥ + , 降 低 推 理 强 度                  ⌥ + . 提 高 推 理 强 度
+  ctrl + t 查 看 对 话 记 录
 
-  customize shortcuts with /keymap
+  使 用 以 下 命 令 自 定 义 快 捷 键 ： /keymap
 after closing:
                                         ⠁               ⡀   ⠄           ⠄   ⠄
 › Ask Codex to do anything                                   ⠈
       ⠠                             ⠠        ⢀ ⢀     ⡀                         ⠄
-  ? for shortcuts                                            100% context left
+  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%
 
 expires during help: true
 initial:
                             ⠈     ⢀     ⠁                 ⠂
 ›⠁Ask Codex to do anything         ⠈      ⠁
        ⢀            ⠠     ⠄         ⠠          ⢀    ⠠     ⡀
-  ? for shortcuts                                            100% context left
+  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%
 shortcut help:
 
 › Ask Codex to do anything
 
-  / for commands                             ! for shell commands
-  ctrl + j for newline                       tab to submit message
-  @ for file paths                           ctrl + v to paste images
-  ctrl + g to edit in external editor        esc esc to edit previous message
-  ctrl + r search history                    ctrl + c to exit
-  ⌥ + , reasoning down                       ⌥ + . reasoning up
-  ctrl + t to view transcript
+  / 输 入 命 令                          ! 输 入  Shell 命 令
+  ctrl + j 插 入 换 行                   tab 提 交 消 息
+  @ 插 入 文 件 路 径                      ctrl + v 粘 贴 图 片
+  ctrl + g 在 外 部 编 辑 器 中 编 辑         esc esc 编 辑 上 一 条 消 息
+  ctrl + r 搜 索 历 史                   ctrl + c 退 出
+  ⌥ + , 降 低 推 理 强 度                  ⌥ + . 提 高 推 理 强 度
+  ctrl + t 查 看 对 话 记 录
 
-  customize shortcuts with /keymap
+  使 用 以 下 命 令 自 定 义 快 捷 键 ： /keymap
 after closing:
 
 › Ask Codex to do anything
 
-  ? for shortcuts                                            100% context left
+  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%

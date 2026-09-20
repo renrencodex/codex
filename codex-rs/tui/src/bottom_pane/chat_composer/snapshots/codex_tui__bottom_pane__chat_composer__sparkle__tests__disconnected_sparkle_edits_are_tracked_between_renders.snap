@@ -7,21 +7,21 @@ before disconnect:
                             ⠈     ⢀     ⠁                 ⠂
 ›⠁Ask Codex to do anything         ⠈      ⠁
        ⢀            ⠠     ⠄         ⠠          ⢀    ⠠     ⡀
-  ? for shortcuts                                            100% context left
+  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%
 after typing and erasing without rendering:
 
 › Ask Codex to do anything
 
-  ? for shortcuts                                            100% context left
+  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%
 
 gpt-5.5
 before disconnect:
 
 › Ask Codex to do anything
 
-  ? for shortcuts                                            100% context left
+  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%
 after typing and erasing without rendering:
 
 › Ask Codex to do anything
 
-  ? for shortcuts                                            100% context left
+  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%

@@ -107,10 +107,7 @@ impl ChatWidget {
             && enabled
             && !self.realtime_conversation_available_for_thread
         {
-            self.add_info_message(
-                "Voice conversations will be available in new threads.".into(),
-                /*hint*/ None,
-            );
+            self.add_info_message("语音对话将在新会话中可用。".into(), /*hint*/ None);
         }
         if feature == Feature::MentionsV2 {
             self.sync_mentions_v2_enabled();
@@ -329,7 +326,7 @@ impl ChatWidget {
 
     pub(super) fn image_inputs_not_supported_message(&self) -> String {
         format!(
-            "Model {} does not support image inputs. Remove images or switch models.",
+            "模型 {} 不支持图片输入。请移除图片或切换模型。",
             self.current_model()
         )
     }
@@ -670,18 +667,18 @@ impl ChatWidget {
         if previous_mode != next_mode
             && (previous_model != next_model || previous_effort != next_effort)
         {
-            let mut message = format!("Model changed to {next_model}");
+            let mut message = format!("模型已更改为 {next_model}");
             if !next_model.starts_with("codex-auto-") {
                 let reasoning_label = match next_effort.as_ref() {
-                    None | Some(ReasoningEffortConfig::None) => "default",
+                    None | Some(ReasoningEffortConfig::None) => "默认",
                     Some(effort) => effort.as_str(),
                 };
                 message.push(' ');
                 message.push_str(reasoning_label);
             }
-            message.push_str(" for ");
+            message.push_str("，应用于");
             message.push_str(next_mode.display_name());
-            message.push_str(" mode.");
+            message.push_str("模式。");
             self.add_info_message(message, /*hint*/ None);
         }
         self.request_redraw();

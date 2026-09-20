@@ -3,22 +3,22 @@ source: tui/src/external_agent_config_migration/mod.rs
 expression: rendered
 ---
 
-  > Import setup
-  Bring over supported setup from another coding agent.
-  Codex may add files to your current project folder.
-  Your existing setup will not be changed.
-    [x] Tools & setup
-        Settings, instructions, integrations, agents, commands, and skills
-        Importing: Settings 1, Memory 1
-    [x] Current project
-        Add Codex files alongside your existing project files
-        Importing: Plugins 6, Instructions 1
-    [x] Chat sessions (1)
-        Last 30 days of chats
-        Importing: Chat sessions 1
+  > 导入设置
+  从其他编码智能体导入受支持的设置。
+  Codex 可能会向当前项目文件夹添加文件。
+  现有设置不会被更改。
+    [x] 工具和设置
+        设置、说明、集成、智能体、命令和技能
+        正在导入：设置 1 项, 记忆 1 项
+    [x] 当前项目
+        在现有项目文件旁添加 Codex 文件
+        正在导入：插件 6 项, 说明 1 项
+    [x] 聊天会话（1）
+        最近 30 天的对话
+        正在导入：聊天会话 1 项
 
-  Selected 5 of 5 items.
-  › 1. Import selected
-    2. Customize selection
-    3. Cancel
-  Use ↑/↓ to move, enter to select, c to customize
+  已选择 5 / 5 项。
+  › 1. 导入所选项目
+    2. 自定义选择
+    3. 取消
+  使用 ↑/↓ 移动，enter 选择，c 自定义

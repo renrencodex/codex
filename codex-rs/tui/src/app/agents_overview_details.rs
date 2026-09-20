@@ -174,26 +174,26 @@ impl App {
                 .or(source.name.as_deref())
                 .unwrap_or(&source.id);
             lines.push(Line::default());
-            lines.push(vec!["Agent: ".dim(), preview_text(name).into()].into());
+            lines.push(vec!["智能体：".dim(), preview_text(name).into()].into());
         }
         if AgentsOverviewGroup::for_status(&source.status) == AgentsOverviewGroup::NeedsYou {
             if !is_child {
-                lines.extend([Line::default(), "Needs attention".red().into()]);
+                lines.extend([Line::default(), "需要关注".red().into()]);
             }
             if let Some(request) = self.agents_overview_request_preview(thread_id) {
                 lines.push(request.into());
             }
-            lines.push("Open task to review.".dim().into());
+            lines.push("打开任务以查看。".dim().into());
             match &source.status {
                 ThreadStatus::Active { active_flags } => {
                     if active_flags.contains(&ThreadActiveFlag::WaitingOnApproval) {
-                        lines.push("Waiting for approval.".into());
+                        lines.push("正在等待批准。".into());
                     }
                     if active_flags.contains(&ThreadActiveFlag::WaitingOnUserInput) {
-                        lines.push("Waiting for your response.".into());
+                        lines.push("正在等待你的响应。".into());
                     }
                 }
-                ThreadStatus::SystemError => lines.push("Task encountered an error.".into()),
+                ThreadStatus::SystemError => lines.push("任务遇到错误。".into()),
                 ThreadStatus::NotLoaded | ThreadStatus::Idle => {}
             }
         }
@@ -208,7 +208,7 @@ impl App {
             if !is_child {
                 lines.push(Line::default());
             }
-            lines.extend(["Latest activity".dim().into(), header.clone().into()]);
+            lines.extend(["最新活动".dim().into(), header.clone().into()]);
         }
         let last_message = activity
             .and_then(|activity| activity.last_message.as_ref())

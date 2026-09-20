@@ -44,7 +44,7 @@ pub(crate) fn new_patch_apply_failure(stderr: String) -> PlainHistoryCell {
     let mut lines: Vec<Line<'static>> = Vec::new();
 
     // Failure title
-    lines.push(Line::from("✘ Failed to apply patch".magenta().bold()));
+    lines.push(Line::from("✘ 应用补丁失败".magenta().bold()));
 
     if !stderr.trim().is_empty() {
         let output = output_lines(
@@ -72,7 +72,7 @@ impl HistoryCell for ViewImageHistoryCell {
     fn display_lines(&self, width: u16) -> Vec<Line<'static>> {
         let line = vec![
             "• ".dim(),
-            "Viewed image ".bold(),
+            "已查看图像 ".bold(),
             self.filename.replace(['\n', '\r', '\t'], " ").dim(),
         ]
         .into();
@@ -84,7 +84,7 @@ impl HistoryCell for ViewImageHistoryCell {
 
     fn transcript_lines(&self, width: u16) -> Vec<Line<'static>> {
         PrefixedWrappedHistoryCell::new(
-            Line::from(vec!["Viewed image ".bold(), self.path_label.clone().dim()]),
+            Line::from(vec!["已查看图像 ".bold(), self.path_label.clone().dim()]),
             vec!["• ".dim()],
             "  ",
         )
@@ -92,7 +92,7 @@ impl HistoryCell for ViewImageHistoryCell {
     }
 
     fn raw_lines(&self) -> Vec<Line<'static>> {
-        vec![Line::from(format!("Viewed image {}", self.path_label))]
+        vec![Line::from(format!("已查看图像 {}", self.path_label))]
     }
 }
 
@@ -115,16 +115,16 @@ pub(crate) fn new_image_generation_call(
 ) -> PlainHistoryCell {
     let detail = revised_prompt.unwrap_or(call_id);
     let heading = if status == "failed" {
-        vec!["✗ ".red().bold(), "Image generation failed".bold()].into()
+        vec!["✗ ".red().bold(), "图像生成失败".bold()].into()
     } else {
-        vec!["• ".dim(), "Generated Image:".bold()].into()
+        vec!["• ".dim(), "已生成图像：".bold()].into()
     };
     let mut lines: Vec<Line<'static>> = vec![heading, vec!["  └ ".dim(), detail.dim()].into()];
     if let Some(saved_path) = saved_path {
         let saved_path = Url::from_file_path(saved_path.as_path())
             .map(|url| url.to_string())
             .unwrap_or_else(|_| saved_path.display().to_string());
-        lines.push(vec!["  └ ".dim(), "Saved to: ".dim(), saved_path.into()].into());
+        lines.push(vec!["  └ ".dim(), "已保存到：".dim(), saved_path.into()].into());
     }
 
     PlainHistoryCell { lines }

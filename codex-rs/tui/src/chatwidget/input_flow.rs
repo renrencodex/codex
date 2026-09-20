@@ -51,7 +51,7 @@ impl ChatWidget {
                     self.reasoning_buffer.clear();
                     self.reasoning_header = None;
                     self.reasoning_summary_parts.clear();
-                    self.set_status_header(String::from("Working"));
+                    self.set_status_header(String::from("工作中"));
                     self.submit_user_message(user_message);
                 } else {
                     self.queue_user_message(user_message);
@@ -324,7 +324,7 @@ impl ChatWidget {
         if let Some(pending) = &self.pending_image_submission {
             preview.queued_messages.insert(
                 /*index*/ 0,
-                format!("Preparing images: {}", pending.message.text),
+                format!("正在准备图像：{}", pending.message.text),
             );
         }
         self.bottom_pane.set_pending_input_preview(
@@ -341,8 +341,7 @@ impl ChatWidget {
     ) {
         if self.blocks_direct_input {
             self.add_error_message(if self.external_writer_view {
-                "This thread is open elsewhere. Close it there and retry resume to continue."
-                    .to_string()
+                "此会话已在其他位置打开。请先在那里关闭，然后重试恢复操作。".to_string()
             } else {
                 PARENT_OWNED_INPUT_MESSAGE.to_string()
             });
@@ -356,9 +355,7 @@ impl ChatWidget {
         if self.turn_lifecycle.agent_turn_running
             && self.active_collaboration_mask.as_ref() != Some(&collaboration_mode)
         {
-            self.add_error_message(
-                "Cannot switch collaboration mode while a turn is running.".to_string(),
-            );
+            self.add_error_message("回合运行期间无法切换协作模式。".to_string());
             return;
         }
         self.set_collaboration_mask_from_user_action(collaboration_mode);

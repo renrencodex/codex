@@ -23,21 +23,21 @@ fn render_visible(state: &BedrockState) -> String {
 #[test]
 fn discovery_prioritizes_profiles_and_keeps_bedrock_api_key_last() {
     let discovering = BedrockState::discovering(RequestId::Integer(1));
-    insta::assert_snapshot!(render_visible(&discovering), @r###"
-    > Set up Amazon Bedrock
+    insta::assert_snapshot!(render_visible(&discovering), @"
+    > 设 置  Amazon Bedrock
 
-      Checking for existing AWS credentials...
-    "###);
+      正 在 检 查 现 有  AWS 凭 据 ...
+    ");
 
     let mut configuring = discovering;
     configuring.view = BedrockView::Configuring(RequestId::Integer(2));
-    insta::assert_snapshot!(render_visible(&configuring), @r###"
-    > Set up Amazon Bedrock
+    insta::assert_snapshot!(render_visible(&configuring), @"
+    > 设 置  Amazon Bedrock
 
-      Setting up Amazon Bedrock...
+      正 在 设 置  Amazon Bedrock...
 
-      Press esc to go back
-    "###);
+      按  esc 返 回
+    ");
     assert!(
         configuring
             .handle_key_event(&KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE))
@@ -371,18 +371,18 @@ fn credential_entries_share_region_and_keep_aws_secrets_hidden() {
         selected_field: 1,
     };
     let visible = render_visible(&access_keys);
-    insta::assert_snapshot!(visible, @r###"
-    > Set up Amazon Bedrock
+    insta::assert_snapshot!(visible, @"
+    > 设 置  Amazon Bedrock
 
-      Enter your AWS access keys.
+      输 入  AWS 访 问 密 钥 。
 
-      AWS access key ID: AKIAEXAMPLE
-    > AWS secret access key: •••••••••••e
-      AWS session token (optional): •••••••••••••
+      AWS 访 问 密 钥  ID: AKIAEXAMPLE
+    > AWS 秘 密 访 问 密 钥 : •••••••••••e
+      AWS 会 话 令 牌 （ 可 选 ） : •••••••••••••
 
-      Press enter to continue
-      Press esc to go back
-    "###);
+      按  enter 继 续
+      按  esc 返 回
+    ");
     assert!(visible.contains("AKIAEXAMPLE"));
     assert!(visible.contains("AWS secret access key: •••••••••••e"));
     assert!(!visible.contains("secret-value"));

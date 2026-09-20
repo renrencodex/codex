@@ -2,4 +2,4 @@
 source: tui/src/chatwidget/tests/approval_requests.rs
 expression: lines_to_single_string(&decision)
 ---
-✔ You approved codex network access to http://example.com this time
+✔ 你已批准 Codex 访问网络目标 http://example.com（仅此次）

@@ -4,15 +4,15 @@ expression: rendered
 ---
 /status
 
-╭─────────────────────────────────────────────────────────────────────────────╮
-│  >_ OpenAI Codex (v0.0.0)                                                   │
-│                                                                             │
-│  Model:            gpt-5.6-sol (reasoning none, summaries auto)             │
-│  Model provider:   server-ollama                                            │
-│  Directory: [[workspace]]                                                   │
-│  Permissions:      Custom (workspace with network access, Ask for approval) │
-│  Agents.md:        <none>                                                   │
-│                                                                             │
-│  Token usage:      0 total  (0 input + 0 output)                            │
-│  Limits:           data not available yet                                   │
-╰─────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────╮
+│  >_ OpenAI Codex (v0.0.0)                                 │
+│                                                           │
+│  模型:         gpt-5.6-sol (推理强度 none, 推理摘要 auto) │
+│  模型提供商:   server-ollama                              │
+│  目录:         /workspace/tests                           │
+│  权限:         自定义（工作区，可访问网络，请求审批）     │
+│  Agents.md:    <none>                                     │
+│                                                           │
+│  Token 用量:   0 总计  (0 输入 + 0 输出)                  │
+│  限制:         数据尚不可用                               │
+╰───────────────────────────────────────────────────────────╯

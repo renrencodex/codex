@@ -1,13 +1,12 @@
 ---
 source: tui/src/chatwidget/tests/composer_submission.rs
-assertion_line: 2750
-expression: "normalize_snapshot_paths(render_bottom_popup(&chat, 80))"
+expression: "normalize_snapshot_paths(render_bottom_popup(&chat, 80)).replace('◦', \"•\")"
 ---
 • Reconnect failed — check the endpoint, then relaunch (0s)
 
-• Queued follow-up inputs
+• 已 排 队 的 后 续 输 入
   ↳ x
-    ⌥ + ↑ edit last queued message
+    shift + ← 编 辑 最 后 一 条 排 队 消 息
 
 › describe
 

@@ -319,7 +319,7 @@ impl Renderable for FeedbackNoteView {
                     key_hint::plain(KeyCode::PageUp).into(),
                     "/".into(),
                     key_hint::plain(KeyCode::PageDown).into(),
-                    " scroll disclosure".into(),
+                    " 滚动查看说明".into(),
                 ]))
                 .render(blank_area, buf);
             }
@@ -329,9 +329,9 @@ impl Renderable for FeedbackNoteView {
         if hint_y < area.y.saturating_add(area.height) {
             Paragraph::new(accept_cancel_hint_line(
                 Some(key_hint::plain(KeyCode::Enter).into()),
-                "to submit",
+                "提交",
                 Some(key_hint::plain(KeyCode::Esc).into()),
-                "to cancel",
+                "取消",
             ))
             .render(
                 Rect {
@@ -377,21 +377,18 @@ impl FeedbackNoteView {
         };
         match self.feedback_audience {
             FeedbackAudience::OpenAiEmployee => {
-                lines.push(
-                    "Your data may be used to improve our models and products"
-                        .bold()
-                        .into(),
-                );
+                lines.push("你的数据可能会用于改进我们的模型和产品".bold().into());
                 lines.push(Line::from(vec![
-                    "By submitting feedback, you agree that OpenAI can use your feedback for safety purposes and internal model training, as explained in more detail ".dim(),
-                    "here".cyan().underlined(),
-                    ". Please avoid sharing tented information under NDA, or privileged, HR-related, or sensitive personal information.".dim(),
+                    "提交反馈即表示你同意 OpenAI 将反馈用于安全目的和内部模型训练，详情请参阅"
+                        .dim(),
+                    "此处".cyan().underlined(),
+                    "。请勿分享受保密协议约束、享有特权、与人力资源相关或敏感的个人信息。".dim(),
                 ]));
             }
             FeedbackAudience::External => lines.push(Line::from(vec![
-                "Your feedback can be used to improve ChatGPT. ".dim(),
-                "Learn more".cyan().underlined(),
-                ".".dim(),
+                "你的反馈可能会用于改进 ChatGPT。".dim(),
+                "了解详情".cyan().underlined(),
+                "。".dim(),
             ])),
         }
         word_wrap_lines(
@@ -410,24 +407,24 @@ fn gutter() -> Span<'static> {
 fn feedback_title_and_placeholder(category: FeedbackCategory) -> (String, String) {
     match category {
         FeedbackCategory::BadResult => (
-            "Tell us more (bad result)".to_string(),
-            "(optional) Write a short description to help us further".to_string(),
+            "请告诉我们更多信息（结果不佳）".to_string(),
+            "（可选）请简要说明，以帮助我们进一步改进".to_string(),
         ),
         FeedbackCategory::GoodResult => (
-            "Tell us more (good result)".to_string(),
-            "(optional) Write a short description to help us further".to_string(),
+            "请告诉我们更多信息（结果良好）".to_string(),
+            "（可选）请简要说明，以帮助我们进一步改进".to_string(),
         ),
         FeedbackCategory::Bug => (
-            "Tell us more (bug)".to_string(),
-            "(optional) Write a short description to help us further".to_string(),
+            "请告诉我们更多信息（缺陷）".to_string(),
+            "（可选）请简要说明，以帮助我们进一步改进".to_string(),
         ),
         FeedbackCategory::SafetyCheck => (
-            "Tell us more (safety check)".to_string(),
-            "(optional) Share what was refused and why it should have been allowed".to_string(),
+            "请告诉我们更多信息（安全检查）".to_string(),
+            "（可选）请说明哪些内容遭到拒绝，以及为何应当允许".to_string(),
         ),
         FeedbackCategory::Other => (
-            "Tell us more (other)".to_string(),
-            "(optional) Write a short description to help us further".to_string(),
+            "请告诉我们更多信息（其他）".to_string(),
+            "（可选）请简要说明，以帮助我们进一步改进".to_string(),
         ),
     }
 }

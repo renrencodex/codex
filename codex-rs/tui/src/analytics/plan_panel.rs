@@ -73,7 +73,7 @@ impl AnalyticsView {
         };
         let mut tables = Vec::new();
         let mut selections = Vec::new();
-        for (window, title) in ["5-hour limits", "Weekly limits"].into_iter().enumerate() {
+        for (window, title) in ["5 小时限额", "每周限额"].into_iter().enumerate() {
             let heading = format!(
                 "{} {title}",
                 if self.plan.window == window {
@@ -88,9 +88,9 @@ impl AnalyticsView {
                 if report.periods[window].is_empty() {
                     lines.push(
                         if report.coverage_complete {
-                            "No limit periods in this date range"
+                            "此日期范围内没有限额周期"
                         } else {
-                            "Limit history isn't available yet"
+                            "限额历史暂不可用"
                         }
                         .set_style(secondary_style())
                         .into(),
@@ -104,7 +104,7 @@ impl AnalyticsView {
                     let start = lines.len();
                     let selected = self.plan.cursor[window] == index;
                     let label = if !self.zoomed {
-                        format!("Latest period · {} total", report.periods[window].len())
+                        format!("最新周期 · 共 {} 个", report.periods[window].len())
                     } else {
                         format!(
                             "{} {} – {}{}",
@@ -121,7 +121,7 @@ impl AnalyticsView {
                     let amount = period
                         .used
                         .map(|value| format!("{}%", data::amount(value / 100.0)))
-                        .unwrap_or_else(|| "Not available".into());
+                        .unwrap_or_else(|| "不可用".into());
                     let row = columns(label.into(), amount.into(), table_width);
                     lines.push(if selected && self.plan.window == window {
                         row.set_style(accent_style())
@@ -130,11 +130,7 @@ impl AnalyticsView {
                     });
                     if self.zoomed && self.plan.expanded[window].as_ref() == Some(&period.id) {
                         if !period.complete {
-                            lines.push(
-                                "  Some usage is unavailable; this period may be incomplete"
-                                    .dim()
-                                    .into(),
-                            );
+                            lines.push("  部分用量不可用；此周期的数据可能不完整".dim().into());
                         }
                         if let Some(breakdown) = period.breakdowns.as_ref().and_then(|groups| {
                             groups.iter().find(|group| group.dimension == dimension)
@@ -157,7 +153,7 @@ impl AnalyticsView {
                                 ));
                             }
                         } else {
-                            lines.push("  Breakdown isn't available for this period".dim().into());
+                            lines.push("  此周期的明细不可用".dim().into());
                         }
                     }
                     if selected {
@@ -167,10 +163,8 @@ impl AnalyticsView {
             } else {
                 lines.push(
                     match &self.plan.report {
-                        data::Load::Unavailable => "Limit history isn't available yet",
-                        state => state
-                            .message()
-                            .unwrap_or("Limit history isn't available yet"),
+                        data::Load::Unavailable => "限额历史暂不可用",
+                        state => state.message().unwrap_or("限额历史暂不可用"),
                     }
                     .to_string()
                     .set_style(secondary_style())
@@ -210,7 +204,7 @@ impl AnalyticsView {
         };
         if group == 3 {
             lines.push(
-                "By turn start includes Tasks only; percentages use the full period limit"
+                "按回合启动方式统计时仅包含任务；百分比按完整周期限额计算"
                     .dim()
                     .into(),
             );
@@ -224,14 +218,14 @@ impl AnalyticsView {
         }) = self.plan.report.ready()
         {
             if !*coverage_complete {
-                lines.push("Some periods aren't available yet".dim().into());
+                lines.push("部分周期暂不可用".dim().into());
             }
             lines.push(
                 format!(
-                    "Usage as of {} UTC{}",
+                    "用量截至 {} UTC{}",
                     as_of.format("%b %-d %H:%M"),
                     if self.zoomed {
-                        " · * current at last update"
+                        " · * 最近更新时仍为当前周期"
                     } else {
                         ""
                     }
@@ -241,17 +235,13 @@ impl AnalyticsView {
             );
             if let Some(start) = coverage_start {
                 lines.push(
-                    format!("Available since {} UTC", start.format("%b %-d %H:%M"))
+                    format!("可用数据始于 {} UTC", start.format("%b %-d %H:%M"))
                         .dim()
                         .into(),
                 );
             }
             if *approximate {
-                lines.push(
-                    "Amounts and period boundaries are approximate; recent activity may be delayed"
-                        .dim()
-                        .into(),
-                );
+                lines.push("数值和周期边界为近似值；近期活动可能有延迟".dim().into());
             }
         }
         (lines, selection)

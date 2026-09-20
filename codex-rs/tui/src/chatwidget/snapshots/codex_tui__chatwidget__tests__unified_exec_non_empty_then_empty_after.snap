@@ -1,10 +1,10 @@
 ---
 source: tui/src/chatwidget/tests/exec_flow.rs
-expression: normalize_completion_timestamps(& (combined))
+expression: combined
 ---
-↳ Interacted with background terminal · just fix
+↳ 已与后台终端交互 · just fix
   └ pwd
 
-• Waited for background terminal · just fix
+• 已等待后台终端 · just fix
 
   [completion time]

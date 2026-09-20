@@ -4,15 +4,15 @@ expression: "format!(\"before completion:\\n{before_completion}\\nafter completi
 ---
 before completion:
 "                                                                                "
-"• Working (0s • esc to interrupt) · Running hook                                "
+"• Working (0s • esc to interrupt) · 正在运行钩子                                " Hidden by multi-width symbols: [(37, " "), (39, " "), (41, " "), (43, " "), (45, " "), (47, " ")]
 "                                                                                "
 "                                                                                "
 "› Ask Codex to do anything                                                      "
 "                                                                                "
-"  GPT-5.6-Sol default · /tmp/project                                            "
+"  GPT-5.6-Sol 默认 · /tmp/project                                               " Hidden by multi-width symbols: [(15, " "), (17, " ")]
 after completion:
 "                                                                                "
 "                                                                                "
 "› Ask Codex to do anything                                                      "
 "                                                                                "
-"  GPT-5.6-Sol default · /tmp/project                                            "
+"  GPT-5.6-Sol 默认 · /tmp/project                                               " Hidden by multi-width symbols: [(15, " "), (17, " ")]

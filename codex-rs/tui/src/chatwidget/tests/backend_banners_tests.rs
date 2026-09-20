@@ -196,7 +196,7 @@ async fn backend_banner_restores_only_programmatically_displaced_switch_prompt()
         chat.has_chatgpt_account = true;
         chat.on_rate_limit_snapshot(Some(snapshot(/*percent*/ 95.0)));
         chat.maybe_show_pending_rate_limit_prompt();
-        assert!(render_bottom_popup(&chat, /*width*/ 90).contains("Approaching rate limits"));
+        assert!(render_bottom_popup(&chat, /*width*/ 90).contains("即将达到速率限制"));
         if user_dismissed {
             chat.handle_key_event(KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE));
         }
@@ -209,7 +209,7 @@ async fn backend_banner_restores_only_programmatically_displaced_switch_prompt()
         response.rate_limit_upsell = None;
         chat.update_backend_banner(&response);
         assert_eq!(
-            render_bottom_popup(&chat, /*width*/ 90).contains("Approaching rate limits"),
+            render_bottom_popup(&chat, /*width*/ 90).contains("即将达到速率限制"),
             !user_dismissed
         );
     }
@@ -397,10 +397,7 @@ async fn backend_banner_changed_remedy_keeps_fallback_until_applicable_replaceme
             chat.on_rolling_rate_limit_snapshot(cap);
         }
         chat.on_rate_limit_error(RateLimitErrorKind::UsageLimit, "Usage cap reached".into());
-        assert!(
-            render_bottom_popup(&chat, /*width*/ 90)
-                .contains("Request a limit increase from your owner")
-        );
+        assert!(render_bottom_popup(&chat, /*width*/ 90).contains("请向所有者申请提高限制"));
         response.rate_limit_upsell.as_mut().unwrap()["title"] =
             json!("Workspace spending cap reached");
         response.rate_limit_upsell.as_mut().unwrap()["ctas"] =
@@ -412,12 +409,9 @@ async fn backend_banner_changed_remedy_keeps_fallback_until_applicable_replaceme
             "{rendered}"
         );
         assert!(rendered.contains("Request more usage"));
-        assert!(!rendered.contains("Request a limit increase from your owner"));
+        assert!(!rendered.contains("请向所有者申请提高限制"));
         chat.set_model("test-model-b");
         chat.on_rate_limit_error(RateLimitErrorKind::UsageLimit, "Usage cap reached".into());
-        assert!(
-            render_bottom_popup(&chat, /*width*/ 90)
-                .contains("Request a limit increase from your owner")
-        );
+        assert!(render_bottom_popup(&chat, /*width*/ 90).contains("请向所有者申请提高限制"));
     }
 }

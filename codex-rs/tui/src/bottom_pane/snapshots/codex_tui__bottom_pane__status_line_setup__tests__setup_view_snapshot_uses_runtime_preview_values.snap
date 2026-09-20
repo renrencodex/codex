@@ -3,19 +3,19 @@ source: tui/src/bottom_pane/status_line_setup.rs
 expression: "render_lines(&view, 72)"
 ---
                                                                         
-  Configure Status Line                                                 
-  Select which items to display in the status line.                     
+  配 置 状 态 栏                                                             
+  选 择 要 在 状 态 栏 中 显 示 的 项 目 。                                           
                                                                         
-  Type to search                                                        
+  输 入 以 搜 索                                                             
   >                                                                     
-› [x] Use theme colors      Apply colors from the active /theme         
+› [x] 使 用 主 题 颜 色          应 用 当 前  /theme 的 颜 色                        
   ───────────────────────                                               
-  [x] model                 Current model name                          
-  [x] current-dir           Current working directory                   
-  [x] git-branch            Current Git branch (omitted when unavaila…  
-  [ ] model-with-reasoning  Current model name with reasoning level     
-  [ ] reasoning             Current reasoning level                     
-  [ ] project-name          Project name (omitted when unavailable)     
+  [x] 模 型                  当 前 模 型 名 称                                  
+  [x] 当 前 目 录              当 前 工 作 目 录                                  
+  [x] Git 分 支              当 前  Git 分 支 （ 不 可 用 时 省 略 ）                 
+  [ ] 模 型 与 推 理 强 度        当 前 模 型 名 称 和 推 理 强 度                        
+  [ ] 推 理 强 度              当 前 推 理 强 度                                  
+  [ ] 项 目                  项 目 名 称 （ 不 可 用 时 省 略 ）                      
                                                                         
   gpt-5-codex · ~/codex-rs · jif/statusline-preview                     
-  Press space to toggle; ←/→ to move; enter to confirm and close; esc to
+  按  space 切 换 ; ←/→ 移 动 ; enter 确 认 并 关 闭 ; esc 关 闭

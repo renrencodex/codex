@@ -11,16 +11,14 @@ const ANNOUNCEMENT_TIP_URL: &str =
 const IS_MACOS: bool = cfg!(target_os = "macos");
 const IS_WINDOWS: bool = cfg!(target_os = "windows");
 
-const APP_TOOLTIP: &str = "Try the **Desktop app**. Run 'codex app' or visit https://chatgpt.com/codex?app-landing-page=true";
-const MACOS_APP_TOOLTIP: &str =
-    "Run `codex app` to open the Desktop app (it installs on macOS if needed).";
-const LINUX_APP_TOOLTIP: &str = "Try the **Desktop app** on Linux: install it from https://learn.chatgpt.com/docs/linux/linux-app and run 'chatgpt'.";
-const FAST_TOOLTIP: &str =
-    "*New* Use **/fast** to enable our fastest inference with increased plan usage.";
-const OTHER_TOOLTIP: &str = "*New* Build faster with the **Desktop app**. Run 'codex app' or visit https://chatgpt.com/codex?app-landing-page=true";
-const OTHER_TOOLTIP_NON_MAC: &str = "*New* Build faster with Codex.";
-const FREE_GO_TOOLTIP: &str =
-    "*New* For a limited time, Codex is included in your plan for free – let’s build together.";
+const APP_TOOLTIP: &str =
+    "试试**桌面应用**。运行 'codex app' 或访问 https://chatgpt.com/codex?app-landing-page=true";
+const MACOS_APP_TOOLTIP: &str = "运行 `codex app` 打开桌面应用（需要时会在 macOS 上安装）。";
+const LINUX_APP_TOOLTIP: &str = "在 Linux 上试试**桌面应用**：从 https://learn.chatgpt.com/docs/linux/linux-app 安装，然后运行 'chatgpt'。";
+const FAST_TOOLTIP: &str = "*新功能* 使用 **/fast** 启用最快推理，但会增加方案用量。";
+const OTHER_TOOLTIP: &str = "*新功能* 使用**桌面应用**更快构建。运行 'codex app' 或访问 https://chatgpt.com/codex?app-landing-page=true";
+const OTHER_TOOLTIP_NON_MAC: &str = "*新功能* 使用 Codex 更快构建。";
+const FREE_GO_TOOLTIP: &str = "*新功能* 限时免费：你的方案已包含 Codex，一起构建吧。";
 
 const RAW_TOOLTIPS: &str = include_str!("../assets/tooltips.txt");
 

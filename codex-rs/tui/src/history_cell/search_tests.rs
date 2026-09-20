@@ -71,7 +71,7 @@ fn pending_web_action_and_legacy_query() {
         String::new(),
         /*animations_enabled*/ false,
     );
-    insta::assert_snapshot!(cell.display_lines(/*width*/ 80)[0].to_string(), @"• Browsing the web");
+    insta::assert_snapshot!(cell.display_lines(/*width*/ 80)[0].to_string(), @"• 正在浏览网页");
     let legacy = new_web_search_call("call".into(), "old query".into(), WebSearchAction::Other);
     assert_eq!(
         legacy.raw_lines(),
@@ -91,7 +91,7 @@ fn batched_search_retains_each_query() {
     );
     assert_eq!(
         cell.raw_lines(),
-        vec![Line::from("Searched the web for first query, second query")]
+        vec![Line::from("已搜索网页：first query, second query")]
     );
-    insta::assert_snapshot!(cell.display_lines(/*width*/ 80)[0].to_string(), @"• Searched the web for first query, second query");
+    insta::assert_snapshot!(cell.display_lines(/*width*/ 80)[0].to_string(), @"• 已搜索网页：first query, second query");
 }

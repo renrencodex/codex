@@ -32,7 +32,7 @@ impl App {
         let picker_app_server = match picker_app_server {
             Ok(app_server) => app_server,
             Err(err) => {
-                self.add_session_picker_error(format!("Failed to start TUI session picker: {err}"));
+                self.add_session_picker_error(format!("启动 TUI 会话选择器失败：{err}"));
                 self.chat_widget.maybe_send_next_queued_input();
                 return Ok(AppRunControl::Continue);
             }
@@ -60,7 +60,7 @@ impl App {
                     .await
             }
             Err(err) => {
-                self.add_session_picker_error(format!("Failed to open session picker: {err}"));
+                self.add_session_picker_error(format!("打开会话选择器失败：{err}"));
                 self.chat_widget.maybe_send_next_queued_input();
                 Ok(AppRunControl::Continue)
             }
@@ -144,10 +144,10 @@ impl App {
             .is_some()
         {
             self.chat_widget.show_selection_view(SelectionViewParams {
-                title: Some("Unable to resume session".to_string()),
+                title: Some("无法恢复会话".to_string()),
                 subtitle: Some(message.clone()),
                 items: vec![SelectionItem {
-                    name: "Return to command center".to_string(),
+                    name: "返回控制中心".to_string(),
                     dismiss_on_select: true,
                     ..Default::default()
                 }],

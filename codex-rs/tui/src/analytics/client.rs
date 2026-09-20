@@ -129,7 +129,7 @@ impl Live {
         let start = days
             .checked_sub(/*rhs*/ 1)
             .and_then(|offset| end.checked_sub_days(chrono::Days::new(u64::from(offset))))
-            .ok_or("Invalid analytics date range.")?;
+            .ok_or("分析日期范围无效。")?;
         let session = self.session().await?;
         session.backend.ensure_identity().await?;
         let enterprise_tokens = report == Report::Usage
@@ -143,10 +143,8 @@ impl Live {
             } else {
                 grouping
             };
-        let route =
-            route(report, grouping, session.backend.account().plan_type).ok_or_else(|| {
-                "This credit breakdown is not supported for this account type.".to_string()
-            })?;
+        let route = route(report, grouping, session.backend.account().plan_type)
+            .ok_or_else(|| "此账户类型不支持 credit 明细。".to_string())?;
         // Credit events have no range parameters. Other grouping changes reuse the same payload.
         let key = if route == AnalyticsReport::Credits {
             (route, String::new(), String::new())
@@ -246,10 +244,10 @@ fn route(report: Report, grouping: Grouping, plan: Option<PlanType>) -> Option<A
 
 pub(super) fn request_error(error: RequestError) -> String {
     match error.status().map(|status| status.as_u16()) {
-        Some(401) => "Sign in again to load this report.",
-        Some(403) => "Access denied for this report.",
-        Some(404) => "This report endpoint is unavailable. Press R to retry.",
-        _ => "Report request failed. Press R to retry.",
+        Some(401) => "请重新登录以加载此报告。",
+        Some(403) => "无权访问此报告。",
+        Some(404) => "此报告端点不可用。按 R 重试。",
+        _ => "报告请求失败。按 R 重试。",
     }
     .into()
 }

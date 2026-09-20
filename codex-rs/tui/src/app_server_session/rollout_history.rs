@@ -71,9 +71,8 @@ impl AppServerSession {
                 .await?;
             thread.turns = page.data.into_iter().rev().collect();
             self.history_pagination.remove(&thread_id);
-            history_notice = Some(
-                "Showing up to 100 recent prompts and final replies. Intermediate messages and tool activity are unavailable.",
-            );
+            history_notice =
+                Some("最多显示最近 100 条提示词和最终回复。中间消息和工具活动不可用。");
         }
         let session = thread_session_state_from_thread_response(
             &thread.id,

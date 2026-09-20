@@ -39,7 +39,7 @@ impl AnalyticsView {
         ) {
             columns(
                 heading,
-                format!("By {}", self.group_label(section, group).to_lowercase())
+                format!("按{}", self.group_label(section, group))
                     .set_style(secondary_style())
                     .into(),
                 width,
@@ -52,7 +52,7 @@ impl AnalyticsView {
             lines.push(
                 format!(
                     "{} · m change model",
-                    self.token_model.as_deref().unwrap_or("All models")
+                    self.token_model.as_deref().unwrap_or("所有模型")
                 )
                 .set_style(secondary_style())
                 .into(),

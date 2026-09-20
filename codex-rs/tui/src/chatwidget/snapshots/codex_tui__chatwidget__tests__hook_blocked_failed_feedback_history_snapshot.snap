@@ -2,8 +2,8 @@
 source: tui/src/chatwidget/tests/status_and_layout.rs
 expression: rendered
 ---
-• Blocked by hook
+• 已被钩子阻止
   └ run tests before touching the fixture
 
-• Hook failed
+• 钩子失败
   └ hook exited with code 7

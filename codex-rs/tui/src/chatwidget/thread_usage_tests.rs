@@ -159,7 +159,7 @@ async fn status_history_survives_exhausted_billing_retries() {
             .flat_map(|line| line.spans)
             .map(|span| span.content.into_owned())
             .collect::<String>();
-        assert!(rendered.contains("50 credits · ~$2.10"));
+        assert!(rendered.contains("50 点 · ~$2.10"));
     }
     assert!(chat.thread_usage.status_history_handles.is_empty());
 }
@@ -228,7 +228,7 @@ async fn status_history_updates_again_after_billing_settles() {
             .flat_map(|line| line.spans)
             .map(|span| span.content.into_owned())
             .collect::<String>();
-        assert!(rendered.contains("50 credits · ~$2.10"));
+        assert!(rendered.contains("50 点 · ~$2.10"));
         assert!(chat.thread_usage.status_history_handles.is_empty());
     }
 }
@@ -407,14 +407,8 @@ async fn transient_zero_cost_preserves_fresh_credits_and_breakdowns() {
             ..fresh_usage
         })
     );
-    assert_eq!(
-        chat.status_line_text(),
-        Some("50 credits · ~$1.82".to_string())
-    );
-    assert_eq!(
-        chat.last_terminal_title,
-        Some("50 credits | ~$1.82".to_string())
-    );
+    assert_eq!(chat.status_line_text(), Some("50 点 · ~$1.82".to_string()));
+    assert_eq!(chat.last_terminal_title, Some("50 点 | ~$1.82".to_string()));
     assert!(chat.thread_usage.settlement_refresh_due_at.is_some());
 }
 
@@ -464,8 +458,8 @@ async fn transient_zero_credits_preserves_credits_only_estimates() {
     ));
 
     assert_eq!(chat.estimated_thread_usage(), Some(&previous_usage));
-    assert_eq!(chat.status_line_text(), Some("46 credits".to_string()));
-    assert_eq!(chat.last_terminal_title, Some("46 credits".to_string()));
+    assert_eq!(chat.status_line_text(), Some("46 点".to_string()));
+    assert_eq!(chat.last_terminal_title, Some("46 点".to_string()));
     assert!(chat.thread_usage.settlement_refresh_due_at.is_some());
 }
 
@@ -565,7 +559,7 @@ async fn credits_only_settlement_completes_without_usd_estimates() {
         ))),
     ));
 
-    assert_eq!(chat.last_terminal_title, Some("50 credits".to_string()));
+    assert_eq!(chat.last_terminal_title, Some("50 点".to_string()));
     assert_eq!(chat.thread_usage.settlement_baseline_credits_micros, None);
     assert_eq!(chat.thread_usage.settlement_baseline_usd_micros, None);
     assert_eq!(chat.thread_usage.settlement_refresh_due_at, None);
@@ -657,13 +651,10 @@ async fn billing_surfaces_render_for_every_supported_enterprise_plan() {
             ))),
         ));
 
-        assert_eq!(
-            chat.status_line_text(),
-            Some("5.2 credits · ~$0.21".to_string())
-        );
+        assert_eq!(chat.status_line_text(), Some("5.2 点 · ~$0.21".to_string()));
         assert_eq!(
             chat.last_terminal_title,
-            Some("5.2 credits | ~$0.21".to_string())
+            Some("5.2 点 | ~$0.21".to_string())
         );
         assert!(rx.try_recv().is_err(), "billing surfaces share a request");
     }

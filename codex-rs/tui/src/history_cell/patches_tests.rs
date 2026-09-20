@@ -13,7 +13,7 @@ fn viewed_image_retains_original_path_in_details() {
                 .iter()
                 .map(ToString::to_string)
                 .collect::<Vec<_>>(),
-            vec!["• Viewed image example.png"]
+            vec!["• 已查看图像 example.png"]
         );
         assert_eq!(
             cell.raw_lines(),

@@ -58,12 +58,12 @@ impl ChatWidget {
                 Some(auto_review_denials::action_summary(action))
             }
             GuardianAssessmentAction::ApplyPatch { files, .. } => Some(if files.len() == 1 {
-                format!("apply_patch touching {}", files[0].render_for_ui())
+                format!("apply_patch 修改 {}", files[0].render_for_ui())
             } else {
-                format!("apply_patch touching {} files", files.len())
+                format!("apply_patch 修改 {} 个文件", files.len())
             }),
             GuardianAssessmentAction::NetworkAccess { target, .. } => {
-                Some(format!("network access to {target}"))
+                Some(format!("访问网络目标 {target}"))
             }
             GuardianAssessmentAction::McpToolCall {
                 server,
@@ -72,10 +72,10 @@ impl ChatWidget {
                 ..
             } => {
                 let label = connector_name.as_deref().unwrap_or(server.as_str());
-                Some(format!("MCP {tool_name} on {label}"))
+                Some(format!("在 {label} 上调用 MCP {tool_name}"))
             }
             GuardianAssessmentAction::RequestPermissions { reason, .. } => {
-                Some(permission_request_summary("permission request", reason))
+                Some(permission_request_summary("权限请求", reason))
             }
         };
         let guardian_command = |action: &GuardianAssessmentAction| match action {
@@ -452,8 +452,8 @@ impl ChatWidget {
         let summary = Notification::user_input_request_summary(&ev.questions);
         let title = match (question_count, summary.as_deref()) {
             (1, Some(summary)) => summary.to_string(),
-            (1, None) => "Question requested".to_string(),
-            (count, _) => format!("{count} questions requested"),
+            (1, None) => "请求回答问题".to_string(),
+            (count, _) => format!("请求回答 {count} 个问题"),
         };
         self.notify(Notification::PlanModePrompt { title });
         self.bottom_pane.push_user_input_request(ev);

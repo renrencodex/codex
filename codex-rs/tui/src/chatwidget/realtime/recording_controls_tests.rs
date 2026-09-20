@@ -39,11 +39,10 @@ async fn voice_mute_shortcut_only_handles_active_current_thread_presses() {
     let Ok(AppEvent::InsertHistoryCell(cell)) = events.try_recv() else {
         panic!("a missing microphone handle should fail closed with the existing voice error");
     };
-    assert!(
-        cell.display_lines(/*width*/ 80)
-            .iter()
-            .any(|line| line.to_string().contains("Start voice mode before muting"))
-    );
+    assert!(cell.display_lines(/*width*/ 80).iter().any(|line| {
+        line.to_string()
+            .contains("请先启动语音模式，再将麦克风静音")
+    }));
     assert!(!chat.realtime_conversation.microphone_muted);
     assert!(ops.try_recv().is_err());
 }
@@ -137,9 +136,9 @@ async fn voice_composer_preserves_normal_colors_across_microphone_states() {
                 })
                 .collect::<Vec<_>>()
                 .join("\n");
-            insta::assert_snapshot!(rows, @r"
+            insta::assert_snapshot!(rows, @"
             0:
-            1:  voice ● listening ctrl+x mute     /voice stop
+            1:  voice ● 正 在 聆 听   ctrl+x mute     /voice stop
             2:    mic ▁▁▁▁▁▁  codex ▁▁▁▁▁▁
             3:
             4: › typed
@@ -423,7 +422,7 @@ async fn narrow_voice_footer_keeps_the_stop_control_before_meters() {
     chat.update_realtime_footer();
 
     let footer = render_bottom_popup(&chat, /*width*/ 46);
-    assert!(footer.contains("voice ● speaking"));
+    assert!(footer.contains("voice ● 正在说话"));
     assert!(footer.contains("ctrl+x mute"));
     assert!(footer.contains("/voice stop"));
     chat.realtime_conversation.speaker_active_until = None;
@@ -663,16 +662,16 @@ async fn clipped_voice_composer_keeps_the_draft_and_cursor_visible() {
         layouts.push(format!("{height} rows:\n{rows}"));
     }
 
-    insta::assert_snapshot!(layouts.join("\n\n"), @r"
+    insta::assert_snapshot!(layouts.join("\n\n"), @"
     5 rows:
     › typed
 
     6 rows:
-    voice ● listening ctrl+x mute     /voice stop
+    voice ● 正 在 聆 听   ctrl+x mute     /voice stop
     › typed
 
     8 rows:
-    voice ● listening ctrl+x mute     /voice stop
+    voice ● 正 在 聆 听   ctrl+x mute     /voice stop
     › typed
     ");
 }

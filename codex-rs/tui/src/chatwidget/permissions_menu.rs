@@ -57,7 +57,7 @@ impl ChatWidget {
                     &preset.active_permission_profile.id,
                     &preset.permission_profile,
                 ))
-                .then(|| "Disabled by requirements.".to_string())
+                .then(|| "已被要求配置停用。".to_string())
             })
     }
 
@@ -69,35 +69,25 @@ impl ChatWidget {
             .map(|profile| profile.id);
         let presets = builtin_approval_presets();
         let Some(read_only) = presets.iter().find(|preset| preset.id == "read-only") else {
-            self.add_error_message(
-                "Internal error: missing the 'read-only' approval preset.".to_string(),
-            );
+            self.add_error_message("内部错误：缺少 'read-only' 审批预设。".to_string());
             return;
         };
         let Some(default) = presets.iter().find(|preset| preset.id == "auto") else {
-            self.add_error_message(
-                "Internal error: missing the 'auto' approval preset.".to_string(),
-            );
+            self.add_error_message("内部错误：缺少 'auto' 审批预设。".to_string());
             return;
         };
         let Some(full_access) = presets.iter().find(|preset| preset.id == "full-access") else {
-            self.add_error_message(
-                "Internal error: missing the 'full-access' approval preset.".to_string(),
-            );
+            self.add_error_message("内部错误：缺少 'full-access' 审批预设。".to_string());
             return;
         };
-        let mut items = vec![
-            self.builtin_permission_mode_selection_item(
-                &discovery,
-                default,
-                ":workspace",
-                default
-                    .description
-                    .replace(" (Identical to Agent mode)", ""),
-                AskForApproval::from(default.approval),
-                ApprovalsReviewer::User,
-            ),
-        ];
+        let mut items = vec![self.builtin_permission_mode_selection_item(
+            &discovery,
+            default,
+            ":workspace",
+            "允许在工作区内读写和运行命令；需要时请求审批。".to_string(),
+            AskForApproval::from(default.approval),
+            ApprovalsReviewer::User,
+        )];
         if self.config.features.enabled(Feature::GuardianApproval) {
             items.push(self.builtin_permission_mode_selection_item(
                 &discovery,
@@ -112,7 +102,7 @@ impl ChatWidget {
             &discovery,
             full_access,
             BUILT_IN_PERMISSION_PROFILE_DANGER_FULL_ACCESS,
-            full_access.description.to_string(),
+            "允许不受沙箱限制地访问系统。".to_string(),
             AskForApproval::from(full_access.approval),
             ApprovalsReviewer::User,
         ));
@@ -120,7 +110,7 @@ impl ChatWidget {
             &discovery,
             read_only,
             ":read-only",
-            read_only.description.to_string(),
+            "仅允许读取；修改文件或执行受限操作时请求审批。".to_string(),
             AskForApproval::from(read_only.approval),
             ApprovalsReviewer::User,
         ));
@@ -136,7 +126,7 @@ impl ChatWidget {
                         profile
                             .description
                             .as_deref()
-                            .unwrap_or("Configured permission profile."),
+                            .unwrap_or("已配置的权限配置。"),
                         active_profile_id.as_deref(),
                         discovery.disabled_reason(
                             &profile.id,
@@ -157,9 +147,9 @@ impl ChatWidget {
             items.push(Self::permission_profile_selection_item(
                 id,
                 id,
-                "Current permission profile.",
+                "当前权限配置。",
                 Some(id),
-                Some("Not available on this server.".to_string()),
+                Some("此服务器不可用。".to_string()),
             ));
         }
         self.bottom_pane.show_selection_view(SelectionViewParams {
@@ -167,8 +157,8 @@ impl ChatWidget {
             subtitle: discovery
                 .profiles
                 .is_empty()
-                .then(|| "No permission profiles returned by the server.".to_string()),
-            title: Some("Update Model Permissions".to_string()),
+                .then(|| "服务器未返回权限配置。".to_string()),
+            title: Some("更新模型权限".to_string()),
             footer_hint: Some(standard_popup_hint_line()),
             items,
             header: Box::new(()),
@@ -188,6 +178,8 @@ impl ChatWidget {
         let label = match (preset.id, approvals_reviewer) {
             ("auto", ApprovalsReviewer::AutoReview) => APPROVE_FOR_ME_LABEL,
             ("auto", ApprovalsReviewer::User) => ASK_FOR_APPROVAL_LABEL,
+            ("full-access", _) => "完全访问",
+            ("read-only", _) => "只读",
             _ => preset.label,
         };
         let active_profile_id = self

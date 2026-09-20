@@ -53,11 +53,7 @@ impl AnalyticsView {
         };
         if history.data.is_empty() {
             return plot::Chart {
-                lines: vec![
-                    "No data reported for this range."
-                        .set_style(secondary_style())
-                        .into(),
-                ],
+                lines: vec!["此范围内没有上报数据。".set_style(secondary_style()).into()],
                 bands: 0,
             };
         }
@@ -91,9 +87,9 @@ impl AnalyticsView {
         let unit = match section {
             Section::Usage if history.unit == AccountAnalyticsUnit::Tokens => "tokens",
             Section::Summary => "tokens",
-            Section::Activity => "messages",
-            Section::Plugins => "calls",
-            Section::Skills => "uses",
+            Section::Activity => "条消息",
+            Section::Plugins => "次调用",
+            Section::Skills => "次使用",
             Section::Usage | Section::Credits | Section::Chats | Section::Plan => "credits",
         };
         let empty_breakdown = matches!(
@@ -115,15 +111,13 @@ impl AnalyticsView {
             format_amount(total)
         };
         let mut lines = vec![if relative {
-            "Total usage · relative units"
-                .set_style(secondary_style())
-                .into()
+            "总用量 · 相对单位".set_style(secondary_style()).into()
         } else {
             number(format!(
                 "{} {}{unit}",
                 formatted_total,
                 if section == Section::Activity {
-                    "reported "
+                    "已报告 "
                 } else {
                     ""
                 }
@@ -132,14 +126,14 @@ impl AnalyticsView {
         }];
         if section == Section::Usage && !self.business() && self.zoomed {
             lines.push(
-                "Approximate · may be delayed up to 6 hours"
+                "近似值 · 最多可能延迟 6 小时"
                     .set_style(secondary_style())
                     .into(),
             );
         }
         if self.sections[section].group == 3 {
             lines.push(
-                "All usage by how each turn started"
+                "按各回合启动方式统计全部用量"
                     .set_style(secondary_style())
                     .into(),
             );
@@ -159,13 +153,11 @@ impl AnalyticsView {
                     section,
                     Section::Plugins | Section::Activity | Section::Skills
                 ) {
-                    format!("No {unit} reported in this range.")
+                    format!("此范围内未上报{unit}。")
                         .set_style(secondary_style())
                         .into()
                 } else {
-                    "No activity reported in this range."
-                        .set_style(secondary_style())
-                        .into()
+                    "此范围内未上报活动。".set_style(secondary_style()).into()
                 },
             );
         }
@@ -177,11 +169,11 @@ impl AnalyticsView {
         }
         let table_start = lines.len();
         let summary = match day {
-            None => " · Not reported".set_style(secondary_style()),
+            None => " · 未上报".set_style(secondary_style()),
             Some(day) if day.total == 0.0 && day.values.iter().all(|value| value.value == 0.0) => {
-                " · No activity (0)".set_style(secondary_style())
+                " · 无活动 (0)".set_style(secondary_style())
             }
-            Some(day) if relative => number(format!(" · {} usage units", data::amount(day.total))),
+            Some(day) if relative => number(format!(" · {} 个用量单位", data::amount(day.total))),
             Some(day) => number(format!(
                 " · {} {unit}",
                 if expanded {
@@ -198,9 +190,9 @@ impl AnalyticsView {
         if self.zoomed {
             lines.push(columns(
                 match section {
-                    Section::Plugins => "Plugin",
-                    Section::Skills => "Skill",
-                    Section::Chats => "Chat",
+                    Section::Plugins => "插件",
+                    Section::Skills => "技能",
+                    Section::Chats => "对话",
                     Section::Summary
                     | Section::Usage
                     | Section::Credits
@@ -210,17 +202,17 @@ impl AnalyticsView {
                 .bold()
                 .into(),
                 if history.unit == AccountAnalyticsUnit::Tokens {
-                    "Tokens"
+                    "Token 数"
                 } else if section == Section::Usage {
-                    "Share"
+                    "占比"
                 } else if section == Section::Activity {
-                    "Messages"
+                    "消息"
                 } else if section == Section::Plugins {
-                    "Calls"
+                    "调用"
                 } else if section == Section::Skills {
-                    "Uses"
+                    "使用次数"
                 } else {
-                    "Credits"
+                    "额度"
                 }
                 .bold()
                 .into(),
@@ -253,7 +245,7 @@ impl AnalyticsView {
         let remainder = if !expanded && values.len() > row_budget {
             let remaining = values.split_off(row_budget - 1);
             Some((
-                format!("{} more", remaining.len()),
+                format!("另有 {} 项", remaining.len()),
                 remaining.iter().map(|(_, value)| value.value).sum::<f64>(),
             ))
         } else {
@@ -312,9 +304,9 @@ impl AnalyticsView {
             lines.truncate(table_start);
             lines.push(truncate_line_with_ellipsis_if_overflow(
                 if day.is_none() {
-                    format!("Data not reported for {selected_date}.")
+                    format!("{selected_date} 的数据未上报。")
                 } else {
-                    format!("No {unit} reported for {selected_date}.")
+                    format!("{selected_date} 未上报{unit}。")
                 }
                 .set_style(secondary_style())
                 .into(),
@@ -328,7 +320,7 @@ impl AnalyticsView {
                 .and_then(|value| chrono::DateTime::from_timestamp(value, /*nsecs*/ 0))
         {
             lines.push(
-                format!("Updated {} UTC", updated.format("%b %-d %H:%M"))
+                format!("更新于 {} UTC", updated.format("%b %-d %H:%M"))
                     .set_style(secondary_style())
                     .into(),
             );

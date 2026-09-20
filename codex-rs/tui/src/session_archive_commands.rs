@@ -61,13 +61,13 @@ fn success_message(
     session_name: Option<&str>,
 ) -> String {
     let action = match action {
-        SessionArchiveAction::Archive => "Archived",
-        SessionArchiveAction::Delete(_) => "Deleted",
-        SessionArchiveAction::Unarchive => "Unarchived",
+        SessionArchiveAction::Archive => "已归档",
+        SessionArchiveAction::Delete(_) => "已删除",
+        SessionArchiveAction::Unarchive => "已取消归档",
     };
     match session_name {
-        Some(name) => format!("{action} session {name} ({session_id})."),
-        None => format!("{action} session {session_id}."),
+        Some(name) => format!("{action}会话 {name}（{session_id}）。"),
+        None => format!("{action}会话 {session_id}。"),
     }
 }
 
@@ -81,7 +81,7 @@ pub async fn run_session_archive_command(
     target: String,
     options: SessionArchiveCommandOptions,
 ) -> Result<String> {
-    let codex_home = find_codex_home().wrap_err("failed to find Codex home")?;
+    let codex_home = find_codex_home().wrap_err("无法找到 Codex 主目录")?;
     let mut app_server =
         start_app_server_for_session_command(options, codex_home.to_path_buf()).await?;
     run_session_archive_action_with_app_server(
@@ -109,7 +109,7 @@ async fn run_session_archive_action_with_app_server(
             if matches!(confirmation, DeleteConfirmation::Prompt)
                 && !confirm_session_delete(&resolved)?
             {
-                return Ok("Delete cancelled.".to_string());
+                return Ok("已取消删除。".to_string());
             }
             app_server.thread_delete(resolved.session_id).await?;
             resolved.session_name
@@ -140,9 +140,7 @@ async fn resolve_session_target(
             let thread = app_server
                 .thread_read(session_id, /*include_turns*/ false)
                 .await
-                .with_context(|| {
-                    format!("No active or archived session found matching '{target}'.")
-                })?;
+                .with_context(|| format!("未找到与“{target}”匹配的活动或已归档会话。"))?;
             return Ok(ResolvedSessionTarget {
                 session_id,
                 session_name: thread.name,
@@ -155,12 +153,12 @@ async fn resolve_session_target(
     }
 
     let (search_scope, collections): (&str, &[SessionCollection]) = match action {
-        SessionArchiveAction::Archive => ("active", &[SessionCollection::Active]),
+        SessionArchiveAction::Archive => ("活动", &[SessionCollection::Active]),
         SessionArchiveAction::Delete(_) => (
-            "active or archived",
+            "活动或已归档",
             &[SessionCollection::Active, SessionCollection::Archived],
         ),
-        SessionArchiveAction::Unarchive => ("archived", &[SessionCollection::Archived]),
+        SessionArchiveAction::Unarchive => ("已归档", &[SessionCollection::Archived]),
     };
     if let Some(thread) = lookup(
         app_server,
@@ -176,14 +174,12 @@ async fn resolve_session_target(
     {
         return session_target_from_app_server_thread(thread);
     }
-    Err(eyre!(
-        "No {search_scope} session found matching '{target}'."
-    ))
+    Err(eyre!("未找到与“{target}”匹配的{search_scope}会话。"))
 }
 
 fn session_target_from_app_server_thread(thread: AppServerThread) -> Result<ResolvedSessionTarget> {
     let session_id = ThreadId::from_string(&thread.id)
-        .wrap_err_with(|| format!("app server returned invalid session id `{}`", thread.id))?;
+        .wrap_err_with(|| format!("app-server 返回了无效的会话 ID `{}`", thread.id))?;
     Ok(ResolvedSessionTarget {
         session_id,
         session_name: Some(display_label(&thread).to_string()),
@@ -193,24 +189,17 @@ fn session_target_from_app_server_thread(thread: AppServerThread) -> Result<Reso
 fn confirm_session_delete(target: &ResolvedSessionTarget) -> Result<bool> {
     if !(std::io::stdin().is_terminal() && std::io::stderr().is_terminal()) {
         return Err(eyre!(
-            "cannot confirm session deletion without an interactive terminal; rerun with --force and a session UUID"
+            "没有交互式终端，无法确认删除会话；请使用 --force 和会话 UUID 重新运行"
         ));
     }
 
     let mut stderr = std::io::stderr().lock();
     match target.session_name.as_deref() {
-        Some(name) => writeln!(
-            stderr,
-            "Permanently delete session '{name}' ({})?",
-            target.session_id
-        ),
-        None => writeln!(stderr, "Permanently delete session {}?", target.session_id),
+        Some(name) => writeln!(stderr, "永久删除会话“{name}”（{}）？", target.session_id),
+        None => writeln!(stderr, "永久删除会话 {}？", target.session_id),
     }?;
-    writeln!(
-        stderr,
-        "This cannot be undone. Subagent threads will also be deleted."
-    )?;
-    write!(stderr, "Continue? [y/N]: ")?;
+    writeln!(stderr, "此操作无法撤销。子代理会话也会一并删除。")?;
+    write!(stderr, "是否继续？[y/N]：")?;
     stderr.flush()?;
 
     let mut input = String::new();
@@ -229,7 +218,7 @@ pub(super) async fn start_app_server_for_session_command(
         explicit_remote_endpoint,
     } = options;
     if cli.no_daemon && explicit_remote_endpoint.is_some() {
-        return Err(eyre!("--no-daemon cannot be used with --remote."));
+        return Err(eyre!("--no-daemon 不能与 --remote 同时使用。"));
     }
     let loader_overrides = LoaderOverrides::default();
     let strict_config = cli.strict_config;
@@ -237,7 +226,7 @@ pub(super) async fn start_app_server_for_session_command(
     let overrides_cli = CliConfigOverrides { raw_overrides };
     let cli_kv_overrides = overrides_cli
         .parse_overrides()
-        .map_err(|err| eyre!("failed to parse -c overrides: {err}"))?;
+        .map_err(|err| eyre!("解析 -c 覆盖项失败：{err}"))?;
     let mut launch_loader_overrides = loader_overrides.clone();
     if let Some(profile_v2) = cli.config_profile_v2.as_ref() {
         launch_loader_overrides.user_config_path = Some(resolve_profile_v2_config_path(
@@ -278,16 +267,16 @@ pub(super) async fn start_app_server_for_session_command(
         arg0_paths.codex_self_exe.clone(),
         arg0_paths.codex_linux_sandbox_exe.clone(),
     )
-    .wrap_err("failed to resolve local runtime paths")?;
+    .wrap_err("解析本地运行时路径失败")?;
     let prepared_environment_manager = EnvironmentManager::prepare_from_env()
         .await
-        .wrap_err("failed to discover execution environments")?;
+        .wrap_err("发现执行环境失败")?;
     let config_cwd = super::config_cwd_for_app_server_target(
         cli.cwd.as_deref(),
         &app_server_target,
         prepared_environment_manager.default_environment_is_remote(),
     )
-    .wrap_err("failed to resolve config cwd")?;
+    .wrap_err("解析配置工作目录失败")?;
 
     let mut loader_overrides = loader_overrides;
     if let Some(profile_v2) = cli.config_profile_v2.as_ref() {
@@ -310,7 +299,7 @@ pub(super) async fn start_app_server_for_session_command(
         },
     )
     .await
-    .wrap_err("failed to load config.toml")?;
+    .wrap_err("加载 config.toml 失败")?;
     let config_toml = &bootstrap_config.config_toml;
     let cloud_config_bundle = super::cloud_config_bundle_for_app_server_target(
         &app_server_target,
@@ -353,15 +342,15 @@ pub(super) async fn start_app_server_for_session_command(
         .cloud_config_bundle(cloud_config_bundle.clone())
         .build()
         .await
-        .wrap_err("failed to load configuration")?;
+        .wrap_err("加载配置失败")?;
     let environment_manager = Arc::new(
         prepared_environment_manager
             .build(Some(local_runtime_paths), config.http_client_factory())
-            .wrap_err("failed to initialize environment manager")?,
+            .wrap_err("初始化环境管理器失败")?,
     );
     let mut state_db = super::init_state_db_for_app_server_target(&config, &app_server_target)
         .await
-        .wrap_err("failed to initialize state database")?;
+        .wrap_err("初始化状态数据库失败")?;
     let app_server = super::start_app_server(
         &mut app_server_target,
         arg0_paths,

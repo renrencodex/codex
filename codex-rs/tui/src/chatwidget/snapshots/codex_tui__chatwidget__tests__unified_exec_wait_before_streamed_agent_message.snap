@@ -1,8 +1,8 @@
 ---
 source: tui/src/chatwidget/tests/exec_flow.rs
-expression: normalize_completion_timestamps(& (combined))
+expression: combined
 ---
-• Waited for background terminal · cargo test -p codex-core
+• 已等待后台终端 · cargo test -p codex-core
 
 • Streaming response.
 

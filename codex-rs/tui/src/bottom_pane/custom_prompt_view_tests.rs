@@ -113,9 +113,9 @@ fn vim_prompt_hint_tracks_escape_behavior() {
         buf[(67, 4)].style().fg
     };
 
-    insta::assert_snapshot!(rendered_hint(&view, /*width*/ 80), @"Press enter to confirm or esc to go back");
+    insta::assert_snapshot!(rendered_hint(&view, /*width*/ 80), @"按  enter 确 认 ， 或 按  esc 返 回");
     view.enable_vim_in_insert_mode();
-    insta::assert_snapshot!(rendered_hint(&view, /*width*/ 80), @"Press enter to confirm or esc to enter normal mode                 Vim: Insert");
+    insta::assert_snapshot!(rendered_hint(&view, /*width*/ 80), @"按  enter to confirm， 或 按  esc to enter normal mode                 Vim: Insert");
     insta::assert_snapshot!(rendered_hint(&view, /*width*/ 60), @"Press enter to confirm or esc to enter norm…   Vim: Insert");
     insta::assert_snapshot!(rendered_hint(&view, /*width*/ 14), @"Press enter to");
     assert_eq!(vim_color(&view), Some(ratatui::style::Color::Green));

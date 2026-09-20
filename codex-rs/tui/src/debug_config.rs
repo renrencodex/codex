@@ -32,7 +32,7 @@ pub(crate) fn new_debug_config_output(
 
     if let Some(proxy) = session_network_proxy {
         lines.push("".into());
-        lines.push("Session runtime:".bold().into());
+        lines.push("会话运行时：".bold().into());
         lines.push("  - network_proxy".into());
         let SessionNetworkProxyRuntime {
             http_addr,
@@ -90,7 +90,7 @@ fn render_agents_config_lines(config: &Config) -> Vec<Line<'static>> {
 fn format_optional(value: Option<impl std::fmt::Display>) -> String {
     value
         .map(|value| value.to_string())
-        .unwrap_or_else(|| "<unset>".to_string())
+        .unwrap_or_else(|| "<未设置>".to_string())
 }
 
 fn sandbox_mode_is_allowed_by_permissions(
@@ -125,26 +125,22 @@ fn render_debug_config_lines(
 ) -> Vec<Line<'static>> {
     let mut lines = vec!["/debug-config".magenta().into(), "".into()];
 
-    lines.push(
-        "Config layer stack (lowest precedence first):"
-            .bold()
-            .into(),
-    );
+    lines.push("配置层堆栈（优先级从低到高）：".bold().into());
     let mut layers = stack.all_layers_low_to_high().peekable();
     if layers.peek().is_none() {
-        lines.push("  <none>".dim().into());
+        lines.push("  <无>".dim().into());
     } else {
         for (index, layer) in layers.enumerate() {
             let source = format_config_layer_source(&layer.name, CONFIG_TOML_FILE);
             let status = if layer.is_disabled() {
-                "disabled"
+                "已禁用"
             } else {
-                "enabled"
+                "已启用"
             };
             lines.push(format!("  {}. {source} ({status})", index + 1).into());
             lines.extend(render_non_file_layer_details(layer));
             if let Some(reason) = &layer.disabled_reason {
-                lines.push(format!("     reason: {reason}").dim().into());
+                lines.push(format!("     原因：{reason}").dim().into());
             }
         }
     }
@@ -153,7 +149,7 @@ fn render_debug_config_lines(
     let requirements_toml = stack.requirements_toml();
 
     lines.push("".into());
-    lines.push("Requirements:".bold().into());
+    lines.push("要求：".bold().into());
     let mut requirement_lines = Vec::new();
 
     if let Some(sqlite_home) = requirements.sqlite_home.as_ref() {
@@ -442,30 +438,30 @@ fn render_non_file_layer_value(layer: &ConfigLayerEntry) -> Vec<Line<'static>> {
         .map(ToString::to_string)
         .unwrap_or_else(|| format_toml_value(&layer.config));
     if value.is_empty() {
-        return vec![format!("     {label}: <empty>").dim().into()];
+        return vec![format!("     {label}：<空>").dim().into()];
     }
 
     if value.contains('\n') {
-        let mut lines = vec![format!("     {label}:").into()];
+        let mut lines = vec![format!("     {label}：").into()];
         lines.extend(value.lines().map(|line| format!("       {line}").into()));
         lines
     } else {
-        vec![format!("     {label}: {value}").into()]
+        vec![format!("     {label}：{value}").into()]
     }
 }
 
 fn non_file_layer_value_label(source: &ConfigLayerSource) -> &'static str {
     match source {
         ConfigLayerSource::Mdm { .. } | ConfigLayerSource::LegacyManagedConfigTomlFromMdm => {
-            "MDM value"
+            "MDM 值"
         }
-        ConfigLayerSource::EnterpriseManaged { .. } => "Enterprise-managed config value",
+        ConfigLayerSource::EnterpriseManaged { .. } => "企业托管配置值",
         ConfigLayerSource::PackagedDefaults { .. }
         | ConfigLayerSource::SessionFlags
         | ConfigLayerSource::System { .. }
         | ConfigLayerSource::User { .. }
         | ConfigLayerSource::Project { .. }
-        | ConfigLayerSource::LegacyManagedConfigTomlFromFile { .. } => "Layer value",
+        | ConfigLayerSource::LegacyManagedConfigTomlFromFile { .. } => "层值",
     }
 }
 

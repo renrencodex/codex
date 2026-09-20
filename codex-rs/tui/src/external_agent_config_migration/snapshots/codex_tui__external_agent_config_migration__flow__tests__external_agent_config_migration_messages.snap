@@ -2,42 +2,42 @@
 source: tui/src/external_agent_config_migration/flow_tests.rs
 expression: messages
 ---
-• Import started. You can keep working while it finishes.
-  Imported setup will apply to new chats.
-  Importing:
-    Settings: 1
-    Memory: 2 — project-a, project-b
-    Skills: 4 — triage, release-notes, risk-check, +1 more
-    MCP servers: 2 — docs, issues
-    Chat sessions: 3 — Alpha rollout, Beta review, Gamma notes
-    Plugins: 2 — formatter, reviewer
-• Import started. You can keep working while it finishes.
-  Imported setup will apply to new chats.
-  Importing:
-    Settings: 1
-    Memory: 2 — project-a, project-b
-    Skills: 4 — triage, release-notes, risk-check, +1 more
-    MCP servers: 2 — docs, issues
-    Chat sessions: 3 — Alpha rollout, Beta review, Gamma notes
-    Plugins: 2 — formatter, reviewer
-  1 additional item remains. After it finishes, run /import again to review it.
-• Import started. You can keep working while it finishes.
-  Imported setup will apply to new chats.
-  Importing:
-    Settings: 1
-    Memory: 2 — project-a, project-b
-    Skills: 4 — triage, release-notes, risk-check, +1 more
-    MCP servers: 2 — docs, issues
-    Chat sessions: 3 — Alpha rollout, Beta review, Gamma notes
-    Plugins: 2 — formatter, reviewer
-  2 additional items remain. After it finishes, run /import again to review them.
-• Import finished: 4 imported, 1 failed.
-  Results by type:
-    Settings: 1 imported, 0 failed
-    Memory: 2 imported, 0 failed
-    Plugins: 1 imported, 1 failed
-  Run /import again to check for additional items.
-No compatible setup was found to import.
-Import from other apps is unavailable in remote sessions. Start Codex locally and run /import.
-Import from other apps is unavailable while Codex is connected to the local app-server daemon. Restart with `codex --no-daemon` and run /import.
+• 导入已开始。 导入期间你可以继续工作。
+  导入的设置将应用于新对话。
+  正在导入：
+    设置: 1
+    记忆: 2 — project-a, project-b
+    技能: 4 — triage, release-notes, risk-check，另有 1 项
+    MCP 服务器: 2 — docs, issues
+    聊天会话: 3 — Alpha rollout, Beta review, Gamma notes
+    插件: 2 — formatter, reviewer
+• 导入已开始。 导入期间你可以继续工作。
+  导入的设置将应用于新对话。
+  正在导入：
+    设置: 1
+    记忆: 2 — project-a, project-b
+    技能: 4 — triage, release-notes, risk-check，另有 1 项
+    MCP 服务器: 2 — docs, issues
+    聊天会话: 3 — Alpha rollout, Beta review, Gamma notes
+    插件: 2 — formatter, reviewer
+  还有 1 个项目。完成后请再次运行 /import 查看。
+• 导入已开始。 导入期间你可以继续工作。
+  导入的设置将应用于新对话。
+  正在导入：
+    设置: 1
+    记忆: 2 — project-a, project-b
+    技能: 4 — triage, release-notes, risk-check，另有 1 项
+    MCP 服务器: 2 — docs, issues
+    聊天会话: 3 — Alpha rollout, Beta review, Gamma notes
+    插件: 2 — formatter, reviewer
+  还有 2 个项目。完成后请再次运行 /import 查看。
+• 导入完成：已导入 4 项, 1 项失败.
+  按类型列出的结果：
+    设置: 已导入 1 项, 0 项失败
+    记忆: 已导入 2 项, 0 项失败
+    插件: 已导入 1 项, 1 项失败
+  再次运行 /import 以检查其他项目。
+未找到可导入的兼容设置。
+远程会话中无法从其他应用导入。请在本地启动 Codex 并运行 /import。
+Codex 连接到本地 app-server 后台服务时无法从其他应用导入。请使用 `codex --no-daemon` 重启并运行 /import。
 A previous external agent import is still running. Wait for it to finish before importing again.

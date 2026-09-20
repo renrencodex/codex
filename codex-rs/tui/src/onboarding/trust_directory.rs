@@ -54,7 +54,7 @@ impl WidgetRef for &TrustDirectoryWidget {
 
         column.push(Line::from(vec![
             "> ".into(),
-            "You are in ".bold(),
+            "当前目录：".bold(),
             self.cwd.to_string_lossy().to_string().into(),
         ]));
         column.push("");
@@ -62,7 +62,7 @@ impl WidgetRef for &TrustDirectoryWidget {
         if !self.restricted && self.cwd != self.trust_target {
             #[allow(clippy::disallowed_methods)]
             let git_root_warning = Paragraph::new(format!(
-                "Note: You’re in a subdirectory of a Git project. Trusting will apply to the repository root: {}",
+                "注意：当前位于 Git 项目的子目录中。信任设置将应用于仓库根目录：{}",
                 self.trust_target.display()
             ))
             .yellow();
@@ -78,18 +78,16 @@ impl WidgetRef for &TrustDirectoryWidget {
 
         column.push(
             Paragraph::new(if self.restricted && self.existing_task {
-                "This existing task may retain settings \
-                 and history, including project configuration or hooks loaded while it was trusted. \
-                 To use restricted settings, start a new task. The folder's trust setting will not change."
+                "此现有任务可能保留之前在受信任状态下加载的设置和历史记录，包括项目配置或钩子。\
+                 如需使用受限设置，请启动新任务。文件夹的信任设置不会更改。"
             } else if self.restricted {
-                "Config, hooks, and exec policies from untrusted folders stay disabled. \
-                 Trusted project folders can still contribute settings. Skills still load, \
-                 and tools follow your permission settings. Opening will not change saved trust."
+                "来自不受信任文件夹的配置、钩子和执行策略将保持停用。\
+                 受信任的项目文件夹仍可提供设置；技能仍会加载，工具遵循权限设置。\
+                 打开文件夹不会更改已保存的信任状态。"
             } else {
-                "Trust this folder? Codex can read, edit, and run files here, subject to \
-                 your permission settings. Folder settings can run code automatically, \
-                 even without a model request. Continue only if you trust these files. \
-                 Your trust decision will be saved."
+                "是否信任此文件夹？在权限设置允许的范围内，Codex 可以读取、编辑和运行这里的文件。\
+                 文件夹设置可以自动运行代码，即使模型没有发出请求。仅当你信任这些文件时才继续。\
+                 你的信任决定将被保存。"
             })
             .wrap(Wrap { trim: true })
             .inset(Insets::tlbr(
@@ -101,18 +99,18 @@ impl WidgetRef for &TrustDirectoryWidget {
         let options: Vec<(&str, TrustDirectorySelection)> = vec![
             (
                 if self.restricted && self.existing_task {
-                    "Open existing task"
+                    "打开现有任务"
                 } else if self.restricted {
-                    "Open restricted"
+                    "以受限模式打开"
                 } else {
-                    "Trust and continue"
+                    "信任并继续"
                 },
                 TrustDirectorySelection::Trust,
             ),
             (
                 match self.cancel {
-                    TrustCancelAction::Quit => "Quit",
-                    TrustCancelAction::AgentsOverview => "Back to Agent Command Center",
+                    TrustCancelAction::Quit => "退出",
+                    TrustCancelAction::AgentsOverview => "返回代理指挥中心",
                 },
                 TrustDirectorySelection::Quit,
             ),
@@ -142,14 +140,14 @@ impl WidgetRef for &TrustDirectoryWidget {
 
         column.push(
             Line::from(vec![
-                "Press ".dim(),
+                "按 ".dim(),
                 keys::CONFIRM[0].into(),
                 if self.show_windows_create_sandbox_hint && !self.restricted {
-                    " to continue and create a sandbox...".dim()
+                    " 继续并创建沙盒...".dim()
                 } else {
                     match self.cancel {
-                        TrustCancelAction::Quit => " to continue; esc to quit",
-                        TrustCancelAction::AgentsOverview => " to continue; esc to go back",
+                        TrustCancelAction::Quit => " 继续；esc 退出",
+                        TrustCancelAction::AgentsOverview => " 继续；esc 返回",
                     }
                     .dim()
                 },

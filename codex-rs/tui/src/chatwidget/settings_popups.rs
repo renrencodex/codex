@@ -19,7 +19,7 @@ impl ChatWidget {
     pub(crate) fn open_experimental_popup(&mut self) {
         let Some(thread_id) = self.thread_id() else {
             self.add_info_message(
-                "Experimental features are unavailable until startup completes.".to_string(),
+                "启动完成前实验性功能不可用。".to_string(),
                 /*hint*/ None,
             );
             return;

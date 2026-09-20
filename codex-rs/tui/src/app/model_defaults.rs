@@ -59,12 +59,12 @@ impl App {
         }
         self.sync_active_thread_service_tier_to_cached_session()
             .await;
-        let mut message = format!("Model changed to {model}");
+        let mut message = format!("模型已更改为 {model}");
         if let Some(label) = Self::reasoning_label_for(&model, effort.as_ref()) {
             message.push(' ');
             message.push_str(&label);
         }
-        message.push_str(" for this session only");
+        message.push_str("，仅适用于此会话");
         self.chat_widget.add_info_message(message, /*hint*/ None);
     }
 
@@ -76,9 +76,8 @@ impl App {
     ) -> Result<()> {
         let response = crate::config_update::write_config_batch(request_handle, edits).await?;
         if response.status == WriteStatus::OkOverridden {
-            self.chat_widget.add_warning_message(format!(
-                "Saved {setting}, but a higher-priority configuration layer overrides the saved value."
-            ));
+            self.chat_widget
+                .add_warning_message(format!("已保存{setting}，但更高优先级的配置层覆盖了该值。"));
         }
         Ok(())
     }

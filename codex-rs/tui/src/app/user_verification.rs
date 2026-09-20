@@ -39,7 +39,7 @@ impl App {
                 thread_id,
                 ServerNotification::Warning(WarningNotification {
                     thread_id: Some(thread_id.to_string()),
-                    message: "User verification is unavailable for remote workspaces.".to_string(),
+                    message: "远程工作区无法使用用户验证。".to_string(),
                 }),
             )
             .await?;

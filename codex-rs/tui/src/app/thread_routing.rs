@@ -165,11 +165,11 @@ impl App {
     pub(super) fn thread_label(&self, thread_id: ThreadId) -> String {
         let is_primary = self.primary_thread_id == Some(thread_id);
         let fallback_label = if is_primary {
-            "Main [default]".to_string()
+            "主代理 [默认]".to_string()
         } else {
             let thread_id = thread_id.to_string();
             let short_id: String = thread_id.chars().take(8).collect();
-            format!("Agent ({short_id})")
+            format!("代理（{short_id}）")
         };
         if let Some(entry) = self.agent_navigation.get(&thread_id) {
             let label = format_agent_picker_item_name(
@@ -177,10 +177,10 @@ impl App {
                 entry.agent_role.as_deref(),
                 is_primary,
             );
-            if label == "Agent" {
+            if label == "代理" {
                 let thread_id = thread_id.to_string();
                 let short_id: String = thread_id.chars().take(8).collect();
-                format!("{label} ({short_id})")
+                format!("{label}（{short_id}）")
             } else {
                 label
             }
@@ -213,7 +213,7 @@ impl App {
         };
 
         self.chat_widget.add_info_message(
-            format!("Already viewing {}.", target_session.display_label()),
+            format!("正在查看 {}。", target_session.display_label()),
             /*hint*/ None,
         );
         true
@@ -490,7 +490,7 @@ impl App {
                 self.chat_widget.reset_realtime_conversation();
             }
             self.chat_widget
-                .add_error_message("No active thread is available.".to_string());
+                .add_error_message("没有可用的活动会话。".to_string());
             return Ok(());
         };
 
@@ -515,9 +515,8 @@ impl App {
                 self.chat_widget.record_realtime_failure();
                 self.chat_widget.reset_realtime_conversation();
             }
-            self.chat_widget.add_error_message(
-                "This conversation is read-only or unavailable; no operation was sent.".into(),
-            );
+            self.chat_widget
+                .add_error_message("此对话为只读或不可用；未发送任何操作。".into());
             return Ok(());
         }
         if self.chat_widget.rejects_misalignment_policy_op(&op) {
@@ -550,7 +549,7 @@ impl App {
         }
 
         self.chat_widget
-            .add_error_message(format!("Not available in TUI yet for thread {thread_id}."));
+            .add_error_message(format!("TUI 暂不支持会话 {thread_id}。"));
         Ok(())
     }
 
@@ -710,7 +709,7 @@ impl App {
                                 let notification =
                                     ServerNotification::Warning(WarningNotification {
                                         thread_id: Some(thread_id.to_string()),
-                                        message: format!("Failed to interrupt turn: {error}"),
+                                        message: format!("中断回合失败：{error}"),
                                     });
                                 let should_send = {
                                     let mut store = thread_event_store.lock().await;
@@ -1078,7 +1077,7 @@ impl App {
             }
             Err(err) => {
                 self.chat_widget.add_error_message(format!(
-                    "Failed to resolve app-server request for thread {thread_id}: {err}"
+                    "解析会话 {thread_id} 的 app-server 请求失败：{err}"
                 ));
                 Ok(false)
             }
@@ -2108,15 +2107,13 @@ impl App {
             }
             if self.active_thread_id == Some(primary_thread_id) {
                 self.chat_widget.add_info_message(
-                    format!(
-                        "Agent thread {closed_thread_id} closed. Switched back to main thread."
-                    ),
+                    format!("代理会话 {closed_thread_id} 已关闭。已切回主会话。"),
                     /*hint*/ None,
                 );
             } else {
                 self.clear_active_thread().await;
                 self.chat_widget.add_error_message(format!(
-                    "Agent thread {closed_thread_id} closed. Failed to switch back to main thread {primary_thread_id}.",
+                    "代理会话 {closed_thread_id} 已关闭。切回主会话 {primary_thread_id} 失败。",
                 ));
             }
             return Ok(());

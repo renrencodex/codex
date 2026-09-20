@@ -45,7 +45,7 @@ pub(super) async fn reconnect(
     }
     if presentation == ReconnectPresentation::Conversation && thread_id.is_none() {
         color_eyre::eyre::bail!(
-            "The initial thread may have been created, but its ID was not received. Nothing was retried. Your prompt is editable; inspect your tasks before relaunching."
+            "初始会话可能已创建，但未收到其 ID。系统未重试任何操作。你的提示词仍可编辑；重新启动前请检查任务。"
         );
     }
     // Connecting already has transport deadlines. Give healthy history/inventory hydration one
@@ -213,7 +213,7 @@ impl App {
                 .is_some()
             {
                 if let Ok(mut state) = self.agents_overview.view_state.lock() {
-                    state.connection_notice = Some("Reconnecting — agent list is stale");
+                    state.connection_notice = Some("正在重新连接 — 代理列表已过期");
                 }
                 ReconnectPresentation::Overview
             } else {
@@ -418,7 +418,7 @@ impl App {
             if self.thread_unavailable(id) && !self.chat_widget.is_external_writer_view() {
                 self.agent_navigation.mark_stopped(id);
                 self.chat_widget.pause_unavailable_thread();
-                self.chat_widget.add_info_message("This conversation is unavailable. Its cached transcript and draft remain here; input is paused. Open the agent picker or return to the parent to continue.".into(), /*hint*/ None);
+                self.chat_widget.add_info_message("此对话不可用。缓存的对话记录和草稿仍保留在这里；输入已暂停。请打开代理选择器或返回父会话以继续。".into(), /*hint*/ None);
             } else {
                 self.schedule_recap_check(id, Instant::now());
             }
@@ -456,8 +456,7 @@ impl App {
         #[cfg(any(target_os = "windows", test))]
         if interrupted_windows_setup {
             self.chat_widget.add_error_message(
-                "Windows sandbox setup was interrupted. Restart Codex before using Agent mode."
-                    .to_string(),
+                "Windows 沙箱设置已中断。使用代理模式前请重启 Codex。".to_string(),
             );
         }
         // Only accept fresh task-tool calls once this connection and its event queue are adopted.
@@ -480,7 +479,7 @@ impl App {
         }
         self.feedback_audience = bootstrap.feedback_audience;
         self.chat_widget.add_info_message(
-            "Reconnected. No input was resent. Review uncertain submissions before retrying; recovered queues remain paused.".into(), /*hint*/ None,
+            "已重新连接。未重新发送任何输入。重试前请检查状态不明的提交；已恢复的队列仍处于暂停状态。".into(), /*hint*/ None,
         );
         let connected_notice_key = crate::status::remote_connection::server_version_notice_key(
             &self.app_server_target,

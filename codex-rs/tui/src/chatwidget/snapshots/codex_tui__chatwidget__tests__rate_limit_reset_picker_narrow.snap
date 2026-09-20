@@ -2,12 +2,11 @@
 source: tui/src/chatwidget/tests/usage.rs
 expression: "render_bottom_popup(&chat, 44)"
 ---
-  Usage limit resets
-  2 usage limit resets available.
+  用 量 限 制 重 置
+  有  2 次 可 用 的 重 置 机 会 。
 
-› 1. Full reset  Expires 09:39 on 18 Jun
-                 2026.
-  2. Full reset  Does not expire.
-  3. Cancel
+› 1. 完 全 重 置   到 期 时 间 ： 2026-06-18 09:39.
+  2. 完 全 重 置   永 不 过 期 .
+  3. 取 消
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

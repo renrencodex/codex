@@ -19,13 +19,13 @@ pub(super) const GROUPINGS: [Grouping; 7] = [
 ];
 
 pub(super) const GROUP_LABELS: [&str; 7] = [
-    "Surface",
-    "Feature",
-    "Model",
-    "Turn start",
-    "Speed",
-    "Reasoning",
-    "Token type",
+    "平台",
+    "功能",
+    "模型",
+    "回合启动方式",
+    "速度",
+    "推理强度",
+    "Token 类型",
 ];
 
 pub(super) struct Pending<T> {
@@ -67,8 +67,8 @@ impl<T: Send + 'static> Load<T> {
                         .await
                     {
                         Ok(Ok(result)) => result,
-                        Ok(Err(_)) => Err("Request interrupted. Press R to retry.".into()),
-                        Err(_) => Err("Request timed out. Press R to retry.".into()),
+                        Ok(Err(_)) => Err("请求已中断。按 R 重试。".into()),
+                        Err(_) => Err("请求超时。按 R 重试。".into()),
                     };
                 let _ = sender.send(result);
                 frame.schedule_frame();
@@ -83,7 +83,7 @@ impl<T: Send + 'static> Load<T> {
                 Ok(Ok(None)) => Self::Unavailable,
                 Ok(Err(message)) => Self::Error(message),
                 Err(oneshot::error::TryRecvError::Closed) => {
-                    Self::Error("Request interrupted. Press R to retry.".into())
+                    Self::Error("请求已中断。按 R 重试。".into())
                 }
                 Err(oneshot::error::TryRecvError::Empty) => return,
             };
@@ -101,8 +101,8 @@ impl<T: Send + 'static> Load<T> {
     pub(super) fn message(&self) -> Option<&str> {
         match self {
             Self::Ready(_) => None,
-            Self::Loading(_) => Some("Loading…"),
-            Self::Unavailable => Some("No history has been reported."),
+            Self::Loading(_) => Some("正在加载…"),
+            Self::Unavailable => Some("尚未上报历史记录。"),
             Self::Error(message) => Some(message),
         }
     }
@@ -110,7 +110,7 @@ impl<T: Send + 'static> Load<T> {
 
 /// Keep untyped server and transport diagnostics out of account reports.
 pub(super) fn error(_error: codex_app_server_client::TypedRequestError) -> String {
-    "Couldn't load analytics. Press R to retry.".into()
+    "无法加载分析数据。按 R 重试。".into()
 }
 
 /// Keep tiny refunds visible while avoiding noise on ordinary credit amounts.

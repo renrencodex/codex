@@ -142,7 +142,7 @@ async fn startup_warnings_wait_for_splash_and_coalesce_with_full_details() -> Re
     let transcript = app.transcript_cells[1].transcript_lines(/*width*/ 80);
     insta::assert_snapshot!(format!("display:\n{}\n\ntranscript:\n{}", lines_to_single_string(&display), lines_to_single_string(&transcript)), @"
     display:
-    ⚠ 2 startup issues · ctrl + t for details
+    ⚠ 2 个 启动问题 · ctrl + t 查看详情
 
     transcript:
     ⚠ Skill manifest is invalid.
@@ -150,7 +150,7 @@ async fn startup_warnings_wait_for_splash_and_coalesce_with_full_details() -> Re
     ");
     app.keymap.app.open_transcript = vec![crate::key_hint::plain(crossterm::event::KeyCode::F(12))];
     app.merge_startup_warnings(&mut tui, &StartupWarningsCell::default());
-    insta::assert_snapshot!(lines_to_single_string(&app.transcript_cells[1].display_lines(/*width*/ 80)), @"⚠ 2 startup issues · f12 for details");
+    insta::assert_snapshot!(lines_to_single_string(&app.transcript_cells[1].display_lines(/*width*/ 80)), @"⚠ 2 个 启动问题 · f12 查看详情");
     app.keymap.app.open_transcript.clear();
     app.merge_startup_warnings(&mut tui, &StartupWarningsCell::default());
     insta::assert_snapshot!(lines_to_single_string(&app.transcript_cells[1].display_lines(/*width*/ 80)), @"⚠ 2 startup issues");

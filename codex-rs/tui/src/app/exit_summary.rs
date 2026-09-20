@@ -94,25 +94,23 @@ impl AppExitInfo {
             let turn_interrupted = matches!(self.exit_reason, ExitReason::TurnInterrupted);
             let message = match self.exit_reason {
                 ExitReason::UserRequested | ExitReason::Archived(_) | ExitReason::ThreadRemoved => {
-                    "Disconnected from this task. Any running work continues."
+                    "已与此任务断开连接。正在运行的工作将继续。"
                 }
-                ExitReason::Fatal(_) => "Disconnected from this task. Work may still be running.",
-                ExitReason::TurnInterrupted => {
-                    "Disconnected from this task. The current turn was stopped."
-                }
+                ExitReason::Fatal(_) => "已与此任务断开连接。工作可能仍在运行。",
+                ExitReason::TurnInterrupted => "已与此任务断开连接。当前回合已停止。",
             };
             lines.push(message.to_string());
             let mut resume_command = disconnect.command.clone();
             resume_command.extend(["resume".to_string(), thread_id.to_string()]);
             lines.push(format!(
-                "Reconnect: {}",
+                "重新连接：{}",
                 color_command(escape_command(&resume_command)),
             ));
             if !turn_interrupted {
                 let mut agents_command = disconnect.command;
                 agents_command.push("agents".to_string());
                 lines.push(format!(
-                    "Stop the current turn: run {}, select this task, and {}.",
+                    "停止当前回合：运行 {}，选择此任务，然后{}。",
                     color_command(escape_command(&agents_command)),
                     disconnect.stop_hint,
                 ));
@@ -122,7 +120,7 @@ impl AppExitInfo {
                 lines.push(if turn_interrupted {
                     usage
                 } else {
-                    usage.replacen("Token usage:", "Token usage so far:", /*count*/ 1)
+                    usage.replacen("Token 用量：", "目前 Token 用量：", /*count*/ 1)
                 });
             }
             return lines;
@@ -132,22 +130,22 @@ impl AppExitInfo {
             lines.push(self.token_usage.to_string());
         }
         if let ExitReason::Archived(thread_id) = self.exit_reason {
-            lines.push(format!("Session archived: {thread_id}"));
+            lines.push(format!("会话已归档：{thread_id}"));
         } else if let Some(thread) = self.resume_hint {
-            lines.push("To continue this session, run:".to_string());
+            lines.push("要继续此会话，请运行：".to_string());
             lines.push(format!(
                 "  {}",
                 color_command(format!("codex resume {}", thread.thread_id)),
             ));
             if let Some(thread_name) = thread.thread_name.filter(|name| !name.is_empty()) {
                 lines.push(format!(
-                    "Or run {} and select {}.",
+                    "或运行 {} 并选择 {}。",
                     color_command("codex resume".to_string()),
                     color_command(thread_name),
                 ));
             }
         } else if let Some(thread_id) = self.thread_id {
-            lines.push(format!("Session ID: {thread_id}"));
+            lines.push(format!("会话 ID：{thread_id}"));
         }
         lines
     }

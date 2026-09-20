@@ -2,9 +2,9 @@
 source: tui/src/history_cell/search_tests.rs
 expression: rendered
 ---
-• Opened https://example.com/docs
-• Opened page
-• Searched for 'needle' in https://example.com/docs
-• Searched for 'needle'
-• Searched page https://example.com/docs
-• Searched page
+• 已打开 https://example.com/docs
+• 已打开页面
+• 已查找 'needle' in https://example.com/docs
+• 已查找 'needle'
+• 已搜索页面 https://example.com/docs
+• 已搜索页面

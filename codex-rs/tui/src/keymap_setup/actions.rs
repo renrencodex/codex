@@ -22,43 +22,35 @@ use crate::keymap::bindings_for_action;
 pub(super) struct KeymapActionDescriptor {
     /// Config context segment, such as `composer` in `tui.keymap.composer.submit`.
     pub(super) context: &'static str,
-    /// Human-readable group label shown in the picker.
-    pub(super) context_label: &'static str,
     /// Config action segment, such as `submit` in `tui.keymap.composer.submit`.
     pub(super) action: &'static str,
-    /// Short user-facing explanation of what the action does.
-    pub(super) description: &'static str,
     /// Feature required before the action appears in `/keymap`.
     required_feature: Option<KeymapActionFeature>,
 }
 
 const fn action(
     context: &'static str,
-    context_label: &'static str,
+    _context_label: &'static str,
     action: &'static str,
-    description: &'static str,
+    _description: &'static str,
 ) -> KeymapActionDescriptor {
     KeymapActionDescriptor {
         context,
-        context_label,
         action,
-        description,
         required_feature: None,
     }
 }
 
 const fn gated_action(
     context: &'static str,
-    context_label: &'static str,
+    _context_label: &'static str,
     action: &'static str,
-    description: &'static str,
+    _description: &'static str,
     required_feature: KeymapActionFeature,
 ) -> KeymapActionDescriptor {
     KeymapActionDescriptor {
         context,
-        context_label,
         action,
-        description,
         required_feature: Some(required_feature),
     }
 }
@@ -240,17 +232,155 @@ pub(super) const KEYMAP_ACTIONS: &[KeymapActionDescriptor] = &[
 /// parsed back into an action name, because underscores and casing are part of
 /// the stable config contract.
 pub(super) fn action_label(action: &str) -> String {
-    action
-        .split('_')
-        .map(|word| {
-            let mut chars = word.chars();
-            let Some(first) = chars.next() else {
-                return String::new();
-            };
-            format!("{}{}", first.to_ascii_uppercase(), chars.as_str())
-        })
-        .collect::<Vec<_>>()
-        .join(" ")
+    match action {
+        "accept" => "接受",
+        "append_after_cursor" => "在光标后追加",
+        "append_line_end" => "在行尾追加",
+        "approve" => "批准",
+        "approve_for_prefix" => "为命令前缀批准",
+        "approve_for_session" => "为本次会话批准",
+        "archive" => "归档",
+        "backtick" => "反引号",
+        "backward" => "向后",
+        "big_word" => "大写 WORD",
+        "braces" => "花括号",
+        "brackets" => "方括号",
+        "cancel" => "取消",
+        "cancel_operator" => "取消操作符",
+        "change_to_line_end" => "更改至行尾",
+        "clear_terminal" => "清空终端",
+        "close" => "关闭",
+        "close_transcript" => "关闭对话记录",
+        "copy" => "复制",
+        "decline" => "拒绝并说明",
+        "decrease_reasoning_effort" => "降低推理强度",
+        "delete" => "删除",
+        "delete_backward" => "向后删除",
+        "delete_backward_word" => "向后删除单词",
+        "delete_char" => "删除字符",
+        "delete_forward" => "向前删除",
+        "delete_forward_word" => "向前删除单词",
+        "delete_line" => "删除行",
+        "delete_to_line_end" => "删除至行尾",
+        "deny" => "拒绝",
+        "double_quote" => "双引号",
+        "edit_queued_message" => "编辑排队消息",
+        "enter_insert" => "进入插入模式",
+        "enter_replace_mode" => "进入替换模式",
+        "find_backward" => "向后查找",
+        "find_forward" => "向前查找",
+        "forward" => "向前",
+        "half_page_down" => "向下半页",
+        "half_page_up" => "向上半页",
+        "hide" => "隐藏",
+        "history_search_next" => "搜索下一条历史记录",
+        "history_search_previous" => "搜索上一条历史记录",
+        "increase_reasoning_effort" => "提高推理强度",
+        "insert_line_start" => "在行首插入",
+        "insert_newline" => "插入换行",
+        "interrupt_turn" => "中断当前轮次",
+        "jump_bottom" => "跳到底部",
+        "jump_top" => "跳到顶部",
+        "kill_line_end" => "删除至行尾",
+        "kill_line_start" => "删除至行首",
+        "kill_whole_line" => "删除整行",
+        "motion_down" => "向下移动操作符",
+        "motion_find_backward" => "向后查找操作符",
+        "motion_find_forward" => "向前查找操作符",
+        "motion_jump_bottom" => "跳到底部操作符",
+        "motion_jump_top" => "跳到顶部操作符",
+        "motion_left" => "向左移动操作符",
+        "motion_line_end" => "移至行尾操作符",
+        "motion_line_start" => "移至行首操作符",
+        "motion_right" => "向右移动操作符",
+        "motion_till_backward" => "向后移至字符前操作符",
+        "motion_till_forward" => "向前移至字符前操作符",
+        "motion_up" => "向上移动操作符",
+        "motion_word_backward" => "向后移动单词操作符",
+        "motion_word_end" => "移至词尾操作符",
+        "motion_word_forward" => "向前移动单词操作符",
+        "move_down" => "向下移动",
+        "move_left" => "向左移动",
+        "move_line_end" => "移至行尾",
+        "move_line_start" => "移至行首",
+        "move_right" => "向右移动",
+        "move_up" => "向上移动",
+        "move_word_backward" => "向后移动单词",
+        "move_word_end" => "移至词尾",
+        "move_word_forward" => "向前移动单词",
+        "move_word_left" => "向左移动单词",
+        "move_word_right" => "向右移动单词",
+        "new_task" => "新建任务",
+        "new_worktree" => "新建工作树",
+        "next" => "下一个",
+        "next_permission_mode" => "下一个权限模式",
+        "open_agents" => "打开智能体面板",
+        "open_external_editor" => "打开外部编辑器",
+        "open_fullscreen" => "全屏打开",
+        "open_line_above" => "在上方新建一行",
+        "open_line_below" => "在下方新建一行",
+        "open_thread" => "打开线程",
+        "open_transcript" => "打开对话记录",
+        "page_down" => "向下翻页",
+        "page_up" => "向上翻页",
+        "parentheses" => "圆括号",
+        "paste_after" => "在光标后粘贴",
+        "previous" => "上一个",
+        "previous_permission_mode" => "上一个权限模式",
+        "prompt_stack_back" => "返回上一层提示",
+        "queue" => "排队",
+        "redo" => "重做",
+        "rename" => "重命名",
+        "repeat_last_change" => "重复上次更改",
+        "replace_char" => "替换字符",
+        "resume" => "恢复会话",
+        "scroll_down" => "向下滚动",
+        "scroll_up" => "向上滚动",
+        "search" => "搜索",
+        "select_around_text_object" => "选择文本对象及周边",
+        "select_inner_text_object" => "选择文本对象内部",
+        "single_quote" => "单引号",
+        "skip_question" => "跳过问题",
+        "start_change_operator" => "开始更改操作符",
+        "start_delete_operator" => "开始删除操作符",
+        "start_yank_operator" => "开始复制操作符",
+        "stop" => "停止",
+        "submit" => "提交",
+        "substitute_char" => "替换并进入插入模式",
+        "till_backward" => "向后移至字符前",
+        "till_forward" => "向前移至字符前",
+        "toggle_grouping" => "切换分组方式",
+        "toggle_raw_output" => "切换原始输出",
+        "toggle_shortcuts" => "切换快捷键面板",
+        "toggle_side_conversation" => "切换侧边对话",
+        "toggle_vim_mode" => "切换 Vim 模式",
+        "toggle_voice" => "切换语音对话",
+        "toggle_voice_mute" => "切换麦克风静音",
+        "undo" => "撤销",
+        "word" => "单词",
+        "yank" => "粘贴删除缓冲区",
+        "yank_line" => "复制整行",
+        _ => action,
+    }
+    .to_string()
+}
+
+pub(super) fn context_label(context: &str) -> &'static str {
+    match context {
+        "global" => "全局",
+        "chat" => "聊天",
+        "composer" => "输入框",
+        "editor" => "编辑器",
+        "vim_normal" => "Vim 普通模式",
+        "vim_search" => "Vim 搜索",
+        "vim_operator" => "Vim 操作符",
+        "vim_text_object" => "Vim 文本对象",
+        "pager" => "分页器",
+        "list" => "列表",
+        "agents" => "智能体",
+        "approval" => "审批",
+        _ => "其他",
+    }
 }
 
 #[rustfmt::skip]
@@ -440,7 +570,7 @@ pub(super) fn format_action_binding_summary(
         .filter(|spec| seen.insert(spec.clone()))
         .collect::<Vec<_>>();
     if specs.is_empty() {
-        "unbound".to_string()
+        "未绑定".to_string()
     } else {
         specs.join(", ")
     }
@@ -456,9 +586,9 @@ pub(super) enum KeymapDebugBindingSource {
 impl KeymapDebugBindingSource {
     pub(super) const fn label(&self) -> &'static str {
         match self {
-            Self::Custom => "Custom",
-            Self::CustomGlobal => "Custom global",
-            Self::Default => "Default",
+            Self::Custom => "自定义",
+            Self::CustomGlobal => "自定义全局",
+            Self::Default => "默认",
         }
     }
 }
@@ -468,7 +598,7 @@ pub(super) struct KeymapDebugActionMatch {
     pub(super) context: &'static str,
     pub(super) action: &'static str,
     pub(super) label: String,
-    pub(super) description: &'static str,
+    pub(super) description: String,
     pub(super) source: KeymapDebugBindingSource,
 }
 
@@ -489,7 +619,7 @@ pub(super) fn matching_actions_for_key_event(
                     context: descriptor.context,
                     action: descriptor.action,
                     label: action_label(descriptor.action),
-                    description: descriptor.description,
+                    description: format!("配置“{}”操作的快捷键。", action_label(descriptor.action)),
                     source: debug_binding_source(keymap_config, descriptor),
                 })
         })

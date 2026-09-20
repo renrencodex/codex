@@ -30,9 +30,9 @@ impl ChatWidget {
         self.bottom_pane.ensure_status_indicator();
         self.bottom_pane
             .set_interrupt_hint_visible(/*visible*/ false);
-        self.set_status_header("Reconnecting to app-server…".to_string());
-        self.set_footer_hint_override(Some(vec![("ctrl+c".into(), "quit".into())]));
-        self.add_error_message("Connection lost. Attempting to reconnect…".into());
+        self.set_status_header("正在重新连接 app-server…".to_string());
+        self.set_footer_hint_override(Some(vec![("ctrl+c".into(), "退出".into())]));
+        self.add_error_message("连接已断开。正在尝试重新连接…".into());
     }
 
     /// Restore local input only after replay, which can otherwise move interrupted queues into the draft.
@@ -132,9 +132,9 @@ impl ChatWidget {
     }
 
     pub(crate) fn reconnect_failed(&mut self) {
-        self.set_status_header("Reconnect failed — check the endpoint, then relaunch".into());
+        self.set_status_header("重新连接失败 — 请检查端点后重新启动".into());
         self.add_error_message(
-            "Automatic reconnect could not restore this session. Your draft is still editable. Copy it before quitting with Ctrl+C, then reconnect with the same command.".into(),
+            "自动重新连接无法恢复此会话。你的草稿仍可编辑。请在按 Ctrl+C 退出前复制草稿，然后使用相同命令重新连接。".into(),
         );
     }
 }

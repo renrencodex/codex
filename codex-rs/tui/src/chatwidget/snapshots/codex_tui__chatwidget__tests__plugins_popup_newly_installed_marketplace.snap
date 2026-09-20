@@ -1,15 +1,14 @@
 ---
 source: tui/src/chatwidget/tests/popups_and_settings.rs
-assertion_line: 473
 expression: popup
 ---
-  Plugins
-  Debug Marketplace installed successfully.
-  Select the plugins you want to use and press Enter to install or view details.
+  插 件
+  Debug Marketplace 安 装 成 功 。
+  选 择 要 使 用 的 插 件 ， 然 后 按  Enter 安 装 或 查 看 详 细 信 息 。
 
-  All Plugins  Installed (0)  OpenAI Curated  Workspace  [Debug Marketplace]  Add Marketplace
+  全 部 插 件   已 安 装 （ 0）   OpenAI 精 选   工 作 区   [Debug Marketplace]  添 加 插 件 市 场
 
-  Type to search plugins
-› [-] Debug Plugin  Available   Press Enter to install or view plugin details.
+  输 入 内 容 以 搜 索 插 件
+› [-] Debug Plugin  可 安 装    按  Enter 安 装 或 查 看 插 件 详 细 信 息 。
 
-  ctrl + u upgrade · ctrl + r remove · space toggle · ←/→ tabs · enter details · esc close
+  ctrl + u 升 级  · ctrl + r 移 除  · space 切 换  · ←/→ 标 签 页  · enter 详 情  · esc 关 闭

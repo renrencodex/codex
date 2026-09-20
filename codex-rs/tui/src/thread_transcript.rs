@@ -76,7 +76,7 @@ pub(crate) fn thread_to_transcript_cells(
     );
     if cells.is_empty() {
         cells.push(Arc::new(PlainHistoryCell::new(vec![
-            "No transcript content available".italic().dim().into(),
+            "没有可用的对话记录内容".italic().dim().into(),
         ])));
     }
     cells
@@ -158,7 +158,7 @@ pub(crate) fn thread_items_to_transcript_cells(
                     )
                 {
                     cells.push(Arc::new(PrefixedWrappedHistoryCell::new(
-                        format!("Sent by Codex from task {source_thread_id}\n{prompt}"),
+                        format!("由 Codex 从任务 {source_thread_id} 发送\n{prompt}"),
                         "• ".dim(),
                         "  ",
                     )));
@@ -179,7 +179,7 @@ pub(crate) fn thread_items_to_transcript_cells(
                     if matches!(raw_reasoning_visibility, RawReasoningVisibility::Visible)
                         && !content.is_empty()
                     {
-                        ("Reasoning".to_string(), content.join("\n\n"))
+                        ("推理".to_string(), content.join("\n\n"))
                     } else {
                         split_reasoning_summary_parts(&summary)
                     };

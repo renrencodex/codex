@@ -2,6 +2,6 @@
 source: tui/src/history_cell/computer_activity_tests.rs
 expression: "render(&cell, 24)"
 ---
-• Used computer · 1
-  action · 1 failed
-  └ Failed: diagnostic …
+• 已操作电脑 · 1 个操作
+  · 1 个失败
+  └ 失败：diagnostic di…

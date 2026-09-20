@@ -52,22 +52,20 @@ impl HistoryCell for StartupWarningsCell {
         let mcp_count = self.mcp_servers.len();
         let count = mcp_count + self.other_sources.len();
         let sign_in_count = self.sign_in_servers.len();
-        let plural = if count == 1 { "" } else { "s" };
         let source = if mcp_count == count { "MCP " } else { "" };
-        let mut summary = format!("⚠ {count} {source}startup issue{plural}");
+        let mut summary = format!("⚠ {count} 个 {source}启动问题");
         let mut breakdown = Vec::new();
         if mcp_count > 0 && mcp_count < count {
             breakdown.push(format!("{mcp_count} MCP"));
         }
         if sign_in_count > 0 {
-            let verb = if sign_in_count == 1 { "needs" } else { "need" };
-            breakdown.push(format!("{sign_in_count} {verb} sign-in"));
+            breakdown.push(format!("{sign_in_count} 个需要登录"));
         }
         if !breakdown.is_empty() {
             summary.push_str(&format!(" ({})", breakdown.join("; ")));
         }
         if let Some(hint) = &self.transcript_hint {
-            summary.push_str(&format!(" · {hint} for details"));
+            summary.push_str(&format!(" · {hint} 查看详情"));
         }
         vec![
             crate::line_truncation::truncate_line_with_ellipsis_if_overflow(

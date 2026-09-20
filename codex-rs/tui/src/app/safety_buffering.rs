@@ -50,7 +50,7 @@ impl App {
             self.fail_safety_buffered_branch(
                 input_state,
                 prompt,
-                color_eyre::eyre::eyre!("Wait for permissions to update before forking."),
+                color_eyre::eyre::eyre!("请等待权限更新后再分叉。"),
             );
             return;
         }
@@ -65,9 +65,8 @@ impl App {
             ..
         } = &mut turn
         else {
-            self.chat_widget.add_error_message(
-                "Failed to retry with a faster model: original turn is unavailable.".to_string(),
-            );
+            self.chat_widget
+                .add_error_message("改用更快的模型重试失败：原始回合不可用。".to_string());
             return;
         };
         let permissions_override = Self::turn_permissions_override_from_config(
@@ -79,7 +78,7 @@ impl App {
         );
         if let Err(err) = turn_permissions_overrides(permissions_override, cwd.as_path()) {
             self.chat_widget
-                .add_error_message(format!("Failed to retry with a faster model: {err}"));
+                .add_error_message(format!("改用更快的模型重试失败：{err}"));
             return;
         }
         *turn_model = model.clone();
@@ -94,7 +93,7 @@ impl App {
 
         if let Err(err) = app_server.turn_interrupt(thread_id, turn_id.clone()).await {
             self.chat_widget
-                .add_error_message(format!("Failed to retry with a faster model: {err}"));
+                .add_error_message(format!("改用更快的模型重试失败：{err}"));
             return;
         }
 
@@ -128,9 +127,7 @@ impl App {
                         )
                         .await?;
                     if page.next_cursor.is_some() {
-                        color_eyre::eyre::bail!(
-                            "Cannot safely retry a turn whose input exceeds the bounded history page."
-                        );
+                        color_eyre::eyre::bail!("无法安全重试输入超出有限历史页面的回合。");
                     }
                     let turn = &mut thread.turns[turn_index];
                     turn.items = page
@@ -249,7 +246,7 @@ impl App {
         self.chat_widget.cancel_safety_buffered_retry_submission();
         self.chat_widget.restore_user_message_to_composer(prompt);
         self.chat_widget
-            .add_error_message(format!("Failed to retry with a faster model: {err}"));
+            .add_error_message(format!("改用更快的模型重试失败：{err}"));
     }
 }
 

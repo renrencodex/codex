@@ -218,17 +218,17 @@ async fn plan_implementation_clear_context_requires_default_mode_and_plan() {
 
     assert_eq!(
         params.items[1].description.as_deref(),
-        Some("Fresh thread with this plan.")
+        Some("使用此计划创建新会话。")
     );
 
     let params = plan_implementation::selection_view_params(
         Some(default_mask),
         Some("- Step\n"),
-        Some("89% used"),
+        Some("已使用 89%"),
     );
     assert_eq!(
         params.items[1].description.as_deref(),
-        Some("Fresh thread. Context: 89% used.")
+        Some("创建新会话。上下文：已使用 89%。")
     );
 }
 
@@ -458,9 +458,9 @@ async fn plan_mode_reasoning_override_is_marked_current_in_reasoning_popup() {
     chat.open_reasoning_popup(preset);
 
     let popup = render_bottom_popup(&chat, /*width*/ 100);
-    assert!(popup.contains("Low (current)"));
+    assert!(popup.contains("低（当前）"));
     assert!(
-        !popup.contains("High (current)"),
+        !popup.contains("高（当前）"),
         "expected Plan override to drive current reasoning label, got: {popup}"
     );
 }
@@ -663,10 +663,10 @@ async fn plan_reasoning_scope_popup_mentions_selected_reasoning() {
     );
 
     let popup = render_bottom_popup(&chat, /*width*/ 100);
-    assert!(popup.contains("Choose where to apply medium reasoning."));
+    assert!(popup.contains("选择中等推理的应用范围。"));
     assert!(popup.contains("Always use medium reasoning in Plan mode."));
-    assert!(popup.contains("Apply to Plan mode override"));
-    assert!(popup.contains("Apply to global default and Plan mode override"));
+    assert!(popup.contains("应用到计划模式覆盖值"));
+    assert!(popup.contains("应用到全局默认值和计划模式覆盖值"));
     assert!(popup.contains("user-chosen Plan override (low)"));
 }
 
@@ -679,7 +679,7 @@ async fn plan_reasoning_scope_popup_mentions_built_in_plan_default_when_no_overr
     );
 
     let popup = render_bottom_popup(&chat, /*width*/ 100);
-    assert!(popup.contains("built-in Plan default (medium)"));
+    assert!(popup.contains("内置计划模式默认值（中）"));
 }
 
 #[tokio::test]
@@ -1110,7 +1110,7 @@ async fn plan_implementation_popup_skips_when_rate_limit_prompt_pending() {
 
     let popup = render_bottom_popup(&chat, /*width*/ 80);
     assert!(
-        popup.contains("Approaching rate limits"),
+        popup.contains("即将达到速率限制"),
         "expected rate limit popup, got {popup:?}"
     );
     assert!(
@@ -1777,10 +1777,7 @@ async fn plan_update_renders_history_cell() {
     let cells = drain_insert_history(&mut rx);
     assert!(!cells.is_empty(), "expected plan update cell to be sent");
     let blob = lines_to_single_string(cells.last().unwrap());
-    assert!(
-        blob.contains("Updated Plan"),
-        "missing plan header: {blob:?}"
-    );
+    assert!(blob.contains("已更新计划"), "missing plan header: {blob:?}");
     assert!(blob.contains("Explore codebase"));
     assert!(blob.contains("Implement feature"));
     assert!(blob.contains("Write tests"));

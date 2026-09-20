@@ -1,6 +1,5 @@
 ---
 source: tui/src/chatwidget/realtime_settings_tests.rs
-assertion_line: 46
 expression: lines
 ---
-• Voice set to juniper. Applies to your next voice conversation.
+• 语音已设为 juniper，将在下次语音对话中生效。

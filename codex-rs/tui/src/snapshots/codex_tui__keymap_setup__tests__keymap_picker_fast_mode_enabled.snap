@@ -3,20 +3,20 @@ source: tui/src/keymap_setup.rs
 expression: "render_picker(params, 120)"
 ---
 
-  Keymap
-  All configurable shortcuts.
-  148 actions, 0 customized, 6 unbound.
+  按 键 映 射
+  所 有 可 配 置 快 捷 键 。
+  共  148 个 操 作 ， 0 个 已 自 定 义 ， 6 个 未 绑 定 。
 
-  [All]  Common  Customized (0)  Unbound (6)  App  Composer  Editor  Vim  Navigation  Agents  Approval  Debug
+  [全 部 ]  常 用   已 自 定 义 （ 0）   未 绑 定 （ 6）   应 用   输 入 框   编 辑 器   Vim  导 航   智 能 体   审 批   调 试
 
-  Type to search shortcuts
-› Global       - Open Agents                unbound
-  Global         Open Transcript            ctrl-t
-  Global         Open External Editor       ctrl-g
-  Global         Copy                       ctrl-o
-  Global         Clear Terminal             ctrl-l
-  Global       - Toggle Vim Mode            unbound
-  Global       - Toggle Fast Mode           unbound
-  Global         Toggle Raw Output          alt-r
+  输 入 内 容 以 搜 索 快 捷 键
+› 全 局          - 打 开 智 能 体 面 板         未 绑 定
+  全 局            打 开 对 话 记 录           ctrl-t
+  全 局            打 开 外 部 编 辑 器         ctrl-g
+  全 局            复 制                   ctrl-o
+  全 局            清 空 终 端               ctrl-l
+  全 局          - 切 换  Vim 模 式          未 绑 定
+  全 局          - toggle_fast_mode      未 绑 定
+  全 局            切 换 原 始 输 出           alt-r
 
-  left/right group · enter edit shortcut · * custom · - unbound · esc close
+  left/right 分 组  · enter 编 辑 快 捷 键  · * 自 定 义  · - 未 绑 定  · esc 关 闭

@@ -7,7 +7,7 @@ use super::*;
 use crate::terminal_hyperlinks::HyperlinkLine;
 use std::sync::Weak;
 
-const DESKTOP_THREAD_OPENED_MESSAGE: &str = "Opened this session in the Desktop app.";
+const DESKTOP_THREAD_OPENED_MESSAGE: &str = "已在桌面应用中打开此会话。";
 
 pub(super) struct RenderedHistoryTail {
     pub(super) cell: Weak<dyn HistoryCell>,
@@ -219,12 +219,12 @@ impl App {
     pub(super) fn open_url_in_browser(&mut self, url: String) {
         if let Err(err) = webbrowser::open(&url) {
             self.chat_widget
-                .add_error_message(format!("Failed to open browser for {url}: {err}"));
+                .add_error_message(format!("无法在浏览器中打开 {url}：{err}"));
             return;
         }
 
         self.chat_widget
-            .add_info_message(format!("Opened {url} in your browser."), /*hint*/ None);
+            .add_info_message(format!("已在浏览器中打开 {url}。"), /*hint*/ None);
     }
 
     pub(super) fn open_desktop_thread(&mut self, thread_id: ThreadId) {
@@ -331,9 +331,7 @@ impl App {
 }
 
 fn desktop_thread_open_error_message(err: &str) -> String {
-    format!(
-        "Failed to open this session in the Desktop app: {err}. Install or launch the Desktop app and try again."
-    )
+    format!("无法在桌面应用中打开此会话：{err}。请安装或启动桌面应用后重试。")
 }
 
 #[cfg(target_os = "macos")]
@@ -428,7 +426,7 @@ fn powershell_single_quoted_string(value: &str) -> String {
 
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 fn open_desktop_thread_url(_url: &str) -> Result<(), String> {
-    Err("The Desktop app is only available on macOS and Windows".to_string())
+    Err("桌面应用仅适用于 macOS 和 Windows".to_string())
 }
 
 #[cfg(test)]

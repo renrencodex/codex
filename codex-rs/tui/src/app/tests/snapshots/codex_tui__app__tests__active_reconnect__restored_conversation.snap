@@ -2,10 +2,10 @@
 source: tui/src/app/tests/active_reconnect_tests.rs
 expression: "render_bottom_popup(&app.chat_widget, 80)"
 ---
-• Queued follow-up inputs
+• 已 排 队 的 后 续 输 入
   ↳ old queued input
-    ⌥ + ↑ edit last queued message
+    shift + ← 编 辑 最 后 一 条 排 队 消 息
 
 › kept draft
 
-  gpt-test default                              Plan mode (shift+tab to cycle)
+  gpt-test 默 认                                    计 划 模 式  (按  shift+tab 切 换 )

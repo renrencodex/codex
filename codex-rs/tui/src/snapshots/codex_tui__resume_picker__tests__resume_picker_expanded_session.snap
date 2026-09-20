@@ -3,12 +3,12 @@ source: tui/src/resume_picker.rs
 expression: rendered
 ---
 ⌄ Investigate picker expansion
-  │ Session:    019dabc1-0ef5-7431-b81c-03037f51f62c
-  │ Created:    1 hour ago · 2026-04-28 16:30:00
-  │ Updated:    15 minutes ago · 2026-04-28 17:45:00
-  │ Directory:  /tmp/codex
-  │ Branch:      fcoury/session-picker
+  │ 会话：         019dabc1-0ef5-7431-b81c-03037f51f62c
+  │ 创建时间：       1 小时前 · 2026-04-28 16:30:00
+  │ 更新时间：       15 分钟前 · 2026-04-28 17:45:00
+  │ 目录：         /tmp/codex
+  │ 分支：          fcoury/session-picker
   │
-  │ Conversation:
+  │ 对话：
   │ Show me the recent transcript
   └ Here are the last lines: docs (https://example.com) report.xlsx.

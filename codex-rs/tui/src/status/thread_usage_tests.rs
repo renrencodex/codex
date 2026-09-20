@@ -41,7 +41,7 @@ fn thread_usage_breakdown_groups_aggregate_model_credit_percentages() {
     );
     assert_eq!(
         grouped_usage(&groups, BreakdownDimension::Reasoning),
-        Some("Light 20%, Medium 20%, High 60%".to_string())
+        Some("低 20%, 中 20%, 高 60%".to_string())
     );
     assert_eq!(
         grouped_usage(&groups, BreakdownDimension::Speed),

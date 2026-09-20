@@ -62,10 +62,10 @@ struct StartupRecovery {
 impl StartupRecovery {
     fn message(&self) -> String {
         format!(
-            "Startup did not finish binding a thread to this worktree: {:?}\n\
-             The checkout was kept. Inspect it and confirm no session is using it.\n\
-             To remove it, run `git worktree remove <checkout-path>` from the source repository,\n\
-             replacing <checkout-path> with the path above. Do not use --force.",
+            "启动期间未能完成将会话绑定到此工作树：{:?}\n\
+             检出已保留。请检查并确认没有会话正在使用它。\n\
+             要移除它，请在源仓库中运行 `git worktree remove <checkout-path>`，\n\
+             并将 <checkout-path> 替换为上方路径。请勿使用 --force。",
             self.root
         )
     }
@@ -168,7 +168,7 @@ pub(super) async fn prepare(
         let resolved = async {
             let target = lookup_session_target_with_app_server(&mut lookup, &source, id_or_name)
                 .await?
-                .ok_or_else(|| color_eyre::eyre::eyre!("Session not found: {id_or_name}"))?;
+                .ok_or_else(|| color_eyre::eyre::eyre!("未找到会话：{id_or_name}"))?;
             lookup
                 .thread_read(target.thread_id, /*include_turns*/ false)
                 .await

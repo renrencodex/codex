@@ -30,10 +30,10 @@ mod tests;
 
 fn mcp_auth_status_label(status: McpAuthStatus) -> &'static str {
     match status {
-        McpAuthStatus::Unknown => "Unknown",
-        McpAuthStatus::Unsupported => "Unsupported",
-        McpAuthStatus::NotLoggedIn => "Not logged in",
-        McpAuthStatus::BearerToken => "Bearer token",
+        McpAuthStatus::Unknown => "未知",
+        McpAuthStatus::Unsupported => "不支持",
+        McpAuthStatus::NotLoggedIn => "未登录",
+        McpAuthStatus::BearerToken => "Bearer 令牌",
         McpAuthStatus::OAuth => "OAuth",
     }
 }
@@ -148,9 +148,9 @@ impl McpToolCallCell {
             .unwrap_or_else(|| "•".dim()),
         };
         let header_text = if status.is_some() {
-            "Called"
+            "已调用"
         } else {
-            "Calling"
+            "正在调用"
         };
 
         let title = self
@@ -217,10 +217,10 @@ impl McpToolCallCell {
                             // without losing the image indication when it replaces the summary.
                             if node_repl && block.is_image && block.text().is_some() {
                                 if mode == McpToolCallRenderMode::Display {
-                                    preview.push_line(Line::from("Returned image".dim()));
+                                    preview.push_line(Line::from("已返回图像".dim()));
                                 } else {
                                     detail_lines.extend(
-                                        textwrap::wrap("Returned image", detail_wrap_width)
+                                        textwrap::wrap("已返回图像", detail_wrap_width)
                                             .into_iter()
                                             .map(|line| Line::from(line.into_owned().dim())),
                                     );
@@ -283,7 +283,7 @@ impl McpToolCallCell {
                     }
                 }
                 Err(err) => {
-                    let err_text = format!("Error: {err}");
+                    let err_text = format!("错误：{err}");
                     if mode == McpToolCallRenderMode::Display {
                         for line in err_text.lines() {
                             preview.push_line(Line::from(line.dim()));
@@ -327,9 +327,9 @@ impl HistoryCell for McpToolCallCell {
 
     fn raw_lines(&self) -> Vec<Line<'static>> {
         let header_text = if self.success().is_some() {
-            "Called"
+            "已调用"
         } else {
-            "Calling"
+            "正在调用"
         };
         let mut lines = vec![Line::from(format!(
             "{header_text} {}",
@@ -344,7 +344,7 @@ impl HistoryCell for McpToolCallCell {
                         lines.extend(raw_lines_from_source(&text));
                     }
                 }
-                Err(err) => lines.push(Line::from(format!("Error: {err}"))),
+                Err(err) => lines.push(Line::from(format!("错误：{err}"))),
             }
         }
 
@@ -368,19 +368,19 @@ pub(crate) fn new_active_mcp_tool_call(
 }
 /// Render a summary of configured MCP servers from the current `Config`.
 pub(crate) fn empty_mcp_output() -> WebHyperlinkHistoryCell {
-    let mut docs_line = HyperlinkLine::new(Line::from("    See the "));
+    let mut docs_line = HyperlinkLine::new(Line::from("    请参阅 "));
     docs_line.push_span(
-        "MCP docs".underlined(),
+        "MCP 文档".underlined(),
         Some("https://developers.openai.com/codex/mcp"),
     );
-    docs_line.push_span(" to configure them.".into(), /*destination*/ None);
+    docs_line.push_span(" 进行配置。".into(), /*destination*/ None);
 
     let lines = vec![
         HyperlinkLine::new("/mcp".magenta().into()),
         HyperlinkLine::from(""),
-        HyperlinkLine::new(vec!["🔌  ".into(), "MCP Tools".bold()].into()),
+        HyperlinkLine::new(vec!["🔌  ".into(), "MCP 工具".bold()].into()),
         HyperlinkLine::from(""),
-        HyperlinkLine::new("  • No MCP servers configured.".italic().into()),
+        HyperlinkLine::new("  • 尚未配置 MCP 服务器。".italic().into()),
         docs_line.style(Style::default().add_modifier(Modifier::DIM)),
     ];
 
@@ -399,12 +399,12 @@ pub(crate) fn new_mcp_tools_output(
     let mut lines: Vec<Line<'static>> = vec![
         "/mcp".magenta().into(),
         "".into(),
-        vec!["🔌  ".into(), "MCP Tools".bold()].into(),
+        vec!["🔌  ".into(), "MCP 工具".bold()].into(),
         "".into(),
     ];
 
     if tools.is_empty() {
-        lines.push("  • No MCP tools available.".italic().into());
+        lines.push("  • 没有可用的 MCP 工具。".italic().into());
         lines.push("".into());
     }
 
@@ -428,19 +428,19 @@ pub(crate) fn new_mcp_tools_output(
         let mut header: Vec<Span<'static>> = vec!["  • ".into(), server.clone().into()];
         if !cfg.enabled {
             header.push(" ".into());
-            header.push("(disabled)".red());
+            header.push("（已停用）".red());
             lines.push(header.into());
             if let Some(reason) = cfg.disabled_reason.as_ref().map(ToString::to_string) {
-                lines.push(vec!["    • Reason: ".into(), reason.dim()].into());
+                lines.push(vec!["    • 原因：".into(), reason.dim()].into());
             }
             lines.push(Line::from(""));
             continue;
         }
         lines.push(header.into());
-        lines.push(vec!["    • Status: ".into(), "enabled".green()].into());
+        lines.push(vec!["    • 状态：".into(), "已启用".green()].into());
         lines.push(
             vec![
-                "    • Auth: ".into(),
+                "    • 身份验证：".into(),
                 mcp_auth_status_label(auth_status).into(),
             ]
             .into(),
@@ -460,15 +460,15 @@ pub(crate) fn new_mcp_tools_output(
                     format!(" {}", args.join(" "))
                 };
                 let cmd_display = format!("{command}{args_suffix}");
-                lines.push(vec!["    • Command: ".into(), cmd_display.into()].into());
+                lines.push(vec!["    • 命令：".into(), cmd_display.into()].into());
 
                 if let Some(cwd) = cwd.as_ref() {
-                    lines.push(vec!["    • Cwd: ".into(), cwd.to_string().into()].into());
+                    lines.push(vec!["    • 工作目录：".into(), cwd.to_string().into()].into());
                 }
 
                 let env_display = format_env_display(env.as_ref(), env_vars);
                 if env_display != "-" {
-                    lines.push(vec!["    • Env: ".into(), env_display.into()].into());
+                    lines.push(vec!["    • 环境变量：".into(), env_display.into()].into());
                 }
             }
             McpServerTransportConfig::StreamableHttp {
@@ -488,7 +488,7 @@ pub(crate) fn new_mcp_tools_output(
                         .map(|(name, _)| format!("{name}=*****"))
                         .collect::<Vec<_>>()
                         .join(", ");
-                    lines.push(vec!["    • HTTP headers: ".into(), display.into()].into());
+                    lines.push(vec!["    • HTTP 标头：".into(), display.into()].into());
                 }
                 if let Some(headers) = env_http_headers.as_ref()
                     && !headers.is_empty()
@@ -500,23 +500,23 @@ pub(crate) fn new_mcp_tools_output(
                         .map(|(name, var)| format!("{name}={var}"))
                         .collect::<Vec<_>>()
                         .join(", ");
-                    lines.push(vec!["    • Env HTTP headers: ".into(), display.into()].into());
+                    lines.push(vec!["    • 环境变量 HTTP 标头：".into(), display.into()].into());
                 }
             }
         }
 
         if names.is_empty() {
-            lines.push("    • Tools: (none)".into());
+            lines.push("    • 工具：（无）".into());
         } else {
-            lines.push(vec!["    • Tools: ".into(), names.join(", ").into()].into());
+            lines.push(vec!["    • 工具：".into(), names.join(", ").into()].into());
         }
 
         let server_resources: Vec<Resource> =
             resources.get(server.as_str()).cloned().unwrap_or_default();
         if server_resources.is_empty() {
-            lines.push("    • Resources: (none)".into());
+            lines.push("    • 资源：（无）".into());
         } else {
-            let mut spans: Vec<Span<'static>> = vec!["    • Resources: ".into()];
+            let mut spans: Vec<Span<'static>> = vec!["    • 资源：".into()];
 
             for (idx, resource) in server_resources.iter().enumerate() {
                 if idx > 0 {
@@ -537,9 +537,9 @@ pub(crate) fn new_mcp_tools_output(
             .cloned()
             .unwrap_or_default();
         if server_templates.is_empty() {
-            lines.push("    • Resource templates: (none)".into());
+            lines.push("    • 资源模板：（无）".into());
         } else {
-            let mut spans: Vec<Span<'static>> = vec!["    • Resource templates: ".into()];
+            let mut spans: Vec<Span<'static>> = vec!["    • 资源模板：".into()];
 
             for (idx, template) in server_templates.iter().enumerate() {
                 if idx > 0 {
@@ -576,7 +576,7 @@ pub(crate) fn new_mcp_tools_output_from_statuses(
     let mut lines: Vec<Line<'static>> = vec![
         "/mcp".magenta().into(),
         "".into(),
-        vec!["🔌  ".into(), "MCP Tools".bold()].into(),
+        vec!["🔌  ".into(), "MCP 工具".bold()].into(),
         "".into(),
     ];
 
@@ -585,47 +585,40 @@ pub(crate) fn new_mcp_tools_output_from_statuses(
 
     let has_any_tools = statuses.iter().any(|status| !status.tools.is_empty());
     if !has_any_tools && matches!(detail, McpServerStatusDetail::Full) {
-        lines.push("  • No MCP tools available.".italic().into());
+        lines.push("  • 没有可用的 MCP 工具。".italic().into());
         lines.push("".into());
     }
 
     for status in statuses {
         let (label, style) = match status.runtime_status {
             Some(McpServerConnectionStatus::Connected) => {
-                ("connected", status_style(StatusTone::Success))
+                ("已连接", status_style(StatusTone::Success))
             }
-            Some(McpServerConnectionStatus::Starting) => ("starting", accent_style()),
-            Some(McpServerConnectionStatus::AuthenticationRequired) => (
-                "authentication required",
-                status_style(StatusTone::Attention),
-            ),
-            Some(McpServerConnectionStatus::Failed) => {
-                ("failed", status_style(StatusTone::Failure))
+            Some(McpServerConnectionStatus::Starting) => ("正在启动", accent_style()),
+            Some(McpServerConnectionStatus::AuthenticationRequired) => {
+                ("需要身份验证", status_style(StatusTone::Attention))
             }
-            Some(McpServerConnectionStatus::NotStarted) => ("not started", Style::default().dim()),
-            Some(McpServerConnectionStatus::Disabled) => ("disabled", Style::default().dim()),
-            Some(McpServerConnectionStatus::Cancelled) => ("cancelled", Style::default().dim()),
+            Some(McpServerConnectionStatus::Failed) => ("失败", status_style(StatusTone::Failure)),
+            Some(McpServerConnectionStatus::NotStarted) => ("未启动", Style::default().dim()),
+            Some(McpServerConnectionStatus::Disabled) => ("已停用", Style::default().dim()),
+            Some(McpServerConnectionStatus::Cancelled) => ("已取消", Style::default().dim()),
             None if matches!(
                 status.auth_status,
                 codex_app_server_protocol::McpAuthStatus::NotLoggedIn
             ) =>
             {
-                (
-                    "authentication required",
-                    status_style(StatusTone::Attention),
-                )
+                ("需要身份验证", status_style(StatusTone::Attention))
             }
-            None => ("unknown", Style::default().dim()),
+            None => ("未知", Style::default().dim()),
         };
         let count = status.tools.len();
-        let unit = if count == 1 { "tool" } else { "tools" };
         lines.push(
             vec![
                 "  • ".set_style(style),
                 status.name.clone().bold(),
                 ": ".into(),
                 label.set_style(style),
-                format!(" ({count} {unit})").dim(),
+                format!("（{count} 个工具）").dim(),
             ]
             .into(),
         );
@@ -641,7 +634,7 @@ pub(crate) fn new_mcp_tools_output_from_statuses(
         };
         lines.push(
             vec![
-                "    • Auth: ".into(),
+                "    • 身份验证：".into(),
                 mcp_auth_status_label(auth_status).into(),
             ]
             .into(),
@@ -650,17 +643,17 @@ pub(crate) fn new_mcp_tools_output_from_statuses(
         let mut names = status.tools.keys().cloned().collect::<Vec<_>>();
         names.sort();
         if names.is_empty() {
-            lines.push("    • Tools: (none)".into());
+            lines.push("    • 工具：（无）".into());
         } else {
-            lines.push(vec!["    • Tools: ".into(), names.join(", ").into()].into());
+            lines.push(vec!["    • 工具：".into(), names.join(", ").into()].into());
         }
 
         if matches!(detail, McpServerStatusDetail::Full) {
             let server_resources = status.resources.clone();
             if server_resources.is_empty() {
-                lines.push("    • Resources: (none)".into());
+                lines.push("    • 资源：（无）".into());
             } else {
-                let mut spans: Vec<Span<'static>> = vec!["    • Resources: ".into()];
+                let mut spans: Vec<Span<'static>> = vec!["    • 资源：".into()];
 
                 for (idx, resource) in server_resources.iter().enumerate() {
                     if idx > 0 {
@@ -678,9 +671,9 @@ pub(crate) fn new_mcp_tools_output_from_statuses(
 
             let server_templates = status.resource_templates.clone();
             if server_templates.is_empty() {
-                lines.push("    • Resource templates: (none)".into());
+                lines.push("    • 资源模板：（无）".into());
             } else {
-                let mut spans: Vec<Span<'static>> = vec!["    • Resource templates: ".into()];
+                let mut spans: Vec<Span<'static>> = vec!["    • 资源模板：".into()];
 
                 for (idx, template) in server_templates.iter().enumerate() {
                     if idx > 0 {
@@ -702,7 +695,7 @@ pub(crate) fn new_mcp_tools_output_from_statuses(
 
     if matches!(detail, McpServerStatusDetail::ToolsAndAuthOnly) {
         lines.push("".into());
-        lines.push("  Use /mcp verbose for tools and resources.".dim().into());
+        lines.push("  使用 /mcp verbose 查看工具和资源。".dim().into());
     }
 
     PlainHistoryCell { lines }
@@ -740,7 +733,7 @@ impl HistoryCell for McpInventoryLoadingCell {
                 )
                 .unwrap_or_else(|| "•".dim()),
                 " ".into(),
-                "Loading MCP inventory".bold(),
+                "正在加载 MCP 清单".bold(),
                 "…".dim(),
             ]
             .into(),
@@ -748,7 +741,7 @@ impl HistoryCell for McpInventoryLoadingCell {
     }
 
     fn raw_lines(&self) -> Vec<Line<'static>> {
-        vec![Line::from("Loading MCP inventory...")]
+        vec![Line::from("正在加载 MCP 清单...")]
     }
 
     fn transcript_animation_tick(&self) -> Option<u64> {

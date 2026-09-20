@@ -5,9 +5,9 @@ expression: "format!(\"{}\\n{}\",\nlines_to_single_string(&app.transcript_cells.
 ■ Connection lost. Attempting to reconnect…
 • Reconnecting to app-server… (0s)
 
-• Queued follow-up inputs
+• 已 排 队 的 后 续 输 入
   ↳ queued before disconnect
-    ⌥ + ↑ edit last queued message
+    shift + ← 编 辑 最 后 一 条 排 队 消 息
 
 › keep this draft!
 

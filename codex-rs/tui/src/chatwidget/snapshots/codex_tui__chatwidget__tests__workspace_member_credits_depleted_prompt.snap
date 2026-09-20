@@ -2,10 +2,10 @@
 source: tui/src/chatwidget/tests/status_and_layout.rs
 expression: popup
 ---
-  You've reached your workspace credit limit
-  Your workspace is out of credits. Ask your workspace owner to add more. Notify owner?
+  已 达 到 工 作 区 点 数 限 制
+  你 的 工 作 区 点 数 已 用 完 。 请 让 工 作 区 所 有 者 添 加 点 数 。 是 否 通 知 所 有 者 ？
 
-  1. Yes (y)
-› 2. No (default) (n)
+  1. 是  (y)
+› 2. 否 （ 默 认 ）  (n)
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

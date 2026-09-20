@@ -4,17 +4,17 @@ expression: "whole_status.replace(&directory,\n\"[[workspace]]\").replace(crate:
 ---
 >_ OpenAI Codex (vVERSION)
 
-Visit https://chatgpt.com/codex/settings/usage for up-to-date
-information on rate limits and credits
+访问 https://chatgpt.com/codex/settings/usage 查看最新的
+速率限制和点数信息
 
- Model:                GPT-5.5 (reasoning medium, summaries auto)
- Model provider:       openai
- Directory:            [[workspace]]
- Permissions:          Read Only (Ask for approval)
- Agents.md:            <none>
- Thread name:          Clipboard example
- Collaboration mode:   Default
- Session:              00000000-0000-0000-0000-000000000123
+ 模型:         GPT-5.5 (推理强度 medium, 推理摘要 auto)
+ 模型提供商:   openai
+ 目录:         [[workspace]]
+ 权限:         只读（请求审批）
+ Agents.md:    <无>
+ 会话名称:     Clipboard example
+ 协作模式:     Default
+ 会话:         00000000-0000-0000-0000-000000000123
 
- Token usage:          0 total  (0 input + 0 output)
- Limits:               data not available yet
+ Token 用量:   0 总计  (0 输入 + 0 输出)
+ 限制:         数据尚不可用

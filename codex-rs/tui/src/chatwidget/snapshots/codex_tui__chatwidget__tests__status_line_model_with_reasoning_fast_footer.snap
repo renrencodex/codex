@@ -6,4 +6,4 @@ expression: normalized_backend_snapshot(terminal.backend())
 "                                                                                "
 "› Ask Codex to do anything                                                      "
 "                                                                                "
-"  gpt-5.4 xhigh fast · Context 0% used · /tmp/project                           "
+"  gpt-5.4 xhigh fast · 上下文已使用 0% · /tmp/project                           " Hidden by multi-width symbols: [(24, " "), (26, " "), (28, " "), (30, " "), (32, " "), (34, " ")]

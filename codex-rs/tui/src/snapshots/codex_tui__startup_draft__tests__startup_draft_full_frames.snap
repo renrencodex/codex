@@ -3,38 +3,38 @@ source: tui/src/startup_draft_tests.rs
 expression: "snapshots.join(\"\\n---\\n\")"
 ---
 empty (48 columns):
-╭───────────────────────────────────────╮
-│ >_ OpenAI Codex (v<VERSION>)              │
-│                                       │
-│ model:     loading   /model to change │
-│ directory: loading                    │
-╰───────────────────────────────────────╯
+╭──────────────────────────────╮
+│ >_ OpenAI Codex (v<VERSION>)     │
+│                              │
+│ 模 型 ：  loading   /model 更 改  │
+│ 目 录 ：  loading               │
+╰──────────────────────────────╯
 
 
 › Ask Codex to do anything
 
-  ? for shortcuts
+  ? 查 看 快 捷 键
 ---
 resuming (48 columns):
-╭───────────────────────────────────────╮
-│ >_ OpenAI Codex (v<VERSION>)              │
-│                                       │
-│ model:     loading   /model to change │
-│ directory: loading                    │
-╰───────────────────────────────────────╯
+╭──────────────────────────────╮
+│ >_ OpenAI Codex (v<VERSION>)     │
+│                              │
+│ 模 型 ：  loading   /model 更 改  │
+│ 目 录 ：  loading               │
+╰──────────────────────────────╯
   Resuming session…
 
 › Ask Codex to do anything
 
-  ? for shortcuts
+  ? 查 看 快 捷 键
 ---
 forking (48 columns):
-╭───────────────────────────────────────╮
-│ >_ OpenAI Codex (v<VERSION>)              │
-│                                       │
-│ model:     loading   /model to change │
-│ directory: loading                    │
-╰───────────────────────────────────────╯
+╭──────────────────────────────╮
+│ >_ OpenAI Codex (v<VERSION>)     │
+│                              │
+│ 模 型 ：  loading   /model 更 改  │
+│ 目 录 ：  loading               │
+╰──────────────────────────────╯
   Forking session…
 
 › draft while loading
@@ -42,12 +42,12 @@ forking (48 columns):
 
 ---
 multiline (48 columns):
-╭───────────────────────────────────────╮
-│ >_ OpenAI Codex (v<VERSION>)              │
-│                                       │
-│ model:     loading   /model to change │
-│ directory: loading                    │
-╰───────────────────────────────────────╯
+╭──────────────────────────────╮
+│ >_ OpenAI Codex (v<VERSION>)     │
+│                              │
+│ 模 型 ：  loading   /model 更 改  │
+│ 目 录 ：  loading               │
+╰──────────────────────────────╯
 
 
 › first startup line
@@ -59,8 +59,8 @@ narrow (18 columns):
 ╭────────────────╮
 │ >_ OpenAI Cod… │
 │                │
-│ model:     lo… │
-│ directory: …ng │
+│ 模 型 ：  loadin… │
+│ 目 录 ：  loading │
 ╰────────────────╯
 
 

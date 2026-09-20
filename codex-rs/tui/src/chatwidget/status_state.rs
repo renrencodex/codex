@@ -12,14 +12,14 @@ pub(super) struct StatusIndicatorState {
 impl StatusIndicatorState {
     pub(super) fn working() -> Self {
         Self {
-            header: String::from("Working"),
+            header: String::from("工作中"),
             details: None,
             details_max_lines: STATUS_DETAILS_DEFAULT_MAX_LINES,
         }
     }
 
     pub(super) fn is_guardian_review(&self) -> bool {
-        self.header == "Reviewing approval request" || self.header.starts_with("Reviewing ")
+        self.header == "正在审查审批请求" || self.header.starts_with("正在审查 ")
     }
 }
 
@@ -89,15 +89,15 @@ impl PendingGuardianReviewStatus {
                 .collect::<Vec<_>>();
             let remaining = self.entries.len().saturating_sub(3);
             if remaining > 0 {
-                lines.push(format!("+{remaining} more"));
+                lines.push(format!("另有 {remaining} 项"));
             }
             Some(lines.join("\n"))
         };
         let details = details?;
         let header = if self.entries.len() == 1 {
-            String::from("Reviewing approval request")
+            String::from("正在审查审批请求")
         } else {
-            format!("Reviewing {} approval requests", self.entries.len())
+            format!("正在审查 {} 个审批请求", self.entries.len())
         };
         let details_max_lines = if self.entries.len() == 1 { 1 } else { 4 };
         Some(StatusIndicatorState {

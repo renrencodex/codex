@@ -205,7 +205,7 @@ async fn daemon_startup_falls_back_only_for_implicit_endpoints() -> color_eyre::
             assert!(result.is_err());
             if scenario == "required daemon" {
                 let message = result.err().unwrap().to_string();
-                assert!(message.contains("rerun the same command with --no-daemon"));
+                assert!(message.contains("使用 --no-daemon 重新运行同一命令"));
                 assert!(message.contains("failed to connect to remote app server"));
             }
             assert_eq!(target, original_target);
@@ -264,22 +264,22 @@ fn daemon_eligibility_preserves_launch_options_and_explains_exclusions() {
             LoaderOverrides::default(),
             false,
             None,
-            "command-line configuration overrides (-c, --enable, --disable, or --search)",
+            "命令行配置覆盖（-c、--enable、--disable 或 --search）",
         ),
-        (&[][..], loader, false, None, "custom configuration loader"),
+        (&[][..], loader, false, None, "自定义配置加载器"),
         (
             &[][..],
             LoaderOverrides::default(),
             true,
             None,
-            "workload identity",
+            "工作负载身份认证",
         ),
         (
             &[][..],
             LoaderOverrides::default(),
             false,
             Some(std::ffi::OsStr::new("executor")),
-            "executor selection (CODEX_EXEC_SERVER_URL)",
+            "执行器选择（CODEX_EXEC_SERVER_URL）",
         ),
     ] {
         assert_eq!(

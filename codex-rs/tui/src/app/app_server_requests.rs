@@ -179,27 +179,25 @@ impl PendingAppServerRequests {
             ServerRequest::AttestationGenerate { request_id, .. } => {
                 Some(UnsupportedAppServerRequest {
                     request_id: request_id.clone(),
-                    message: "Attestation generation is not available in TUI.".to_string(),
+                    message: "TUI 中无法生成证明。".to_string(),
                 })
             }
             ServerRequest::CurrentTimeRead { request_id, .. } => {
                 Some(UnsupportedAppServerRequest {
                     request_id: request_id.clone(),
-                    message: "External current time is not available in TUI.".to_string(),
+                    message: "TUI 中无法获取外部当前时间。".to_string(),
                 })
             }
             ServerRequest::ApplyPatchApproval { request_id, .. } => {
                 Some(UnsupportedAppServerRequest {
                     request_id: request_id.clone(),
-                    message: "Legacy patch approval requests are not available in TUI yet."
-                        .to_string(),
+                    message: "TUI 暂不支持旧版补丁审批请求。".to_string(),
                 })
             }
             ServerRequest::ExecCommandApproval { request_id, .. } => {
                 Some(UnsupportedAppServerRequest {
                     request_id: request_id.clone(),
-                    message: "Legacy command approval requests are not available in TUI yet."
-                        .to_string(),
+                    message: "TUI 暂不支持旧版命令审批请求。".to_string(),
                 })
             }
         }
@@ -223,10 +221,7 @@ impl PendingAppServerRequests {
                 let (decision, content) = match response {
                     crate::app_command::UserVerificationResponse::Accept { proof } => (
                         codex_app_server_protocol::McpServerElicitationAction::Accept,
-                        Some(
-                            serde_json::to_value(proof)
-                                .map_err(|_| "Invalid verification proof".to_string())?,
-                        ),
+                        Some(serde_json::to_value(proof).map_err(|_| "验证证明无效".to_string())?),
                     ),
                     crate::app_command::UserVerificationResponse::Cancel => (
                         codex_app_server_protocol::McpServerElicitationAction::Cancel,

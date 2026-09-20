@@ -3,20 +3,18 @@ source: tui/src/keymap_setup.rs
 expression: "render_picker(build_keymap_action_menu_params(\"chat\".into(),\n\"toggle_voice\".into(), &RuntimeKeymap::defaults(), &TuiKeymap::default(),),\n80,)"
 ---
 
-  Edit Shortcut
-  Toggle Voice · Chat
-  Current f8 · Default keymap
-  Config `tui.keymap.chat.toggle_voice`
-  Start or stop a voice conversation.
+  编 辑 快 捷 键
+  切 换 语 音 对 话  · 聊 天
+  当 前  f8 · 默 认 按 键 映 射
+  配 置  `tui.keymap.chat.toggle_voice`
+  配 置 “切 换 语 音 对 话 ”操 作 的 快 捷 键 。
 
-› 1. Replace binding                   Capture a replacement key for `f8`.
-  2. Add alternate binding             Keep `f8` and add another key.
-  3. Replace with key chord            Replace `f8` with a two-stroke key
-                                       chord.
-  4. Add alternate key chord           Keep `f8` and add a two-stroke key
-                                       chord.
-  –  Remove custom binding (disabled)  No custom root override to remove.
-  5. Back to shortcuts                 Return to the shortcut list.
+› 1. 替 换 绑 定                   捕 获 按 键 以 替 换  `f8`。
+  2. 添 加 备 用 绑 定               保 留  `f8` 并 添 加 另 一 个 按 键 。
+  3. 替 换 为 组 合 键               用 两 键 组 合 替 换  `f8`。
+  4. 添 加 备 用 组 合 键             保 留  `f8` 并 添 加 两 键 组 合 。
+  –  移 除 自 定 义 绑 定  (disabled) 没 有 可 移 除 的 自 定 义 根 级 覆 盖 。
+  5. 返 回 快 捷 键 列 表             返 回 快 捷 键 列 表 。
 
-  Changes write the root `tui.keymap.*` override.
-  enter select · esc back
+  更 改 将 写 入 根 级  `tui.keymap.*` 覆 盖 。
+  enter 选 择  · esc 返 回

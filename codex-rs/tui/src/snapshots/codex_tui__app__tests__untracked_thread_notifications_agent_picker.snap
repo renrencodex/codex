@@ -5,6 +5,6 @@ expression: "render_bottom_popup(&app.chat_widget, 80)"
   Subagents
   Select an agent to watch. ⌥ + ← previous, ⌥ + → next.
 
-› 1. • Main [default] (current)  00000000-0000-0000-0000-000000000123
+› 1. • 主 代 理  [默 认 ]（ 当 前 ）   00000000-0000-0000-0000-000000000123
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

@@ -1288,9 +1288,7 @@ pub(super) fn render_bottom_first_row(chat: &ChatWidget, width: u16) -> String {
         let mut row = String::new();
         for x in 0..area.width {
             let s = buf[(x, y)].symbol();
-            if s.is_empty() {
-                row.push(' ');
-            } else {
+            if !s.is_empty() {
                 row.push_str(s);
             }
         }
@@ -1312,9 +1310,7 @@ pub(crate) fn render_bottom_popup(chat: &ChatWidget, width: u16) -> String {
             let mut line = String::new();
             for col in 0..area.width {
                 let symbol = buf[(area.x + col, area.y + row)].symbol();
-                if symbol.is_empty() {
-                    line.push(' ');
-                } else {
+                if !symbol.is_empty() {
                     line.push_str(symbol);
                 }
             }

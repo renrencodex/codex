@@ -2,10 +2,10 @@
 source: tui/src/chatwidget/tests/permissions.rs
 expression: "render_bottom_popup(&chat, 100)"
 ---
-  Set up the Codex agent sandbox to protect your files and control network access. Learn more
+  设 置  Codex 智 能 体 沙 箱 ， 以 保 护 文 件 并 控 制 网 络 访 问 。 了 解 详 情
   <https://developers.openai.com/codex/windows>
 
-› 1. Use non-admin sandbox (higher risk if prompt injected)
-  2. Quit
+› 1. 使 用 非 管 理 员 沙 箱 （ 提 示 词 注 入 风 险 较 高 ）
+  2. 退 出
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

@@ -83,9 +83,7 @@ async fn slash_rename_is_rejected_for_side_threads() {
 #[tokio::test]
 async fn slash_rename_with_args_is_rejected_for_side_threads() {
     let (mut chat, mut rx, mut op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
-    chat.set_thread_rename_block_message(
-        "Side conversations are ephemeral and cannot be renamed.".to_string(),
-    );
+    chat.set_thread_rename_block_message("旁路对话是临时的，无法重命名。".to_string());
 
     chat.dispatch_command_with_args(SlashCommand::Rename, "investigate".to_string(), Vec::new());
     assert_side_rename_rejected(&mut rx, &mut op_rx);

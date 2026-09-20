@@ -1921,10 +1921,7 @@ async fn token_usage_update_refreshes_status_line_with_runtime_context_window() 
         token_usage_notification(ThreadId::new(), "turn-1", Some(950_000)),
     )));
 
-    assert_eq!(
-        app.chat_widget.status_line_text(),
-        Some("950K window".into())
-    );
+    assert_eq!(app.chat_widget.status_line_text(), Some("950K 窗口".into()));
 }
 
 #[tokio::test]
@@ -4165,7 +4162,7 @@ async fn active_thread_file_change_approval_recovers_buffered_changes() {
 
     let rendered = render_bottom_popup(&app.chat_widget, /*width*/ 100);
     let destination = app.chat_widget.config_ref().cwd.join("visible-target.md");
-    assert!(rendered.contains("Description: Apply proposed file edits"));
+    assert!(rendered.contains("说明：应用建议的文件修改"));
     assert!(rendered.contains(&format!("Destination: {}", destination.display())));
 }
 
@@ -4295,7 +4292,7 @@ async fn inactive_thread_url_elicitation_routes_to_app_link() {
         panic!("expected app link request");
     };
 
-    assert_eq!(params.title, "Action required");
+    assert_eq!(params.title, "需要操作");
     assert_eq!(params.description, Some("Server: payments".to_string()));
     assert_eq!(params.url, "https://payments.example/checkout/123");
     assert_eq!(
@@ -4688,7 +4685,7 @@ async fn thread_read_session_state_does_not_reuse_primary_permission_profile() {
         lines_to_single_string(&app.clear_ui_header_lines_with_version(/*width*/ 80, "<VERSION>"));
     let model_line = header
         .lines()
-        .find(|line| line.contains("model:"))
+        .find(|line| line.contains("模型:"))
         .expect("rendered model line");
     assert_app_snapshot!("thread_read_model_after_switch", model_line);
 }
@@ -4858,9 +4855,7 @@ async fn side_start_block_message_allows_replacing_open_side_conversation() {
     app.active_thread_id = Some(side_thread_id);
     assert_eq!(
         app.side_start_block_message(),
-        Some(
-            "A side conversation is already open. Press ctrl + c to return before starting another."
-        )
+        Some("已有旁路对话打开。请先按 ctrl + c 返回，再启动另一个旁路对话。")
     );
 
     app.side_threads.remove(&side_thread_id);
@@ -5020,7 +5015,7 @@ async fn side_parent_status_prioritizes_input_over_approval() -> Result<()> {
         render_bottom_popup(&app.chat_widget, /*width*/ 120)
             .lines()
             .find_map(|line| {
-                line.find("Side from main thread")
+                line.find("旁路 来自主会话")
                     .map(|start| line[start..].trim().to_string())
             })
             .expect("side conversation footer should be rendered")
@@ -5413,7 +5408,7 @@ async fn active_side_thread_renders_live_mcp_startup_notifications() {
         .map(|line| line.to_string())
         .collect::<Vec<_>>()
         .join("\n");
-    assert!(inline.contains("1 MCP startup issue"));
+    assert!(inline.contains("1 个 MCP 启动问题"));
     let rendered = rendered_cells.join("\n");
     assert!(app.chat_widget.side_conversation_active());
     assert_eq!(rendered.matches("sentry is not logged in").count(), 1);
@@ -7162,7 +7157,7 @@ async fn feedback_submission_for_inactive_thread_replays_into_origin_thread() {
         }
     }
     assert!(rendered_cells.iter().any(|cell| {
-        cell.contains("• Feedback uploaded. Please open an issue using the following URL:")
+        cell.contains("• 反馈已上传。 请使用以下 URL 提交问题：")
             && cell.contains("uploaded-thread")
     }));
 }
@@ -8185,7 +8180,7 @@ async fn prompt_edit_reverts_earlier_and_first_visible_prompts_in_place() -> Res
         &app.thread_event_channels[&child_id].store
     ));
     assert_eq!(app.chat_widget.current_model(), "gpt-5.4");
-    assert!(render_bottom_popup(&app.chat_widget, /*width*/ 120).contains("Goal paused"));
+    assert!(render_bottom_popup(&app.chat_widget, /*width*/ 120).contains("目标已暂停"));
     assert!(matches!(control, AppRunControl::Continue));
     let reverted_thread_id = app
         .chat_widget

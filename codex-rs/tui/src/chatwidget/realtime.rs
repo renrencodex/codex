@@ -255,10 +255,7 @@ impl ChatWidget {
     pub(crate) fn toggle_realtime_conversation(&mut self) {
         if self.realtime_conversation.phase == RealtimeConversationPhase::Stopping {
             self.realtime_conversation.startup_retry = StartupRetry::Used;
-            self.add_info_message(
-                "Voice conversation is still stopping.".to_string(),
-                /*hint*/ None,
-            );
+            self.add_info_message("语音对话仍在停止中。".to_string(), /*hint*/ None);
             return;
         }
 
@@ -273,10 +270,7 @@ impl ChatWidget {
         }
 
         if self.side_conversation_active() {
-            self.add_error_message(
-                "Voice mode is unavailable in side conversations. Return to the main thread first."
-                    .to_string(),
-            );
+            self.add_error_message("旁路对话中无法使用语音模式。请先返回主线程。".to_string());
             return;
         }
 
@@ -286,20 +280,20 @@ impl ChatWidget {
         }
 
         if !self.config.features.enabled(Feature::RealtimeConversation) {
-            self.add_error_message("Voice conversations are not enabled.".to_string());
+            self.add_error_message("语音对话未启用。".to_string());
             return;
         }
 
         if !RealtimeWebrtcSession::is_supported() {
             self.add_error_message(
-                "Voice requires macOS, an MSVC-based Windows build, or a glibc-based Linux build."
+                "语音功能需要 macOS、基于 MSVC 的 Windows 构建或基于 glibc 的 Linux 构建。"
                     .to_string(),
             );
             return;
         }
 
         let Some(thread_id) = self.thread_id() else {
-            self.add_error_message("Start a conversation before using voice mode.".to_string());
+            self.add_error_message("请先开始对话，再使用语音模式。".to_string());
             return;
         };
 
@@ -384,7 +378,7 @@ impl ChatWidget {
         let offer = match result {
             Ok(offer) => offer,
             Err(error) => {
-                self.on_realtime_error(format!("Failed to start voice mode: {error}"));
+                self.on_realtime_error(format!("启动语音模式失败：{error}"));
                 return;
             }
         };
@@ -393,7 +387,7 @@ impl ChatWidget {
             && let Err(error) = offer.handle.set_microphone_muted(/*muted*/ true)
         {
             offer.handle.close();
-            self.on_realtime_error(format!("Failed to restore microphone mute: {error}"));
+            self.on_realtime_error(format!("恢复麦克风静音状态失败：{error}"));
             return;
         }
         self.realtime_conversation.handle = Some(offer.handle);
@@ -466,13 +460,13 @@ impl ChatWidget {
                     self.reset_realtime_conversation();
                 } else {
                     self.add_info_message(
-                        "Voice connection timed out. Retrying once after cleanup.".into(),
+                        "语音连接超时。清理后将重试一次。".into(),
                         /*hint*/ None,
                     );
                 }
                 return;
             }
-            self.on_realtime_error(format!("Failed to connect voice mode: {error}"));
+            self.on_realtime_error(format!("连接语音模式失败：{error}"));
             return;
         }
 
@@ -520,8 +514,8 @@ impl ChatWidget {
         self.frame_requester
             .schedule_frame_in(MICROPHONE_METER_INTERVAL);
         self.add_info_message(
-            "Voice conversation started.".to_string(),
-            Some("Use /voice mute to mute or /voice to stop.".to_string()),
+            "语音对话已开始。".to_string(),
+            Some("使用 /voice mute 静音，或使用 /voice stop 停止。".to_string()),
         );
     }
 
@@ -985,7 +979,7 @@ impl ChatWidget {
             text: text.into(),
         }) {
             self.restore_undelivered_realtime_speech(delivery_id);
-            self.on_realtime_error("Failed to deliver the voice response.".to_string());
+            self.on_realtime_error("传递语音响应失败。".to_string());
         } else {
             self.realtime_conversation.pending_speech.retain(|pending| {
                 pending.turn_id != turn_id || pending.state != PendingSpeechState::AwaitingTurn
@@ -1673,7 +1667,7 @@ impl ChatWidget {
             self.realtime_conversation.microphone_muted = muted;
             if retry_after_early_close {
                 self.add_info_message(
-                    "Voice connection closed during startup. Retrying once.".into(),
+                    "语音连接在启动期间关闭，将重试一次。".into(),
                     /*hint*/ None,
                 );
             }
@@ -1684,10 +1678,7 @@ impl ChatWidget {
             && reason != "error"
             && !(failed && reason == "requested")
         {
-            self.add_info_message(
-                format!("Voice conversation ended: {reason}"),
-                /*hint*/ None,
-            );
+            self.add_info_message(format!("语音对话已结束：{reason}"), /*hint*/ None);
         }
         self.request_redraw();
     }

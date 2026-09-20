@@ -4,69 +4,61 @@ expression: snapshot
 ---
 48 columns:
 
-  Edit Shortcut
-  Open Transcript · Global
-  Current ctrl-t · Default keymap
-  Config `tui.keymap.global.open_transcript`
-  Open the transcript overlay.
+  编 辑 快 捷 键
+  打 开 对 话 记 录  · 全 局
+  当 前  ctrl-t · 默 认 按 键 映 射
+  配 置  `tui.keymap.global.open_transcript`
+  配 置 “打 开 对 话 记 录 ”操 作 的 快 捷 键 。
 
-› 1. Replace binding
-     Capture a replacement key for `ctrl-t`.
-  2. Add alternate binding
-     Keep `ctrl-t` and add another key.
-  3. Replace with key chord
-     Replace `ctrl-t` with a two-stroke key
-     chord.
-  4. Add alternate key chord
-     Keep `ctrl-t` and add a two-stroke key
-     chord.
-  –  Remove custom binding (disabled)
-     No custom root override to remove.
-  5. Back to shortcuts
-     Return to the shortcut list.
+› 1. 替 换 绑 定
+     捕 获 按 键 以 替 换  `ctrl-t`。
+  2. 添 加 备 用 绑 定
+     保 留  `ctrl-t` 并 添 加 另 一 个 按 键 。
+  3. 替 换 为 组 合 键
+     用 两 键 组 合 替 换  `ctrl-t`。
+  4. 添 加 备 用 组 合 键
+     保 留  `ctrl-t` 并 添 加 两 键 组 合 。
+  –  移 除 自 定 义 绑 定  (disabled)
+     没 有 可 移 除 的 自 定 义 根 级 覆 盖 。
+  5. 返 回 快 捷 键 列 表
+     返 回 快 捷 键 列 表 。
 
-  Changes write the root `tui.keymap.*`
-  override.
-  enter select · esc back
+  更 改 将 写 入 根 级  `tui.keymap.*` 覆 盖 。
+  enter 选 择  · esc 返 回
 
 64 columns:
 
-  Edit Shortcut
-  Open Transcript · Global
-  Current ctrl-t · Default keymap
-  Config `tui.keymap.global.open_transcript`
-  Open the transcript overlay.
+  编 辑 快 捷 键
+  打 开 对 话 记 录  · 全 局
+  当 前  ctrl-t · 默 认 按 键 映 射
+  配 置  `tui.keymap.global.open_transcript`
+  配 置 “打 开 对 话 记 录 ”操 作 的 快 捷 键 。
 
-› 1. Replace binding
-     Capture a replacement key for `ctrl-t`.
-  2. Add alternate binding
-     Keep `ctrl-t` and add another key.
-  3. Replace with key chord
-     Replace `ctrl-t` with a two-stroke key chord.
-  4. Add alternate key chord
-     Keep `ctrl-t` and add a two-stroke key chord.
-  –  Remove custom binding (disabled)
-     No custom root override to remove.
-  5. Back to shortcuts
-     Return to the shortcut list.
+› 1. 替 换 绑 定                   捕 获 按 键 以 替 换  `ctrl-t`。
+  2. 添 加 备 用 绑 定               保 留  `ctrl-t` 并 添 加 另 一 个 按
+                               键 。
+  3. 替 换 为 组 合 键               用 两 键 组 合 替 换  `ctrl-t`。
+  4. 添 加 备 用 组 合 键             保 留  `ctrl-t` 并 添 加 两 键 组 合 。
+  –  移 除 自 定 义 绑 定  (disabled) 没 有 可 移 除 的 自 定 义 根 级 覆 盖 。
+  5. 返 回 快 捷 键 列 表             返 回 快 捷 键 列 表 。
 
-  Changes write the root `tui.keymap.*` override.
-  enter select · esc back
+  更 改 将 写 入 根 级  `tui.keymap.*` 覆 盖 。
+  enter 选 择  · esc 返 回
 
 96 columns:
 
-  Edit Shortcut
-  Open Transcript · Global
-  Current ctrl-t · Default keymap
-  Config `tui.keymap.global.open_transcript`
-  Open the transcript overlay.
+  编 辑 快 捷 键
+  打 开 对 话 记 录  · 全 局
+  当 前  ctrl-t · 默 认 按 键 映 射
+  配 置  `tui.keymap.global.open_transcript`
+  配 置 “打 开 对 话 记 录 ”操 作 的 快 捷 键 。
 
-› 1. Replace binding                   Capture a replacement key for `ctrl-t`.
-  2. Add alternate binding             Keep `ctrl-t` and add another key.
-  3. Replace with key chord            Replace `ctrl-t` with a two-stroke key chord.
-  4. Add alternate key chord           Keep `ctrl-t` and add a two-stroke key chord.
-  –  Remove custom binding (disabled)  No custom root override to remove.
-  5. Back to shortcuts                 Return to the shortcut list.
+› 1. 替 换 绑 定                   捕 获 按 键 以 替 换  `ctrl-t`。
+  2. 添 加 备 用 绑 定               保 留  `ctrl-t` 并 添 加 另 一 个 按 键 。
+  3. 替 换 为 组 合 键               用 两 键 组 合 替 换  `ctrl-t`。
+  4. 添 加 备 用 组 合 键             保 留  `ctrl-t` 并 添 加 两 键 组 合 。
+  –  移 除 自 定 义 绑 定  (disabled) 没 有 可 移 除 的 自 定 义 根 级 覆 盖 。
+  5. 返 回 快 捷 键 列 表             返 回 快 捷 键 列 表 。
 
-  Changes write the root `tui.keymap.*` override.
-  enter select · esc back
+  更 改 将 写 入 根 级  `tui.keymap.*` 覆 盖 。
+  enter 选 择  · esc 返 回

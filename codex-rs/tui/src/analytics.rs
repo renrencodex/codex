@@ -243,16 +243,16 @@ impl AnalyticsView {
 
     fn section_title(&self, section: Section) -> &str {
         match section {
-            Section::Usage if self.business() => "Token usage history",
-            Section::Usage if self.consumer_attribution() => "Total usage history",
-            Section::Usage => "Usage history",
-            Section::Plugins => "Plugins called",
-            Section::Credits => "Credits usage history",
-            Section::Activity => "Messages",
-            Section::Skills => "Skills used",
-            Section::Chats => "Top chats",
-            Section::Plan => "Plan usage history",
-            Section::Summary => "Summary",
+            Section::Usage if self.business() => "令牌用量历史",
+            Section::Usage if self.consumer_attribution() => "总用量历史",
+            Section::Usage => "用量历史",
+            Section::Plugins => "插件调用",
+            Section::Credits => "点数用量历史",
+            Section::Activity => "消息",
+            Section::Skills => "使用的技能",
+            Section::Chats => "热门对话",
+            Section::Plan => "方案用量历史",
+            Section::Summary => "摘要",
         }
     }
 

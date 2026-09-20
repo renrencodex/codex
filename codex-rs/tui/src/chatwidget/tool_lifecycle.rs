@@ -230,7 +230,7 @@ impl ChatWidget {
                     meta: None,
                 })
             }
-            (None, None) => Err("MCP tool call completed without a result".to_string()),
+            (None, None) => Err("MCP 工具调用已完成但没有结果".to_string()),
         };
 
         if invocation.is_computer_activity() {

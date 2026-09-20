@@ -22,7 +22,7 @@ pub(super) fn has_complete_attribution(
                 record.date.get(..10).unwrap_or(&record.date),
                 "%Y-%m-%d",
             )
-            .map_err(|_| String::from("Analytics returned an invalid date."))?;
+            .map_err(|_| String::from("分析服务返回了无效日期。"))?;
             Ok(complete && (date < start || date > end || record.attribution.is_some()))
         })
 }
@@ -42,7 +42,7 @@ pub(super) fn history(
             | Grouping::Speed
             | Grouping::Reasoning
             | Grouping::TokenType => {
-                return Err(String::from("Unsupported message count grouping."));
+                return Err(String::from("不支持此消息计数分组。"));
             }
         }
     }
@@ -52,7 +52,7 @@ pub(super) fn history(
     for record in response.data {
         let date =
             NaiveDate::parse_from_str(record.date.get(..10).unwrap_or(&record.date), "%Y-%m-%d")
-                .map_err(|_| String::from("Analytics returned an invalid date."))?;
+                .map_err(|_| String::from("分析服务返回了无效日期。"))?;
         if date < start || date > end {
             continue;
         }
@@ -69,9 +69,7 @@ pub(super) fn history(
                             .map(|models| -> Result<_, String> {
                                 let mut values = BTreeMap::new();
                                 for model in models {
-                                    let amount = model
-                                        .credits
-                                        .ok_or("Plan usage amount was not reported.")?;
+                                    let amount = model.credits.ok_or("未上报套餐用量数值。")?;
                                     *values.entry(model.model).or_insert(/*default*/ 0.0) += amount;
                                 }
                                 Ok(values)
@@ -83,7 +81,7 @@ pub(super) fn history(
                 if let Some(daily) = daily {
                     for (key, amount) in daily {
                         if !amount.is_finite() || amount < 0.0 {
-                            return Err(String::from("Analytics returned an invalid amount."));
+                            return Err(String::from("分析服务返回了无效数值。"));
                         }
                         let key = if grouping == Grouping::Surface {
                             if key.starts_with("work_") {
@@ -103,7 +101,7 @@ pub(super) fn history(
                 } else if let Some(attribution) = record.attribution.filter(|_| attributed) {
                     for entry in attribution {
                         if !entry.value.is_finite() || entry.value < 0.0 {
-                            return Err(String::from("Analytics returned an invalid amount."));
+                            return Err(String::from("分析服务返回了无效数值。"));
                         }
                         *total += entry.value;
                         let key = match grouping {
@@ -114,7 +112,7 @@ pub(super) fn history(
                                 entry.turn_trigger.map(|trigger| format!("start-{trigger}"))
                             }
                             Grouping::Speed | Grouping::Reasoning | Grouping::TokenType => {
-                                return Err(String::from("unsupported analytics grouping"));
+                                return Err(String::from("不支持的分析分组"));
                             }
                         }
                         .unwrap_or_else(|| "unknown".to_string());
@@ -151,7 +149,7 @@ pub(super) fn history(
                 } else if let Some(premium) = record.premium_usage_values {
                     for (surface, amount) in premium.credit_usage_credits {
                         if !amount.is_finite() {
-                            return Err(String::from("Analytics returned an invalid amount."));
+                            return Err(String::from("分析服务返回了无效数值。"));
                         }
                         *values.entry(surface).or_default() += amount;
                         *total += amount;
@@ -168,10 +166,10 @@ pub(super) fn history(
             Report::Messages => {
                 let authoritative = record
                     .totals
-                    .ok_or_else(|| String::from("Message count is unavailable."))?
+                    .ok_or_else(|| String::from("消息计数不可用。"))?
                     .turns;
                 if !authoritative.is_finite() || authoritative < 0.0 {
-                    return Err(String::from("Analytics returned an invalid amount."));
+                    return Err(String::from("分析服务返回了无效数值。"));
                 }
                 let mut record_values = BTreeMap::<String, f64>::new();
                 if grouping == Grouping::Model {
@@ -185,16 +183,16 @@ pub(super) fn history(
                         };
                         let count = model
                             .turns
-                            .ok_or_else(|| String::from("Turn count is unavailable."))?;
+                            .ok_or_else(|| String::from("回合计数不可用。"))?;
                         if !count.is_finite() || count < 0.0 {
-                            return Err(String::from("Analytics returned an invalid amount."));
+                            return Err(String::from("分析服务返回了无效数值。"));
                         }
                         *record_values.entry(key).or_default() += count;
                     }
                 } else {
                     for client in record.clients.unwrap_or_default() {
                         if !client.turns.is_finite() || client.turns < 0.0 {
-                            return Err(String::from("Analytics returned an invalid amount."));
+                            return Err(String::from("分析服务返回了无效数值。"));
                         }
                         let key = match client.client_id.as_str() {
                             "CODEX_CLI" => "cli",
@@ -225,10 +223,10 @@ pub(super) fn history(
                 } else {
                     record.plugin_usage_overviews
                 }
-                .ok_or_else(|| String::from("Tool activity is unavailable."))?;
+                .ok_or_else(|| String::from("工具活动不可用。"))?;
                 for tool in overviews {
                     if !tool.invocation_counts.is_finite() || tool.invocation_counts < 0.0 {
-                        return Err(String::from("Analytics returned an invalid amount."));
+                        return Err(String::from("分析服务返回了无效数值。"));
                     }
                     *values.entry(tool.display_name).or_default() += tool.invocation_counts;
                     *total += tool.invocation_counts;
@@ -240,7 +238,7 @@ pub(super) fn history(
                 .values()
                 .any(|value| !value.is_finite() || (report != Report::Credits && *value < 0.0))
         {
-            return Err(String::from("Analytics returned an invalid amount."));
+            return Err(String::from("分析服务返回了无效数值。"));
         }
     }
     if report == Report::Usage
@@ -313,48 +311,48 @@ pub(super) fn history(
 
 pub(super) fn label(key: &str) -> &str {
     match key {
-        "user" => "Tasks",
-        "subagent" => "Subagents",
-        "image_generation" => "Image generation",
-        "automation" => "Automations",
-        "guardian_review" => "Auto review",
-        "guardian_classifier" => "Auto review classifier",
-        "thread_title" => "Thread title",
-        "system" => "System",
-        "automated_review" => "Auto review",
-        "agent_identity" => "Workspace agents",
-        "memory_consolidation" => "Memory consolidation",
+        "user" => "任务",
+        "subagent" => "子代理",
+        "image_generation" => "图像生成",
+        "automation" => "自动化",
+        "guardian_review" => "自动审查",
+        "guardian_classifier" => "自动审查分类器",
+        "thread_title" => "会话标题",
+        "system" => "系统",
+        "automated_review" => "自动审查",
+        "agent_identity" => "工作区代理",
+        "memory_consolidation" => "记忆整合",
         "cli" => "CLI",
-        "desktop_app" => "Desktop app",
+        "desktop_app" => "桌面应用",
         "vscode" => "VS Code",
-        "web" => "Web",
-        "work_web" => "Work web",
-        "work_desktop" => "Work desktop",
-        "work_mobile" => "Work mobile",
-        "mobile" => "Mobile",
+        "web" => "网页",
+        "work_web" => "工作版网页",
+        "work_desktop" => "工作版桌面应用",
+        "work_mobile" => "工作版移动应用",
+        "mobile" => "移动应用",
         "slack" => "Slack",
         "linear" => "Linear",
         "jetbrains" => "JetBrains",
         "sdk" => "SDK",
-        "exec" => "Exec",
+        "exec" => "命令执行",
         "github" => "GitHub",
         "codex" => "Codex",
-        "work" => "Work",
-        "code_review" | "github_code_review" => "Code review",
-        "start-user" | "start-composer" => "User messages",
-        "start-goal" => "Goals",
-        "start-composer_queue" => "Queued messages",
-        "start-composer_queue_run_now" => "Queued messages run now",
-        "start-automation_cron_scheduled" => "Scheduled automations",
-        "start-automation_cron_run_now" => "Automations run now",
-        "start-automation_heartbeat_scheduled" => "Scheduled follow-ups",
-        "start-automation_heartbeat_run_now" => "Follow-ups run now",
-        "start-app_tool_create_thread" => "Agent-created tasks",
-        "start-app_tool_send_message" => "Agent follow-ups",
-        "unknown" | "start-unknown" => "Unknown",
-        "fast" => "Fast",
-        "standard" => "Standard",
-        "other" | "start-other" => "Other",
+        "work" => "工作",
+        "code_review" | "github_code_review" => "代码审查",
+        "start-user" | "start-composer" => "用户消息",
+        "start-goal" => "目标",
+        "start-composer_queue" => "已排队消息",
+        "start-composer_queue_run_now" => "立即运行的排队消息",
+        "start-automation_cron_scheduled" => "计划的自动化",
+        "start-automation_cron_run_now" => "立即运行的自动化",
+        "start-automation_heartbeat_scheduled" => "计划的跟进",
+        "start-automation_heartbeat_run_now" => "立即运行的跟进",
+        "start-app_tool_create_thread" => "代理创建的任务",
+        "start-app_tool_send_message" => "代理跟进",
+        "unknown" | "start-unknown" => "未知",
+        "fast" => "快速",
+        "standard" => "标准",
+        "other" | "start-other" => "其他",
         _ => key,
     }
 }

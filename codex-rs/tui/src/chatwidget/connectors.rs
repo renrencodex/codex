@@ -166,8 +166,8 @@ impl ChatWidget {
     pub(crate) fn add_connectors_output(&mut self) {
         if !self.connectors_enabled() {
             self.add_info_message(
-                "Apps are disabled.".to_string(),
-                Some("Enable the apps feature to use $ or /apps.".to_string()),
+                "应用已停用。".to_string(),
+                Some("启用应用功能后才能使用 $ 或 /apps。".to_string()),
             );
             return;
         }
@@ -181,7 +181,7 @@ impl ChatWidget {
         match connectors_cache {
             ConnectorsCacheState::Ready(snapshot) => {
                 if snapshot.connectors.is_empty() {
-                    self.add_info_message("No apps available.".to_string(), /*hint*/ None);
+                    self.add_info_message("没有可用应用。".to_string(), /*hint*/ None);
                 } else {
                     self.open_connectors_popup(&snapshot.connectors);
                 }
@@ -214,15 +214,15 @@ impl ChatWidget {
 
     fn connectors_loading_popup_params(&self) -> SelectionViewParams {
         let mut header = ColumnRenderable::new();
-        header.push(Line::from("Apps".bold()));
-        header.push(Line::from("Loading installed and available apps...".dim()));
+        header.push(Line::from("应用".bold()));
+        header.push(Line::from("正在加载已安装和可用的应用…".dim()));
 
         SelectionViewParams {
             view_id: Some(CONNECTORS_SELECTION_VIEW_ID),
             header: Box::new(header),
             items: vec![SelectionItem {
-                name: "Loading apps...".to_string(),
-                description: Some("This updates when the full list is ready.".to_string()),
+                name: "正在加载应用…".to_string(),
+                description: Some("完整列表准备就绪后，此处会自动更新。".to_string()),
                 is_disabled: true,
                 ..Default::default()
             }],
@@ -232,8 +232,8 @@ impl ChatWidget {
 
     fn connectors_error_popup_params(&self) -> SelectionViewParams {
         let mut header = ColumnRenderable::new();
-        header.push(Line::from("Apps".bold()));
-        header.push(Line::from("Failed to load apps.".dim()));
+        header.push(Line::from("应用".bold()));
+        header.push(Line::from("加载应用失败。".dim()));
 
         SelectionViewParams {
             view_id: Some(CONNECTORS_SELECTION_VIEW_ID),
@@ -241,17 +241,14 @@ impl ChatWidget {
             footer_hint: Some(self.bottom_pane.standard_popup_hint_line()),
             items: vec![
                 SelectionItem {
-                    name: "App directory unavailable".to_string(),
-                    description: Some(
-                        "The app directory request failed. Retry, or press Esc to continue."
-                            .to_string(),
-                    ),
+                    name: "应用目录不可用".to_string(),
+                    description: Some("应用目录请求失败。请重试，或按 Esc 继续。".to_string()),
                     is_disabled: true,
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: "Retry".to_string(),
-                    description: Some("Reload installed and available apps.".to_string()),
+                    name: "重试".to_string(),
+                    description: Some("重新加载已安装和可用的应用。".to_string()),
                     actions: vec![Box::new(|tx| {
                         tx.send(AppEvent::RefreshConnectors {
                             force_refetch: true,
@@ -275,12 +272,10 @@ impl ChatWidget {
             .filter(|connector| connector.is_accessible)
             .count();
         let mut header = ColumnRenderable::new();
-        header.push(Line::from("Apps".bold()));
+        header.push(Line::from("应用".bold()));
+        header.push(Line::from("使用 $ 将已安装的应用插入提示词。".dim()));
         header.push(Line::from(
-            "Use $ to insert an installed app into your prompt.".dim(),
-        ));
-        header.push(Line::from(
-            format!("Installed {installed} of {total} available apps.").dim(),
+            format!("{total} 个可用应用中已安装 {installed} 个。").dim(),
         ));
         let initial_selected_idx = selected_connector_id.and_then(|selected_connector_id| {
             connectors
@@ -303,17 +298,15 @@ impl ChatWidget {
             };
             let is_installed = connector.is_accessible;
             let selected_label = if is_installed {
-                format!(
-                    "{status_label}. Press Enter to open the app page to install, manage, or enable/disable this app."
-                )
+                format!("{status_label}。按 Enter 打开应用页面，以安装、管理、启用或停用此应用。")
             } else {
-                format!("{status_label}. Press Enter to open the app page to install this app.")
+                format!("{status_label}。按 Enter 打开应用页面以安装此应用。")
             };
-            let missing_label = format!("{status_label}. App link unavailable.");
+            let missing_label = format!("{status_label}。应用链接不可用。");
             let instructions = if connector.is_accessible {
-                "Manage this app in your browser."
+                "在浏览器中管理此应用。"
             } else {
-                "Install this app in your browser, then reload Codex."
+                "在浏览器中安装此应用，然后重新加载 Codex。"
             };
             if let Some(install_url) = connector.install_url.clone() {
                 let app_id = connector.id.clone();
@@ -356,7 +349,7 @@ impl ChatWidget {
             footer_hint: Some(self.bottom_pane.standard_popup_hint_line()),
             items,
             is_searchable: true,
-            search_placeholder: Some("Type to search apps".to_string()),
+            search_placeholder: Some("输入文字以搜索应用".to_string()),
             col_width_mode: ColumnWidthMode::AutoAllRows,
             initial_selected_idx,
             ..Default::default()
@@ -394,12 +387,12 @@ impl ChatWidget {
     fn connector_status_label(connector: &AppInfo) -> &'static str {
         if connector.is_accessible {
             if connector.is_enabled {
-                "Installed"
+                "已安装"
             } else {
-                "Installed · Disabled"
+                "已安装 · 已停用"
             }
         } else {
-            "Can be installed"
+            "可安装"
         }
     }
 

@@ -2,8 +2,8 @@
 source: tui/src/history_cell/computer_activity_tests.rs
 expression: "render(&cell, 24)"
 ---
-• Used computer · 5
-  actions · 1 failed
-  ├ Failed: No browser …
-  ├ Captured screenshot…
-  └ 3 more · ctrl+t
+• 已操作电脑 · 5 个操作
+  · 1 个失败
+  ├ 失败：No browser is…
+  ├ 已截取屏幕截图 · Ca…
+  └ 另有 3 个 · ctrl+t

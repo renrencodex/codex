@@ -78,7 +78,7 @@ impl ExperimentalFeaturesView {
     ) -> Self {
         let mut view = Self {
             discovery_status: if catalog_rx.is_some() {
-                "Loading server experiments…"
+                "正在加载服务器实验…"
             } else {
                 ""
             }
@@ -102,11 +102,14 @@ impl ExperimentalFeaturesView {
 
     fn header(&self, width: u16) -> impl Renderable {
         let mut header = ColumnRenderable::new();
-        header.push(Line::from("Experimental features".bold()));
+        header.push(Line::from("实验性功能".bold()));
         for text in [
-            "Checked features are configured on. Some experimental features take effect only in new tasks or after restarting the Codex server.",
+            "勾选的功能已配置为开启。部分实验性功能仅在新任务中或重启 Codex 服务器后生效。",
             self.discovery_status.as_str(),
-        ].into_iter().filter(|text| !text.is_empty()) {
+        ]
+        .into_iter()
+        .filter(|text| !text.is_empty())
+        {
             for line in textwrap::wrap(text, usize::from(width.max(1))) {
                 header.push(Line::from(line.into_owned().dim()));
             }
@@ -246,7 +249,7 @@ impl ExperimentalFeaturesView {
             // A failed response can follow a committed write. Keep these keys dirty
             // so reverting to the old baseline still sends a corrective write.
             self.unconfirmed = updates.iter().map(|(key, _)| key.clone()).collect();
-            self.discovery_status = "Saving experimental features…".to_string();
+            self.discovery_status = "正在保存实验性功能…".to_string();
             self.app_event_tx.send(AppEvent::SaveExperimentalFeatures {
                 thread_id: self.thread_id,
                 updates,
@@ -268,10 +271,9 @@ impl BottomPaneView for ExperimentalFeaturesView {
             let result = match receiver.try_recv() {
                 Ok(result) => result,
                 Err(oneshot::error::TryRecvError::Empty) => return false,
-                Err(oneshot::error::TryRecvError::Closed) => Err(
-                    "Saving was interrupted. Reopen /experimental to check configured values."
-                        .to_string(),
-                ),
+                Err(oneshot::error::TryRecvError::Closed) => {
+                    Err("保存已中断。请重新打开 /experimental 以检查配置值。".to_string())
+                }
             };
             self.write_rx = None;
             match result {
@@ -306,9 +308,7 @@ impl BottomPaneView for ExperimentalFeaturesView {
         let result = match receiver.try_recv() {
             Ok(result) => result,
             Err(oneshot::error::TryRecvError::Empty) => return false,
-            Err(oneshot::error::TryRecvError::Closed) => {
-                Err("Discovery was interrupted".to_string())
-            }
+            Err(oneshot::error::TryRecvError::Closed) => Err("发现过程已中断".to_string()),
         };
         self.catalog_rx = None;
         match result {
@@ -340,7 +340,7 @@ impl BottomPaneView for ExperimentalFeaturesView {
                     count += 1;
                 }
                 self.discovery_status = if count == 0 {
-                    "No server experiments available."
+                    "没有可用的服务器实验。"
                 } else {
                     ""
                 }
@@ -349,7 +349,7 @@ impl BottomPaneView for ExperimentalFeaturesView {
             }
             Err(error) => {
                 tracing::warn!(%error, "experimental feature discovery failed");
-                self.discovery_status = "Server experiments unavailable. Reopen /experimental to retry; restart this Codex client if requests remain unanswered.".to_string();
+                self.discovery_status = "服务器实验不可用。请重新打开 /experimental 重试；若请求始终无响应，请重启此 Codex 客户端。".to_string();
             }
         }
         true
@@ -449,7 +449,7 @@ impl Renderable for ExperimentalFeaturesView {
                 &rows,
                 &self.state,
                 MAX_POPUP_ROWS,
-                "  No experimental features available for now",
+                "  暂无可用的实验性功能",
             );
         }
 
@@ -460,9 +460,9 @@ impl Renderable for ExperimentalFeaturesView {
             height: footer_area.height,
         };
         let hint = if self.write_rx.is_some() {
-            Line::from("Saving… Closing this popup will not cancel the write.")
+            Line::from("正在保存…关闭此弹窗不会取消写入。")
         } else if !self.unconfirmed.is_empty() {
-            Line::from("Selections retained. Save to retry, or cancel to close.")
+            Line::from("已保留选择。保存以重试，或取消并关闭。")
         } else {
             self.footer_hint.clone()
         };
@@ -489,12 +489,12 @@ impl Renderable for ExperimentalFeaturesView {
 
 fn experimental_popup_hint_line(keymap: &ListKeymap) -> Line<'static> {
     let mut spans = vec![
-        "Press ".into(),
+        "按 ".into(),
         key_hint::plain(KeyCode::Char(' ')).into(),
-        " to select".into(),
+        " 选择".into(),
     ];
     if let Some(accept) = keymap.primary_hint(ListAction::Accept) {
-        spans.extend([" or ".into(), accept.into(), " to save".into()]);
+        spans.extend([" 或 ".into(), accept.into(), " 保存".into()]);
     }
     Line::from(spans)
 }

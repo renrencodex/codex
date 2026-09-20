@@ -61,7 +61,7 @@ impl PermissionDiscovery {
         reviewer: Option<ApprovalsReviewer>,
     ) -> Option<String> {
         let Some(profile) = self.profiles.iter().find(|profile| profile.id == id) else {
-            return Some("Not available on this server.".to_string());
+            return Some("此服务器不可用。".to_string());
         };
         let requirements = self.requirements.as_ref();
         if !profile.allowed
@@ -75,7 +75,7 @@ impl PermissionDiscovery {
                 .and_then(|r| r.allowed_approvals_reviewers.as_ref())
                 .is_some_and(|allowed| reviewer.is_some_and(|value| !allowed.contains(&value)))
         {
-            return Some("Disabled by requirements.".to_string());
+            return Some("已被要求禁用。".to_string());
         }
         None
     }
@@ -167,9 +167,7 @@ pub(crate) fn fetch(
                 let Some(next) = cursor.as_ref() else {
                     let mut ids = HashSet::new();
                     if !profiles.iter().all(|profile| ids.insert(&profile.id)) {
-                        return Err(
-                            "The server returned duplicate permission profiles.".to_string()
-                        );
+                        return Err("服务器返回了重复的权限配置文件。".to_string());
                     }
                     return Ok(PermissionDiscovery {
                         profiles,
@@ -181,16 +179,11 @@ pub(crate) fn fetch(
                     break;
                 }
             }
-            Err(
-                "Permission discovery exceeded its pagination limit. Try /permissions again."
-                    .to_string(),
-            )
+            Err("权限发现已超出分页限制，请再次尝试 /permissions。".to_string())
         };
         let result = tokio::time::timeout(Duration::from_secs(10), request)
             .await
-            .unwrap_or_else(|_| {
-                Err("Permission discovery timed out. Try /permissions again.".to_string())
-            });
+            .unwrap_or_else(|_| Err("权限发现超时，请再次尝试 /permissions。".to_string()));
         tx.send(AppEvent::PermissionProfilesLoaded { request_id, result });
     });
 }
@@ -203,9 +196,9 @@ fn discovery_error(error: TypedRequestError) -> String {
                     || source.message.contains("configRequirements/read")
                     || source.message.contains("config/read"))))
     {
-        return "This server does not support permission discovery. Upgrade the Codex server to use this menu.".to_string();
+        return "此服务器不支持权限发现。请升级 Codex 服务器后使用此菜单。".to_string();
     }
-    format!("Failed to load permissions: {error}")
+    format!("加载权限失败：{error}")
 }
 
 #[cfg(test)]

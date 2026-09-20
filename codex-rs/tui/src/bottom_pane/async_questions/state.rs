@@ -117,10 +117,8 @@ impl AsyncQuestions {
         let (first, count) = self.visible_options.get();
         let index = self.selected_option_index().unwrap_or(0);
         if !self.focus_is_notes() && !(first..first + count).contains(&index) {
-            self.composer.show_footer_flash(
-                "Expand terminal to read the entire option".into(),
-                Duration::from_secs(5),
-            );
+            self.composer
+                .show_footer_flash("请放大终端以阅读完整选项".into(), Duration::from_secs(5));
             return;
         }
         let text = if self.focus_is_notes() {
@@ -135,10 +133,8 @@ impl AsyncQuestions {
         let reply =
             AnsweredQuestion::new(&answer.question_id, &answer.question.title, text).render();
         if reply.chars().count() > codex_protocol::user_input::MAX_USER_INPUT_TEXT_CHARS {
-            self.composer.show_footer_flash(
-                "Answer too long; shorten it before sending".into(),
-                Duration::from_secs(5),
-            );
+            self.composer
+                .show_footer_flash("答案过长，请缩短后再发送".into(), Duration::from_secs(5));
         } else {
             self.submission = Some(QuestionSubmission::Submit(reply));
         }

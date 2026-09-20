@@ -2,5 +2,5 @@
 source: tui/src/chatwidget/tests/exec_flow.rs
 expression: "lines_to_single_string(&cells[0])"
 ---
-✗ Image generation failed
+✗ 图像生成失败
   └ A tiny blue square

@@ -142,7 +142,7 @@ async fn completed_thread_usage_updates_status_without_scrollback_reflow() -> Re
         .last()
         .expect("status card should remain in terminal history");
     let rendered = lines_to_single_string(&status.display_lines(/*width*/ 90));
-    assert!(rendered.contains("50 credits"), "{rendered}");
+    assert!(rendered.contains("50 点"), "{rendered}");
     app_server.shutdown().await?;
     Ok(())
 }
@@ -168,7 +168,7 @@ async fn thread_usage_after_intervening_history_appends_refreshed_status() -> Re
 
     let pending = pending_history_text(&tui);
     assert!(pending.contains("intervening model output"), "{pending}");
-    assert!(pending.contains("50 credits"), "{pending}");
+    assert!(pending.contains("50 点"), "{pending}");
     assert!(!app.transcript_reflow.has_pending_reflow());
     app_server.shutdown().await?;
     Ok(())
@@ -227,7 +227,7 @@ async fn thread_usage_finishing_during_overlay_updates_history_after_close() -> 
             .expect("updated status should remain the rendered history tail")
             .lines
             .iter()
-            .any(|line| line.line.to_string().contains("50 credits"))
+            .any(|line| line.line.to_string().contains("50 点"))
     );
     app_server.shutdown().await?;
     Ok(())
@@ -262,7 +262,7 @@ async fn account_change_discards_thread_usage_deferred_while_overlay_is_open() -
 
     app.close_transcript_overlay(&mut tui);
 
-    assert!(!pending_history_text(&tui).contains("50 credits"));
+    assert!(!pending_history_text(&tui).contains("50 点"));
     app_server.shutdown().await?;
     Ok(())
 }

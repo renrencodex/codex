@@ -827,7 +827,7 @@ async fn single_question_spacing_with_working_status() {
         .iter()
         .position(|line| line.trim() == "Only question?")
         .unwrap();
-    assert!(rows[question - 2].contains("Queued follow-up inputs"));
+    assert!(rows[question - 2].contains("已排队的后续输入"));
     assert!(rows[question - 1].is_empty());
     assert_eq!(rows[question + 2].trim(), "A typed answer");
     assert!(rows[question + 3].is_empty());

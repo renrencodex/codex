@@ -8,4 +8,4 @@ expression: normalized_backend_snapshot(terminal.backend())
 "                                                                                "
 "› Ask Codex to do anything                                                      "
 "                                                                                "
-"  GPT-5.6-Sol default                                         Side starting...  "
+"  GPT-5.6-Sol 默认                                             正在启动旁路...  " Hidden by multi-width symbols: [(15, " "), (17, " "), (64, " "), (66, " "), (68, " "), (70, " "), (72, " "), (74, " ")]

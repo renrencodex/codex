@@ -14,8 +14,8 @@ impl App {
         feature: Feature,
     ) {
         let label = match feature {
-            Feature::Collab => "Subagents",
-            Feature::MemoryTool => "Memories",
+            Feature::Collab => "子代理",
+            Feature::MemoryTool => "记忆",
             _ => return,
         };
         let mut edits = vec![crate::config_update::build_feature_enabled_edit(
@@ -37,15 +37,15 @@ impl App {
         {
             Ok(response) if response.status == WriteStatus::Ok => {
                 Box::new(history_cell::new_warning_event(format!(
-                    "{label} setting saved on the server for new threads. This thread is unchanged. Project or task settings may override it."
+                    "已在服务器上为新会话保存{label}设置。当前会话保持不变。项目或任务设置可能会覆盖它。"
                 )))
             }
             Ok(response) => Box::new(history_cell::new_error_event(format!(
-                "{label} setting was saved but is overridden: {}",
+                "{label}设置已保存但被覆盖：{}",
                 overridden_write_message(&response)
             ))),
             Err(err) => Box::new(history_cell::new_error_event(format!(
-                "Failed to save {label} setting: {}",
+                "保存{label}设置失败：{}",
                 crate::config_update::format_config_error(&err)
             ))),
         };
@@ -81,8 +81,7 @@ impl App {
         response_tx: oneshot::Sender<Result<FeatureWriteResult, String>>,
     ) {
         let Ok(guard) = self.feature_write_lock.clone().try_lock_owned() else {
-            let error =
-                "An experimental feature save is still in progress. Retry after it finishes.";
+            let error = "实验性功能仍在保存。请等待完成后重试。";
             self.chat_widget.add_warning_message(error.to_string());
             let _ = response_tx.send(Err(error.to_string()));
             return;

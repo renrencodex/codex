@@ -68,19 +68,14 @@ async fn plugins_popup_uses_product_labels_for_remote_and_personal_tabs() {
             "Buildkite",
             "Raw Workspace Directory.",
         ),
+        ("[与我共享]", "与我共享。", "Docs", "Raw Shared Private."),
         (
-            "[Shared with me]",
-            "Shared with me.",
-            "Docs",
-            "Raw Shared Private.",
-        ),
-        (
-            "[Shared with me (link)]",
-            "Shared with me (link).",
+            "[与我共享（链接）]",
+            "与我共享（链接）。",
             "Link Share",
             "Raw Shared Link.",
         ),
-        ("[Local]", "Local.", "Local Docs", "Personal."),
+        ("[本地]", "本地。", "Local Docs", "Personal."),
     ]
     .into_iter()
     .map(|(selected_tab, product_label, plugin_name, raw_label)| {
@@ -138,9 +133,9 @@ async fn plugins_popup_preserves_workspace_tab_across_load_and_detail_navigation
         ])),
     );
     let loading_popup =
-        select_plugins_tab_containing(&mut chat, /*width*/ 100, "Loading Workspace plugins.");
+        select_plugins_tab_containing(&mut chat, /*width*/ 100, "正在加载工作区插件……");
     assert!(
-        loading_popup.contains("Loading Workspace plugins."),
+        loading_popup.contains("正在加载工作区插件……"),
         "expected Workspace loading tab before remote sections resolve, got:\n{loading_popup}"
     );
 
@@ -234,7 +229,7 @@ async fn plugins_popup_remote_local_dedupe_prefers_installed_remote_after_mapped
         "expected header count to reflect deduped plugin rows, got:\n{popup}"
     );
     assert!(
-        all_plugins_row.contains("Installed")
+        all_plugins_row.contains("已安装")
             && !all_plugins_row.contains("Local curated docs plugin."),
         "expected installed remote duplicate to win when local row is not a mapped share, got:\n{all_plugins_row}"
     );
@@ -272,7 +267,7 @@ async fn plugin_detail_not_installable_plugin_disables_install_action() {
     let popup = render_bottom_popup(&chat, /*width*/ 100);
     let install_row = popup
         .lines()
-        .find(|line| line.contains("Install plugin"))
+        .find(|line| line.contains("安装插件"))
         .expect("expected install row");
     assert!(
         install_row.contains("This plugin is not installable from this marketplace."),

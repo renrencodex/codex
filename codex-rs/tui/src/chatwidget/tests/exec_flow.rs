@@ -111,9 +111,9 @@ async fn replayed_completion_preserves_unrelated_running_command() {
 
         assert_eq!(drain_insert_history(&mut rx).len(), 1);
         assert!(active_blob(&chat).contains(if active_mcp {
-            "Calling"
+            "正在调用"
         } else {
-            "Running sleep 5"
+            "正在运行 sleep 5"
         }));
     }
 }
@@ -1108,7 +1108,7 @@ async fn final_worked_for_uses_cumulative_turn_duration_snapshot() {
         let cells = drain_insert_history_with(&mut rx, |cell| {
             let rendered = lines_to_single_string(&cell.display_lines(/*width*/ 80));
             if cell.as_any().is::<history_cell::FinalMessageSeparator>() {
-                assert!(rendered.contains("Worked for 2m 5s"), "{rendered}");
+                assert!(rendered.contains("已工作 2m 5s"), "{rendered}");
             }
             normalize_completion_timestamps(cell, rendered)
                 .lines()
@@ -1765,7 +1765,7 @@ async fn interrupt_preserves_unified_exec_processes() {
         .collect::<Vec<_>>()
         .join("\n");
     assert!(
-        combined.contains("Background terminals"),
+        combined.contains("后台终端"),
         "expected /ps to remain available after interrupt; got {combined:?}"
     );
     assert!(
@@ -1818,7 +1818,7 @@ async fn turn_complete_keeps_unified_exec_processes() {
         .collect::<Vec<_>>()
         .join("\n");
     assert!(
-        combined.contains("Background terminals"),
+        combined.contains("后台终端"),
         "expected /ps to remain available after turn complete; got {combined:?}"
     );
     assert!(
@@ -2147,7 +2147,7 @@ async fn apply_patch_untrusted_shows_approval_modal() -> anyhow::Result<()> {
         for x in 0..area.width {
             row.push(buf[(x, y)].symbol().chars().next().unwrap_or(' '));
         }
-        if row.contains("Would you like to make the following edits?") {
+        if row.contains("是否要进行以下修改？") {
             contains_title = true;
             break;
         }

@@ -2,18 +2,18 @@
 source: tui/src/chatwidget/tests/popups_and_settings.rs
 expression: strip_osc8_for_snapshot(&popup)
 ---
-  Plugins
-  Docs · Can be installed · Local
-  Data shared with this app is subject to the app's terms of service and privacy policy. Learn more.
+  插 件
+  Docs · 可 安 装  · 本 地
+  与 此 应 用 共 享 的 数 据 受 其 服 务 条 款 和 隐 私 政 策 . 了 解 详 情 .
   Workspace docs.
 
-› 1. Back to plugins  Return to the plugin list.
-  2. Install plugin   Install this plugin now.
-     Source           Local
-     Auth             Auth on install
-     Version          remote 7
-     Sharing          Private · creator Test User · https://chatgpt.com/codex/plugins/share/docs
-     Skills           No plugin skills.
-     Hooks            No plugin hooks.
+› 1. 返 回 插 件 列 表   返 回 插 件 列 表 。
+  2. 安 装 插 件       立 即 安 装 此 插 件 。
+     来 源           本 地
+     认 证           安 装 时 认 证
+     版 本           远 程  7
+     共 享           私 有  · 创 建 者  Test User · https://chatgpt.com/codex/plugins/share/docs
+     技 能           No plugin skills.
+     钩 子           No plugin hooks.
 
-  Press esc to close.
+  按  esc 关 闭 。

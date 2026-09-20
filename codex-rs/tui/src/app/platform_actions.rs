@@ -113,8 +113,7 @@ impl App {
             } else if self.windows_sandbox_host() == WindowsSandboxHost::Mixed && show_nux {
                 self.app_event_tx.send(AppEvent::InsertHistoryCell(Box::new(
                     history_cell::StartupWarningsCell::new(vec![
-                        "Windows sandbox setup is unavailable when local and remote executors are configured together."
-                            .to_string(),
+                        "同时配置本地和远程执行器时，Windows 沙箱设置不可用。".to_string(),
                     ]),
                 )));
             }
@@ -144,7 +143,8 @@ impl App {
                 self.chat_widget
                     .retain_input_after_failed_permission_selection();
                 self.chat_widget.set_windows_sandbox_mode(/*mode*/ None);
-                self.chat_widget.add_error_message("Could not read Windows sandbox configuration and requirements from the app server.".to_string());
+                self.chat_widget
+                    .add_error_message("无法从应用服务器读取 Windows 沙箱配置和要求。".to_string());
                 false
             }
         }
@@ -165,7 +165,7 @@ impl App {
         if self.windows_sandbox.pending_setup.is_some() {
             if self.windows_sandbox.setup_started_at.is_none() {
                 self.chat_widget.add_info_message(
-                    "Windows sandbox setup is still running. Restart Codex to retry.".to_string(),
+                    "Windows 沙箱设置仍在运行。请重启 Codex 后重试。".to_string(),
                     /*hint*/ None,
                 );
             }
@@ -178,7 +178,7 @@ impl App {
             self.chat_widget
                 .retain_input_after_failed_permission_selection();
             self.chat_widget.add_info_message(
-                "That Windows sandbox option is disallowed by requirements.".to_string(),
+                "要求不允许使用该 Windows 沙箱选项。".to_string(),
                 /*hint*/ None,
             );
             return;
@@ -221,7 +221,7 @@ impl App {
             })) => {}
             Err(_) => {
                 self.chat_widget.add_error_message(
-                    "Windows sandbox setup request timed out. Waiting for completion; restart Codex if it does not finish."
+                    "Windows 沙箱设置请求超时。正在等待完成；如果迟迟未完成，请重启 Codex。"
                         .to_string(),
                 );
             }
@@ -229,8 +229,7 @@ impl App {
                 TypedRequestError::Transport { .. } | TypedRequestError::Deserialize { .. },
             )) => {
                 self.chat_widget.add_error_message(
-                    "Windows sandbox setup response was lost. Waiting for completion or reconnection."
-                        .to_string(),
+                    "Windows 沙箱设置响应丢失。正在等待完成或重新连接。".to_string(),
                 );
             }
             Ok(result) => {
@@ -241,10 +240,10 @@ impl App {
                 self.windows_sandbox.setup_started_at = None;
                 let message = match result {
                     Err(TypedRequestError::Server { source, .. }) if source.code == -32601 => {
-                        "Update the local app server to set up the Windows sandbox.".to_string()
+                        "请更新本地应用服务器以设置 Windows 沙箱。".to_string()
                     }
-                    Err(_) => "Windows sandbox setup failed.".to_string(),
-                    Ok(_) => "Windows sandbox setup did not start.".to_string(),
+                    Err(_) => "Windows 沙箱设置失败。".to_string(),
+                    Ok(_) => "Windows 沙箱设置未启动。".to_string(),
                 };
                 self.chat_widget.add_error_message(message);
             }

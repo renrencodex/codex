@@ -10,4 +10,4 @@ expression: terminal.backend()
 "                                                                                "
 "                                                                                "
 "                                                                                "
-"  ← for agents · ? for shortcuts                             100% context left  "
+"  ← 查看智能体 · ? 查看快捷键                                  上下文剩余 100%  " Hidden by multi-width symbols: [(5, " "), (7, " "), (9, " "), (11, " "), (13, " "), (20, " "), (22, " "), (24, " "), (26, " "), (28, " "), (64, " "), (66, " "), (68, " "), (70, " "), (72, " ")]

@@ -44,9 +44,9 @@ fn completion_label_shows_duration_only_above_sixty_seconds() {
     2:32 PM
     2:32 PM
     2:32 PM
-    Worked for 1m 1s · 2:32 PM
-    Worked for 2m 5s · 2:32 PM
-    Worked for 1h 0m 5s · 2:32 PM
+    已工作 1m 1s · 2:32 PM
+    已工作 2m 5s · 2:32 PM
+    已工作 1h 0m 5s · 2:32 PM
     ");
 }
 
@@ -60,9 +60,9 @@ fn completion_label_includes_date_when_viewed_on_another_day() {
     .with_completed_at(completed_at);
     let tomorrow = completed_at.date_naive().succ_opt().expect("next day");
 
-    insta::assert_snapshot!(cell.label(tomorrow).expect("completion label"), @"Worked for 2m 5s · Sep 6 at 2:32 PM");
+    insta::assert_snapshot!(cell.label(tomorrow).expect("completion label"), @"已工作 2m 5s · Sep 6 at 2:32 PM");
     let next_year = tomorrow.with_year(/*year*/ 2001).expect("valid next year");
-    insta::assert_snapshot!(cell.label(next_year).expect("completion label"), @"Worked for 2m 5s · Sep 6, 2000 at 2:32 PM");
+    insta::assert_snapshot!(cell.label(next_year).expect("completion label"), @"已工作 2m 5s · Sep 6, 2000 at 2:32 PM");
 }
 
 #[test]
@@ -95,7 +95,7 @@ fn completion_without_timestamp_retains_known_elapsed_duration() {
         /*elapsed_seconds*/ Some(125),
         /*runtime_metrics*/ None,
     );
-    insta::assert_snapshot!(cell.raw_lines()[0].to_string(), @"Worked for 2m 5s");
+    insta::assert_snapshot!(cell.raw_lines()[0].to_string(), @"已工作 2m 5s");
 }
 
 #[test]
@@ -115,13 +115,12 @@ fn completion_wraps_metadata_and_preserves_unwrapped_raw_text() {
     let lines = cell.display_lines(/*width*/ 24);
     let rendered = lines.iter().map(ToString::to_string).collect::<Vec<_>>();
 
-    insta::assert_snapshot!(rendered.join("\n"), @r"
-    Worked for 2m 5s · Sep
-    6, 2000 at 2:32 PM ·
-    Local tools: 3 calls
-    (2.5s)
+    insta::assert_snapshot!(rendered.join("\n"), @"
+    已工作 2m 5s · Sep 6,
+    2000 at 2:32 PM · 本地
+    工具：3 次调用（2.5s）
     ");
-    insta::assert_snapshot!(cell.raw_lines()[0].to_string(), @"Worked for 2m 5s · Sep 6, 2000 at 2:32 PM · Local tools: 3 calls (2.5s)");
+    insta::assert_snapshot!(cell.raw_lines()[0].to_string(), @"已工作 2m 5s · Sep 6, 2000 at 2:32 PM · 本地工具：3 次调用（2.5s）");
     for width in [0, 1, 5, 24] {
         assert!(
             cell.display_lines(width)

@@ -4,4 +4,4 @@ expression: "lines_to_single_string(&chat.active_cell_transcript_lines(80).expec
 ---
 active tool
 
-• You have 2 usage limit resets available. Run /usage to use one.
+• 你有 2 次可用的用量限制重置机会。运行 /usage 使用。

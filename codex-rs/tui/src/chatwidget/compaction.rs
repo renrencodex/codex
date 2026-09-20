@@ -3,8 +3,8 @@
 
 use super::*;
 
-pub(super) const COMPACTION_HEADER: &str = "Compacting context";
-pub(super) const COMPACTION_DETAILS: &str = "Making room to continue.";
+pub(super) const COMPACTION_HEADER: &str = "正在压缩上下文";
+pub(super) const COMPACTION_DETAILS: &str = "正在腾出空间以继续。";
 
 #[derive(Debug)]
 pub(super) struct ActiveCompaction {
@@ -35,12 +35,12 @@ impl ChatWidget {
         if self.status_state.compaction.take().is_some() {
             self.bottom_pane
                 .set_status_timer_origin(/*started_at*/ None);
-            self.set_status_header("Working".to_string());
+            self.set_status_header("工作中".to_string());
         }
     }
 
     pub(super) fn on_context_compaction_completed(&mut self, id: &str, from_replay: bool) {
-        let mut message = "Context compacted".to_string();
+        let mut message = "上下文已压缩".to_string();
         if let Some(active) = self.status_state.compaction.as_ref()
             && active.id == id
         {
@@ -48,7 +48,7 @@ impl ChatWidget {
                 let elapsed = crate::status_indicator_widget::fmt_elapsed_compact(
                     active.started_at.elapsed().as_secs(),
                 );
-                message = format!("Context compacted · {elapsed}");
+                message = format!("上下文已压缩 · {elapsed}");
             }
             self.clear_context_compaction();
         }

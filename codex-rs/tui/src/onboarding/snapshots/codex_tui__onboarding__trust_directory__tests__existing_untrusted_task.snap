@@ -1,16 +1,13 @@
 ---
 source: tui/src/onboarding/trust_directory.rs
-assertion_line: 355
 expression: terminal.backend()
 ---
-> You are in /workspace/project
+> 当前目录：/workspace/project
 
-  This existing task may retain settings and history, including
-  project configuration or hooks loaded while it was trusted. To use
-  restricted settings, start a new task. The folder's trust setting
-  will not change.
+  此现有任务可能保留之前在受信任状态下加载的设置和历史记录，包括项目配
+  置或钩子。如需使用受限设置，请启动新任务。文件夹的信任设置不会更改。
 
-› 1. Open existing task                                               
-  2. Back to Agent Command Center
+› 1. 打开现有任务                                                     
+  2. 返回代理指挥中心
 
-  Press enter to continue; esc to go back
+  按 enter 继续；esc 返回

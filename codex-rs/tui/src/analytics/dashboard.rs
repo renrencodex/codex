@@ -53,10 +53,7 @@ impl AnalyticsView {
                                 30
                             },
                             if section == Section::Usage && self.business() {
-                                format!(
-                                    " · {}",
-                                    self.token_model.as_deref().unwrap_or("All models")
-                                )
+                                format!(" · {}", self.token_model.as_deref().unwrap_or("所有模型"))
                             } else {
                                 String::new()
                             }
@@ -71,9 +68,8 @@ impl AnalyticsView {
                 ) {
                     content.push(
                         format!(
-                            "By {}",
+                            "按{}",
                             self.group_label(section, self.sections[section].group)
-                                .to_lowercase()
                         )
                         .set_style(secondary_style())
                         .into(),
@@ -99,16 +95,15 @@ impl AnalyticsView {
                     }
                     Section::Chats => {
                         content.push(
-                            "30d active · lifetime credits"
+                            "过去 30 天活跃 · 累计 credits"
                                 .set_style(secondary_style())
                                 .into(),
                         );
                         content.push(Line::default());
                         if let Some(chats) = self.chats.ready() {
                             if chats.rows.is_empty() {
-                                content.push(
-                                    "No recent local chats.".set_style(secondary_style()).into(),
-                                );
+                                content
+                                    .push("近期没有本地对话。".set_style(secondary_style()).into());
                             }
                             for chat in chats.rows.iter().take(/*n*/ 5) {
                                 let amount = chat
@@ -128,17 +123,10 @@ impl AnalyticsView {
                                 ));
                             }
                             content.push(Line::default());
-                            content.push(
-                                "Local chats · excludes subagents"
-                                    .set_style(secondary_style())
-                                    .into(),
-                            );
+                            content
+                                .push("本地对话 · 不含子代理".set_style(secondary_style()).into());
                             if chats.rows.iter().any(|chat| chat.usage.is_none()) {
-                                content.push(
-                                    "Some estimates unavailable"
-                                        .set_style(secondary_style())
-                                        .into(),
-                                );
+                                content.push("部分估算不可用".set_style(secondary_style()).into());
                             }
                         } else if let Some(message) = self.chats.message() {
                             content.push(message.to_string().set_style(secondary_style()).into());
@@ -148,8 +136,7 @@ impl AnalyticsView {
                 let mut content = word_wrap_lines(content, RtOptions::new(inner_width));
                 if content.len() > inner_height {
                     content.truncate(inner_height);
-                    content[inner_height - 1] =
-                        "… z to maximize".set_style(secondary_style()).into();
+                    content[inner_height - 1] = "… 按 z 最大化".set_style(secondary_style()).into();
                 }
                 content.resize(inner_height, Line::default());
                 let label = format!(

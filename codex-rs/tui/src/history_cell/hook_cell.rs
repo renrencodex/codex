@@ -151,9 +151,9 @@ impl HookCell {
             {
                 message.to_string()
             } else if multiple {
-                "Running hooks".to_string()
+                "正在运行钩子".to_string()
             } else {
-                "Running hook".to_string()
+                "正在运行钩子".to_string()
             },
         )
     }
@@ -287,11 +287,11 @@ impl HookCell {
                 lines.push(vec!["↳ Hook · ".dim(), first_line.to_string().into()].into());
             } else {
                 let header_text = match status {
-                    HookRunStatus::Completed => "Hook completed",
-                    HookRunStatus::Failed => "Hook failed",
-                    HookRunStatus::Blocked => "Blocked by hook",
-                    HookRunStatus::Stopped => "Hook stopped",
-                    HookRunStatus::Running => "Hook running",
+                    HookRunStatus::Completed => "钩子已完成",
+                    HookRunStatus::Failed => "钩子失败",
+                    HookRunStatus::Blocked => "已被钩子阻止",
+                    HookRunStatus::Stopped => "钩子已停止",
+                    HookRunStatus::Running => "钩子正在运行",
                 };
                 lines.push(
                     vec![
@@ -573,19 +573,19 @@ mod tests {
     #[test]
     fn running_hook_summary_uses_only_revealed_messages() {
         for (messages, expected) in [
-            (vec![None], "Running hook"),
-            (vec![Some("   ")], "Running hook"),
-            (vec![None, None], "Running hooks"),
+            (vec![None], "正在运行钩子"),
+            (vec![Some("   ")], "正在运行钩子"),
+            (vec![None, None], "正在运行钩子"),
             (vec![Some("checking policy")], "checking policy"),
             (
                 vec![Some("  checking policy  "), Some("checking policy")],
                 "checking policy",
             ),
-            (vec![Some("checking policy"), None], "Running hooks"),
-            (vec![None, Some("checking policy")], "Running hooks"),
+            (vec![Some("checking policy"), None], "正在运行钩子"),
+            (vec![None, Some("checking policy")], "正在运行钩子"),
             (
                 vec![Some("checking policy"), Some("scanning secrets")],
-                "Running hooks",
+                "正在运行钩子",
             ),
         ] {
             let mut first = hook_run_summary("0");
@@ -648,7 +648,7 @@ mod tests {
     #[test]
     fn unsuccessful_hooks_use_bold_red_bullets_and_actionable_details() {
         for (status, expected_header) in [
-            (HookRunStatus::Failed, "• Hook failed"),
+            (HookRunStatus::Failed, "• 钩子失败"),
             (HookRunStatus::Blocked, "• Blocked by hook"),
             (HookRunStatus::Stopped, "• Hook stopped"),
         ] {

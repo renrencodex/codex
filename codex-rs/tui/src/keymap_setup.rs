@@ -60,6 +60,7 @@ use crate::render::renderable::ColumnRenderable;
 use actions::KEYMAP_ACTIONS;
 use actions::action_label;
 use actions::binding_slot;
+use actions::context_label;
 use actions::format_action_binding_summary;
 #[cfg(test)]
 use debug::KeymapDebugView;
@@ -81,7 +82,7 @@ pub(crate) enum KeymapEditOutcome {
 }
 
 fn key_binding_span(binding: &str) -> ratatui::text::Span<'static> {
-    if binding == "unbound" {
+    if binding == "未绑定" {
         binding.to_string().dim()
     } else {
         binding.to_string().cyan()
@@ -91,9 +92,9 @@ fn key_binding_span(binding: &str) -> ratatui::text::Span<'static> {
 fn keymap_action_menu_hint_line() -> Line<'static> {
     Line::from(vec![
         "enter".cyan(),
-        " select · ".dim(),
+        " 选择 · ".dim(),
         "esc".cyan(),
-        " back".dim(),
+        " 返回".dim(),
     ])
 }
 
@@ -150,7 +151,7 @@ pub(crate) fn build_keymap_action_menu_params(
     let current_bindings =
         active_binding_specs(runtime_keymap, &context, &action).unwrap_or_else(|_| Vec::new());
     let current_binding = if current_bindings.is_empty() {
-        "unbound".to_string()
+        "未绑定".to_string()
     } else {
         current_bindings.join(", ")
     };
@@ -160,48 +161,46 @@ pub(crate) fn build_keymap_action_menu_params(
         .iter()
         .find(|descriptor| descriptor.context == context && descriptor.action == action);
     let context_label = descriptor
-        .map(|descriptor| descriptor.context_label)
-        .unwrap_or(context.as_str())
+        .map(|descriptor| context_label(descriptor.context))
+        .unwrap_or("其他")
         .to_string();
-    let description = descriptor
-        .map(|descriptor| descriptor.description)
-        .unwrap_or("Configure this shortcut.");
-    let remove_disabled_reason =
-        (!custom_binding).then(|| "No custom root override to remove.".to_string());
     let label = action_label(&action);
+    let description = format!("配置“{label}”操作的快捷键。");
+    let remove_disabled_reason =
+        (!custom_binding).then(|| "没有可移除的自定义根级覆盖。".to_string());
     let remove_context = context.clone();
     let remove_action = action.clone();
     let config_path = format!("tui.keymap.{context}.{action}");
     let source = if custom_binding {
-        "Custom root override".cyan()
+        "自定义根级覆盖".cyan()
     } else {
-        "Default keymap".dim()
+        "默认按键映射".dim()
     };
     let mut header = ColumnRenderable::new();
-    header.push(Line::from("Edit Shortcut".bold()));
+    header.push(Line::from("编辑快捷键".bold()));
     header.push(Line::from(vec![
         label.bold(),
         " · ".dim(),
         context_label.dim(),
     ]));
     header.push(Line::from(vec![
-        "Current ".dim(),
+        "当前 ".dim(),
         key_binding_span(&current_binding),
         " · ".dim(),
         source,
     ]));
     header.push(Line::from(vec![
-        "Config ".dim(),
+        "配置 ".dim(),
         format!("`{config_path}`").cyan(),
     ]));
-    header.push(Line::from(description.to_string().dim()));
+    header.push(Line::from(description.dim()));
 
     let mut items = Vec::new();
     match active_binding_count {
         0 => {
             items.push(action_menu_item(
-                "Set key",
-                "Capture a key for this unbound action.".to_string(),
+                "设置按键",
+                "为此未绑定操作捕获一个按键。".to_string(),
                 &context,
                 &action,
                 KeymapEditIntent::ReplaceAll,
@@ -210,16 +209,16 @@ pub(crate) fn build_keymap_action_menu_params(
         }
         1 => {
             items.push(action_menu_item(
-                "Replace binding",
-                format!("Capture a replacement key for `{current_binding}`."),
+                "替换绑定",
+                format!("捕获按键以替换 `{current_binding}`。"),
                 &context,
                 &action,
                 KeymapEditIntent::ReplaceAll,
                 KeymapCaptureMode::SingleKey,
             ));
             items.push(action_menu_item(
-                "Add alternate binding",
-                format!("Keep `{current_binding}` and add another key."),
+                "添加备用绑定",
+                format!("保留 `{current_binding}` 并添加另一个按键。"),
                 &context,
                 &action,
                 KeymapEditIntent::AddAlternate,
@@ -230,8 +229,8 @@ pub(crate) fn build_keymap_action_menu_params(
             let replace_one_context = context.clone();
             let replace_one_action = action.clone();
             items.push(SelectionItem {
-                name: "Replace one binding...".to_string(),
-                description: Some("Choose which existing binding to replace.".to_string()),
+                name: "替换一个绑定……".to_string(),
+                description: Some("选择要替换的现有绑定。".to_string()),
                 actions: vec![Box::new(move |tx| {
                     tx.send(AppEvent::OpenKeymapReplaceBindingMenu {
                         context: replace_one_context.clone(),
@@ -241,16 +240,16 @@ pub(crate) fn build_keymap_action_menu_params(
                 ..Default::default()
             });
             items.push(action_menu_item(
-                "Replace all bindings",
-                format!("Replace `{current_binding}` with one key."),
+                "替换所有绑定",
+                format!("用一个按键替换 `{current_binding}`。"),
                 &context,
                 &action,
                 KeymapEditIntent::ReplaceAll,
                 KeymapCaptureMode::SingleKey,
             ));
             items.push(action_menu_item(
-                "Add alternate binding",
-                format!("Keep `{current_binding}` and add another key."),
+                "添加备用绑定",
+                format!("保留 `{current_binding}` 并添加另一个按键。"),
                 &context,
                 &action,
                 KeymapEditIntent::AddAlternate,
@@ -260,8 +259,8 @@ pub(crate) fn build_keymap_action_menu_params(
     }
     if active_binding_count == 0 {
         items.push(action_menu_item(
-            "Set key chord",
-            "Capture two consecutive keys for this action.".to_string(),
+            "设置组合键",
+            "为此操作捕获两个连续按键。".to_string(),
             &context,
             &action,
             KeymapEditIntent::ReplaceAll,
@@ -269,16 +268,16 @@ pub(crate) fn build_keymap_action_menu_params(
         ));
     } else {
         items.push(action_menu_item(
-            "Replace with key chord",
-            format!("Replace `{current_binding}` with a two-stroke key chord."),
+            "替换为组合键",
+            format!("用两键组合替换 `{current_binding}`。"),
             &context,
             &action,
             KeymapEditIntent::ReplaceAll,
             KeymapCaptureMode::Chord,
         ));
         items.push(action_menu_item(
-            "Add alternate key chord",
-            format!("Keep `{current_binding}` and add a two-stroke key chord."),
+            "添加备用组合键",
+            format!("保留 `{current_binding}` 并添加两键组合。"),
             &context,
             &action,
             KeymapEditIntent::AddAlternate,
@@ -286,8 +285,8 @@ pub(crate) fn build_keymap_action_menu_params(
         ));
     }
     items.push(SelectionItem {
-        name: "Remove custom binding".to_string(),
-        description: custom_binding.then(|| "Restore the default keymap binding.".to_string()),
+        name: "移除自定义绑定".to_string(),
+        description: custom_binding.then(|| "恢复默认按键映射绑定。".to_string()),
         disabled_reason: remove_disabled_reason,
         disabled_gutter_marker: Some("–"),
         actions: vec![Box::new(move |tx| {
@@ -299,8 +298,8 @@ pub(crate) fn build_keymap_action_menu_params(
         ..Default::default()
     });
     items.push(SelectionItem {
-        name: "Back to shortcuts".to_string(),
-        description: Some("Return to the shortcut list.".to_string()),
+        name: "返回快捷键列表".to_string(),
+        description: Some("返回快捷键列表。".to_string()),
         dismiss_on_select: true,
         ..Default::default()
     });
@@ -309,9 +308,9 @@ pub(crate) fn build_keymap_action_menu_params(
         view_id: Some(KEYMAP_ACTION_MENU_VIEW_ID),
         header: Box::new(header),
         footer_note: Some(Line::from(vec![
-            "Changes write the root ".dim(),
+            "更改将写入根级 ".dim(),
             "`tui.keymap.*`".cyan(),
-            " override.".dim(),
+            " 覆盖。".dim(),
         ])),
         footer_hint: Some(keymap_action_menu_hint_line()),
         items,
@@ -331,13 +330,13 @@ pub(crate) fn build_keymap_replace_binding_menu_params(
     let bindings = active_binding_specs(runtime_keymap, &context, &action).unwrap_or_default();
     let label = action_label(&action);
     let mut header = ColumnRenderable::new();
-    header.push(Line::from("Replace Binding".bold()));
+    header.push(Line::from("替换绑定".bold()));
     header.push(Line::from(vec![
         label.bold(),
         " · ".dim(),
         format!("{context}.{action}").dim(),
     ]));
-    header.push(Line::from("Choose the binding to replace.".dim()));
+    header.push(Line::from("选择要替换的绑定。".dim()));
 
     let items = bindings
         .into_iter()
@@ -345,7 +344,7 @@ pub(crate) fn build_keymap_replace_binding_menu_params(
             [
                 SelectionItem {
                     name: binding.clone(),
-                    description: Some(format!("Replace `{binding}` with another key.")),
+                    description: Some(format!("用另一个按键替换 `{binding}`。")),
                     actions: vec![open_capture_action(
                         context.clone(),
                         action.clone(),
@@ -358,8 +357,8 @@ pub(crate) fn build_keymap_replace_binding_menu_params(
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: format!("{binding} (key chord)"),
-                    description: Some(format!("Replace `{binding}` with a two-stroke key chord.")),
+                    name: format!("{binding}（组合键）"),
+                    description: Some(format!("用两键组合替换 `{binding}`。")),
                     actions: vec![open_capture_action(
                         context.clone(),
                         action.clone(),
@@ -396,21 +395,21 @@ pub(crate) fn build_keymap_conflict_params(
         KeymapCaptureMode::SingleKey
     };
     SelectionViewParams {
-        title: Some("Shortcut Conflict".to_string()),
-        subtitle: Some(format!("{context}.{action} cannot use `{key}`.")),
+        title: Some("快捷键冲突".to_string()),
+        subtitle: Some(format!("{context}.{action} 无法使用 `{key}`。")),
         footer_note: Some(Line::from(error)),
         footer_hint: Some(standard_popup_hint_line()),
         items: vec![
             SelectionItem {
-                name: "Pick another key".to_string(),
-                description: Some("Return to key capture for this action.".to_string()),
+                name: "选择其他按键".to_string(),
+                description: Some("返回此操作的按键捕获界面。".to_string()),
                 actions: vec![open_capture_action(context, action, intent, capture_mode)],
                 dismiss_on_select: true,
                 ..Default::default()
             },
             SelectionItem {
-                name: "Cancel".to_string(),
-                description: Some("Leave keymap unchanged.".to_string()),
+                name: "取消".to_string(),
+                description: Some("保持按键映射不变。".to_string()),
                 dismiss_on_select: true,
                 ..Default::default()
             },
@@ -479,7 +478,7 @@ pub(crate) fn keymap_with_edit(
         KeymapEditIntent::AddAlternate => {
             if current_bindings.iter().any(|binding| binding == key) {
                 return Ok(KeymapEditOutcome::Unchanged {
-                    message: format!("No change: `{context}.{action}` already uses `{key}`."),
+                    message: format!("未更改：`{context}.{action}` 已使用 `{key}`。"),
                 });
             }
             let mut bindings = current_bindings.clone();
@@ -489,7 +488,7 @@ pub(crate) fn keymap_with_edit(
         KeymapEditIntent::ReplaceOne { old_key } => {
             if !current_bindings.iter().any(|binding| binding == old_key) {
                 return Err(format!(
-                    "`{context}.{action}` no longer uses `{old_key}`. Reopen /keymap and choose a binding again."
+                    "`{context}.{action}` 已不再使用 `{old_key}`。请重新打开 /keymap 并再次选择绑定。"
                 ));
             }
             let bindings = current_bindings
@@ -508,15 +507,15 @@ pub(crate) fn keymap_with_edit(
 
     if next_bindings == current_bindings {
         return Ok(KeymapEditOutcome::Unchanged {
-            message: format!("No change: `{context}.{action}` already uses `{key}`."),
+            message: format!("未更改：`{context}.{action}` 已使用 `{key}`。"),
         });
     }
 
     let message = match intent {
-        KeymapEditIntent::ReplaceAll => format!("Remapped `{context}.{action}` to `{key}`."),
-        KeymapEditIntent::AddAlternate => format!("Added `{key}` to `{context}.{action}`."),
+        KeymapEditIntent::ReplaceAll => format!("已将 `{context}.{action}` 重新映射为 `{key}`。"),
+        KeymapEditIntent::AddAlternate => format!("已为 `{context}.{action}` 添加 `{key}`。"),
         KeymapEditIntent::ReplaceOne { old_key } => {
-            format!("Replaced `{old_key}` with `{key}` for `{context}.{action}`.")
+            format!("已将 `{context}.{action}` 的 `{old_key}` 替换为 `{key}`。")
         }
     };
 
@@ -540,7 +539,7 @@ fn keymap_with_bindings(
 ) -> Result<TuiKeymap, String> {
     let mut keymap = keymap.clone();
     let slot = binding_slot(&mut keymap, context, action).ok_or_else(|| {
-        format!("Unknown keymap action `{context}.{action}`. Reopen /keymap and choose an action.")
+        format!("未知按键映射操作 `{context}.{action}`。请重新打开 /keymap 并选择操作。")
     })?;
     *slot = Some(match keys {
         [key] => KeybindingsSpec::One(KeybindingSpec(key.clone())),
@@ -572,7 +571,7 @@ pub(crate) fn active_binding_specs(
     }
 
     let bindings = bindings_for_action(runtime_keymap, context, action).ok_or_else(|| {
-        format!("Unknown keymap action `{context}.{action}`. Reopen /keymap and choose an action.")
+        format!("未知按键映射操作 `{context}.{action}`。请重新打开 /keymap 并选择操作。")
     })?;
     if let Some(action_id) = action_id
         && let Some(crate::key_hint::ShortcutHint::Chord { prefix, completion }) =
@@ -611,7 +610,7 @@ pub(crate) fn keymap_without_custom_binding(
 ) -> Result<TuiKeymap, String> {
     let mut keymap = keymap.clone();
     let slot = binding_slot(&mut keymap, context, action).ok_or_else(|| {
-        format!("Unknown keymap action `{context}.{action}`. Reopen /keymap and choose an action.")
+        format!("未知按键映射操作 `{context}.{action}`。请重新打开 /keymap 并选择操作。")
     })?;
     *slot = None;
     Ok(keymap)
@@ -620,7 +619,7 @@ pub(crate) fn keymap_without_custom_binding(
 fn has_custom_binding(keymap: &TuiKeymap, context: &str, action: &str) -> Result<bool, String> {
     let mut keymap = keymap.clone();
     let slot = binding_slot(&mut keymap, context, action).ok_or_else(|| {
-        format!("Unknown keymap action `{context}.{action}`. Reopen /keymap and choose an action.")
+        format!("未知按键映射操作 `{context}.{action}`。请重新打开 /keymap 并选择操作。")
     })?;
     Ok(slot.is_some())
 }
@@ -643,9 +642,7 @@ fn key_parts_to_config_key_spec(
 
     let supported_modifiers = KeyModifiers::CONTROL | KeyModifiers::ALT | KeyModifiers::SHIFT;
     if !modifiers.difference(supported_modifiers).is_empty() {
-        return Err(
-            "Only ctrl, alt, and shift modifiers can be stored in `tui.keymap`.".to_string(),
-        );
+        return Err("`tui.keymap` 只能存储 ctrl、alt 和 shift 修饰键。".to_string());
     }
 
     let key = match code {
@@ -665,7 +662,7 @@ fn key_parts_to_config_key_spec(
         KeyCode::F(number) if (1..=MAX_FUNCTION_KEY).contains(&number) => format!("f{number}"),
         KeyCode::F(_) => {
             return Err(format!(
-                "Only function keys F1 through F{MAX_FUNCTION_KEY} can be stored in `tui.keymap`."
+                "`tui.keymap` 只能存储 F1 到 F{MAX_FUNCTION_KEY} 功能键。"
             ));
         }
         KeyCode::Char(' ') => "space".to_string(),
@@ -674,7 +671,7 @@ fn key_parts_to_config_key_spec(
                 return Ok(format_key_spec(modifiers, "minus"));
             }
             if !ch.is_ascii() || ch.is_ascii_control() {
-                return Err("Only printable ASCII keys can be stored in `tui.keymap`.".to_string());
+                return Err("`tui.keymap` 只能存储可打印的 ASCII 按键。".to_string());
             }
             if ch.is_ascii_uppercase() {
                 modifiers.insert(KeyModifiers::SHIFT);
@@ -683,7 +680,7 @@ fn key_parts_to_config_key_spec(
             ch.to_string()
         }
         _ => {
-            return Err("That key is not supported by `tui.keymap`.".to_string());
+            return Err("`tui.keymap` 不支持该按键。".to_string());
         }
     };
 
@@ -794,7 +791,7 @@ mod tests {
             frame_requester: FrameRequester::test_dummy(),
             has_input_focus: true,
             enhanced_keys_supported: false,
-            placeholder_text: "Ask Codex to do anything".to_string(),
+            placeholder_text: "让 Codex 帮你完成任务".to_string(),
             disable_paste_burst: false,
             animations_enabled: false,
             skills: Some(Vec::new()),
@@ -827,7 +824,7 @@ mod tests {
                     "{} | {} | {}",
                     item.name,
                     item.description.as_deref().unwrap_or_default(),
-                    item.disabled_reason.as_deref().unwrap_or("enabled")
+                    item.disabled_reason.as_deref().unwrap_or("已启用")
                 )
             })
             .collect::<Vec<_>>()
@@ -936,26 +933,26 @@ mod tests {
         assert_eq!(
             actions,
             vec![
-                "Composer.submit",
-                "Chat.interrupt_turn",
-                "Editor.insert_newline",
-                "Composer.queue",
-                "Global.open_external_editor",
-                "Global.copy",
-                "Global.toggle_vim_mode",
-                "Editor.delete_backward_word",
-                "Editor.delete_forward_word",
-                "Editor.move_word_left",
-                "Editor.move_word_right",
-                "Global.open_transcript",
-                "Pager.close",
-                "Pager.page_up",
-                "Pager.page_down",
-                "Approval.open_fullscreen",
-                "Approval.approve",
-                "Approval.approve_for_session",
-                "Approval.decline",
-                "Approval.cancel",
+                "输入框.submit",
+                "聊天.interrupt_turn",
+                "编辑器.insert_newline",
+                "输入框.queue",
+                "全局.open_external_editor",
+                "全局.copy",
+                "全局.toggle_vim_mode",
+                "编辑器.delete_backward_word",
+                "编辑器.delete_forward_word",
+                "编辑器.move_word_left",
+                "编辑器.move_word_right",
+                "全局.open_transcript",
+                "分页器.close",
+                "分页器.page_up",
+                "分页器.page_down",
+                "审批.open_fullscreen",
+                "审批.approve",
+                "审批.approve_for_session",
+                "审批.decline",
+                "审批.cancel",
             ]
         );
     }
@@ -981,14 +978,14 @@ mod tests {
         assert_eq!(
             actions,
             vec![
-                "Approval.open_fullscreen",
-                "Approval.open_thread",
-                "Approval.approve",
-                "Approval.approve_for_session",
-                "Approval.approve_for_prefix",
-                "Approval.deny",
-                "Approval.decline",
-                "Approval.cancel",
+                "审批.open_fullscreen",
+                "审批.open_thread",
+                "审批.approve",
+                "审批.approve_for_session",
+                "审批.approve_for_prefix",
+                "审批.deny",
+                "审批.decline",
+                "审批.cancel",
             ]
         );
     }
@@ -1055,7 +1052,7 @@ mod tests {
                 .iter()
                 .map(|item| item.name.as_str())
                 .collect::<Vec<_>>(),
-            vec!["Submit"]
+            vec!["提交"]
         );
         assert!(
             composer_tab
@@ -1091,11 +1088,11 @@ mod tests {
                 ))
                 .collect::<Vec<_>>(),
             vec![
-                ("Open Agents", Some("unbound"), false),
-                ("Toggle Vim Mode", Some("unbound"), false),
-                ("Previous Permission Mode", Some("unbound"), false),
-                ("Next Permission Mode", Some("unbound"), false),
-                ("Kill Whole Line", Some("unbound"), false),
+                ("打开智能体面板", Some("未绑定"), false),
+                ("切换 Vim 模式", Some("未绑定"), false),
+                ("上一个权限模式", Some("未绑定"), false),
+                ("下一个权限模式", Some("未绑定"), false),
+                ("删除整行", Some("未绑定"), false),
             ]
         );
     }
@@ -1107,9 +1104,9 @@ mod tests {
         let debug_tab = params.tabs.last().expect("debug tab");
 
         assert_eq!(debug_tab.id, KEYMAP_DEBUG_TAB_ID);
-        assert_eq!(debug_tab.label, "Debug");
+        assert_eq!(debug_tab.label, "调试");
         assert_eq!(debug_tab.items.len(), 1);
-        assert_eq!(debug_tab.items[0].name, "Inspect keypresses");
+        assert_eq!(debug_tab.items[0].name, "检查按键");
         assert_eq!(
             debug_tab.items[0].description.as_deref(),
             Some("Press Enter to start. Then press any key to inspect it; Ctrl+C exits.")
@@ -1136,7 +1133,7 @@ mod tests {
         assert_eq!(params.initial_tab_id.as_deref(), Some(KEYMAP_ALL_TAB_ID));
         assert_eq!(
             params.initial_selected_idx,
-            all_tab.items.iter().position(|item| item.name == "Submit")
+            all_tab.items.iter().position(|item| item.name == "提交")
         );
     }
 
@@ -1316,7 +1313,7 @@ mod tests {
         let params = build_keymap_picker_params(&runtime, &TuiKeymap::default());
         let rendered = render_picker(params, /*width*/ 78);
 
-        assert!(rendered.contains("Keymap"));
+        assert!(rendered.contains("按键映射"));
         assert!(rendered.contains("Open Transcript"));
         assert!(rendered.contains("ctrl-t"));
         assert!(!rendered.contains("Selected Action"));
@@ -1492,7 +1489,7 @@ mod tests {
         view.show_delayed_hint_for_test();
 
         let rendered = render_debug(&view, /*width*/ 100);
-        assert!(rendered.contains("Still waiting?"));
+        assert!(rendered.contains("还在等待？"));
         assert_snapshot!("keymap_debug_view_delayed_hint", rendered);
     }
 
@@ -1504,7 +1501,7 @@ mod tests {
         view.handle_key_event(KeyEvent::new(KeyCode::Char('o'), KeyModifiers::CONTROL));
 
         let rendered = render_debug(&view, /*width*/ 100);
-        assert!(!rendered.contains("Still waiting?"));
+        assert!(!rendered.contains("还在等待？"));
         assert_snapshot!("keymap_debug_view_match", rendered);
     }
 
@@ -1518,7 +1515,7 @@ mod tests {
         view.handle_key_event(KeyEvent::new(KeyCode::Char('x'), KeyModifiers::CONTROL));
 
         let rendered = render_debug(&view, /*width*/ 100);
-        assert!(rendered.contains("global.copy (Copy)"));
+        assert!(rendered.contains("global.copy (复制)"));
         assert!(rendered.contains("[Custom]"));
     }
 
@@ -1532,7 +1529,7 @@ mod tests {
         view.handle_key_event(KeyEvent::new(KeyCode::Char('q'), KeyModifiers::CONTROL));
 
         let rendered = render_debug(&view, /*width*/ 100);
-        assert!(rendered.contains("composer.queue (Queue)"));
+        assert!(rendered.contains("composer.queue (排队)"));
         assert!(rendered.contains("[Custom global]"));
     }
 
@@ -1635,7 +1632,7 @@ mod tests {
         let remove_idx = action_menu
             .items
             .iter()
-            .position(|item| item.name == "Remove custom binding")
+            .position(|item| item.name == "移除自定义绑定")
             .expect("remove custom binding menu item");
         pane.show_selection_view(action_menu);
 
@@ -1765,7 +1762,7 @@ mod tests {
         );
         assert_eq!(
             key_event_to_config_key_spec(KeyEvent::from(KeyCode::F(25))),
-            Err("Only function keys F1 through F24 can be stored in `tui.keymap`.".to_string())
+            Err("`tui.keymap` 只能存储 F1 到 F24 功能键。".to_string())
         );
     }
 
@@ -1943,7 +1940,7 @@ mod tests {
         assert_eq!(
             outcome,
             KeymapEditOutcome::Unchanged {
-                message: "No change: `composer.submit` already uses `enter`.".to_string()
+                message: "未更改：`composer.submit` 已使用 `enter`。".to_string()
             }
         );
     }

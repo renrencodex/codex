@@ -44,11 +44,8 @@ pub(crate) fn remote_connection_status_value(
 
 pub(crate) fn server_version_notice(client: &str, server: Option<&str>) -> Option<String> {
     let server = server?;
-    crate::update_versions::is_official_server_older(client, server).then(|| {
-        format!(
-            "A background Codex service is running v{server}, older than your Codex CLI v{client}."
-        )
-    })
+    crate::update_versions::is_official_server_older(client, server)
+        .then(|| format!("后台 Codex 服务正在运行 v{server}，版本低于你的 Codex CLI v{client}。"))
 }
 
 pub(crate) fn server_version_notice_for_tui(

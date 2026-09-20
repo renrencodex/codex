@@ -436,7 +436,7 @@ impl App {
                 self.chat_widget
                     .retain_input_after_failed_permission_selection();
                 self.chat_widget.add_error_message(format!(
-                    "Windows sandbox setup failed: {}",
+                    "Windows 沙箱设置失败：{}",
                     result.error.unwrap_or_else(|| "unknown error".to_string())
                 ));
             }
@@ -472,9 +472,9 @@ impl App {
                     .is_ok_and(|thread_id| self.abandoned_side_threads.contains(&thread_id))
             {
                 let response = crate::dynamic_tools::failure_response(if requires_mcp {
-                    "TUI task tools require the approval-gated MCP server"
+                    "TUI 任务工具需要受审批控制的 MCP 服务器"
                 } else {
-                    "TUI dynamic tools require an active external task"
+                    "TUI 动态工具需要活动的外部任务"
                 });
                 self.app_event_tx.send(AppEvent::DynamicToolCallCompleted {
                     request_id: request_id.clone(),

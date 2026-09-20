@@ -127,7 +127,7 @@ async fn completion_replay_preserves_metadata_and_input_without_live_side_effect
         (
             Some(125_000),
             Some(COMPLETED_AT),
-            format!("Worked for 2m 5s · {done}"),
+            format!("已工作 2m 5s · {done}"),
         ),
         (None, None, String::new()),
         (Some(598), Some(COMPLETED_AT), done.clone()),
@@ -135,10 +135,10 @@ async fn completion_replay_preserves_metadata_and_input_without_live_side_effect
         (
             Some(61_000),
             Some(COMPLETED_AT),
-            format!("Worked for 1m 1s · {done}"),
+            format!("已工作 1m 1s · {done}"),
         ),
         (Some(60_000), None, String::new()),
-        (Some(125_000), None, "Worked for 2m 5s".to_string()),
+        (Some(125_000), None, "已工作 2m 5s".to_string()),
     ] {
         for replay_kind in [
             ReplayKind::ResumeInitialMessages,
@@ -195,7 +195,7 @@ async fn completion_replay_waits_for_older_turn_items_to_load() {
         .format("%b %-d, %Y at %-I:%M %p");
     assert_eq!(
         completion_labels(&mut rx),
-        format!("Worked for 2m 5s · {older_time}"),
+        format!("已工作 2m 5s · {older_time}"),
     );
 }
 
@@ -231,7 +231,7 @@ async fn completion_failed_and_interrupted_turns_do_not_report_success() {
 fn completion_snapshot_normalization_preserves_clock_only_message_lines() {
     let timestamp = "Sep 6, 2000 at 2:32 PM";
     let transcript = format!(
-        "› {timestamp}\n• {timestamp}\n  └ {timestamp}\n  The job was done {timestamp}\n  {timestamp} is the expected text\n  Worked for 2m 5s · {timestamp} is quoted\n\n  3:24 PM\n  Worked for 1h 2m 3s · {timestamp}\n"
+        "› {timestamp}\n• {timestamp}\n  └ {timestamp}\n  The job was done {timestamp}\n  {timestamp} is the expected text\n  已工作 2m 5s · {timestamp} is quoted\n\n  3:24 PM\n  已工作 1h 2m 3s · {timestamp}\n"
     );
     let message = history_cell::PlainHistoryCell::new(
         transcript
@@ -253,6 +253,6 @@ fn completion_snapshot_normalization_preserves_clock_only_message_lines() {
             &footer,
             lines_to_single_string(&footer.display_lines(/*width*/ 80))
         ),
-        "  Worked for [duration] · [completion time]\n"
+        "  已工作 [duration] · [completion time]\n"
     );
 }

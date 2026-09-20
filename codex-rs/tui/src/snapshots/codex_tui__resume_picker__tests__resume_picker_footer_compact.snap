@@ -3,5 +3,5 @@ source: tui/src/resume_picker.rs
 expression: "footer_snapshot(&state, 96, 20)"
 ---
 ───────────────────────────────────────────────────────────────────────────────── 0 / 0 · 100% ─
- enter resume   esc clear   ctrl+c quit   tab focus   ←/→ option
- ctrl+o comfy   ctrl+t preview   ctrl+e exp   ↑/↓ browse
+ enter 恢复   esc 清除   ctrl+c 退出   tab 聚焦   ←/→ 选项
+ ctrl+o 舒适   ctrl+t 预览   ctrl+e 展开   ↑/↓ 浏览

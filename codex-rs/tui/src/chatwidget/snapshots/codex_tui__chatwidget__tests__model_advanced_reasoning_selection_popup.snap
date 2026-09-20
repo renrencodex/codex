@@ -2,11 +2,10 @@
 source: tui/src/chatwidget/tests/popups_and_settings.rs
 expression: popup
 ---
-  Advanced Reasoning
-  ⚠ Consumes usage limits faster
+  高 级 推 理
+  ⚠ 会 更 快 消 耗 用 量 限 额
 
-  1. Max              For difficult problems when quality matters more than
-                      speed · higher usage
-› 2. Ultra (current)  For demanding work using multiple agents · highest usage
+  1. 最 大           适 合 质 量 比 速 度 更 重 要 的 难 题  · 用 量 较 高
+› 2. 极 致 （ 当 前 ）   适 合 使 用 多 个 智 能 体 的 高 要 求 工 作  · 用 量 最 高
 
-  enter to apply · s for this session · esc to go back
+  enter 应 用  · s 仅 用 于 此 会 话  · esc 返 回

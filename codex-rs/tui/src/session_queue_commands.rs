@@ -31,10 +31,10 @@ pub async fn run_session_queue_command(
 ) -> Result<String> {
     if options.cli.no_daemon && options.explicit_remote_endpoint.is_none() {
         return Err(eyre!(
-            "--no-daemon cannot be used with codex queue. Queuing must discover the shared server to avoid writing through a separate server."
+            "--no-daemon 不能与 codex queue 同时使用。队列操作必须发现共享服务器，以免通过其他服务器写入。"
         ));
     }
-    let codex_home = find_codex_home().wrap_err("failed to find Codex home")?;
+    let codex_home = find_codex_home().wrap_err("无法找到 Codex 主目录")?;
     let explicit_remote = options.explicit_remote_endpoint.is_some();
     let mut app_server =
         start_app_server_for_session_command(options, codex_home.to_path_buf()).await?;
@@ -45,7 +45,7 @@ pub async fn run_session_queue_command(
             .is_some()
     {
         return Err(eyre!(
-            "cannot queue through an embedded app server while a local app-server daemon is running; remove configuration overrides or use --remote"
+            "本地 app-server 后台服务运行时，无法通过嵌入式 app server 排队；请移除配置覆盖项或使用 --remote"
         ));
     }
     let implicit_local_daemon = !explicit_remote && !app_server.uses_embedded_app_server();
@@ -64,19 +64,19 @@ pub async fn run_session_queue_command(
             if (implicit_local_daemon || explicit_remote) && is_unsupported_queue_error(&error) =>
         {
             let server = if explicit_remote {
-                "remote app server"
+                "远程 app server"
             } else {
-                "local app-server daemon"
+                "本地 app-server 后台服务"
             };
             return Err(error.wrap_err(format!(
-                "the {server} does not support thread/queue/add; update or restart the {server}"
+                "{server} 不支持 thread/queue/add；请更新或重启 {server}"
             )));
         }
         result => result?,
     };
 
     Ok(format!(
-        "Queued message {} for thread {}.",
+        "已将消息 {} 排入会话 {} 的队列。",
         response.queued_submission.id, thread_id
     ))
 }
@@ -104,9 +104,9 @@ pub(super) async fn run_session_queue_action_with_app_server(
             /*model_provider*/ None,
         )
         .await?
-        .ok_or_else(|| eyre!("No active session found matching '{target}'."))?;
+        .ok_or_else(|| eyre!("未找到与“{target}”匹配的活动会话。"))?;
         ThreadId::from_string(&thread.id)
-            .wrap_err_with(|| format!("app server returned invalid session id `{}`", thread.id))?
+            .wrap_err_with(|| format!("app-server 返回了无效的会话 ID `{}`", thread.id))?
     };
     let request_id = app_server.next_request_id();
     let response = app_server
@@ -123,7 +123,7 @@ pub(super) async fn run_session_queue_action_with_app_server(
             },
         })
         .await
-        .wrap_err("failed to queue session message")?;
+        .wrap_err("会话消息排队失败")?;
     Ok((thread_id, response))
 }
 

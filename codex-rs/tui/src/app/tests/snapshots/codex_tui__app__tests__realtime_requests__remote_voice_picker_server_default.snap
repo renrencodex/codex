@@ -1,13 +1,12 @@
 ---
 source: tui/src/app/tests/realtime_requests.rs
-assertion_line: 1721
 expression: popup
 ---
-  Select voice
-  Applies to your next voice conversation.
+  选 择 语 音
+  将 在 下 次 语 音 对 话 中 生 效 。
 
 › 1. maple (current)
   2. cove
   3. juniper
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

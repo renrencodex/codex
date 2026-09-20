@@ -6,4 +6,4 @@ expression: normalized_backend_snapshot(terminal.backend())
 "                                                                                "
 "› Ask Codex to do anything                                                      "
 "                                                                                "
-"  gpt-5.2 medium                                Plan mode (shift+tab to cycle)  "
+"  gpt-5.2 medium                                  计划模式 (按 shift+tab 切换)  " Hidden by multi-width symbols: [(51, " "), (53, " "), (55, " "), (57, " "), (61, " "), (74, " "), (76, " ")]

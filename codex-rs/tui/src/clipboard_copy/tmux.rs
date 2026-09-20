@@ -14,11 +14,11 @@ use std::path::Path;
 /// possible without relying on DCS passthrough.
 pub(super) fn copy(text: &str) -> Result<(), String> {
     let executable = codex_utils_path::system_executable("tmux")
-        .ok_or_else(|| "tmux is unavailable in the system PATH".to_string())?;
+        .ok_or_else(|| "系统 PATH 中没有可用的 tmux".to_string())?;
     let path = codex_utils_path::system_path()
         .map_err(|error| format!("failed to resolve system PATH: {error}"))?;
     let pane = std::env::var("TMUX_PANE")
-        .map_err(|_| "tmux clipboard forwarding is unavailable: no current pane".to_string())?;
+        .map_err(|_| "tmux 剪贴板转发不可用：没有当前窗格".to_string())?;
     let client = clipboard_target(
         || command_output(&executable, &path, ["show-options", "-gv", "set-clipboard"]),
         || {
@@ -105,15 +105,13 @@ fn clipboard_target(
         .filter(|(_, client)| !client.is_empty())
         .max_by_key(|(activity, _)| *activity)
         .map(|(_, client)| client.to_string())
-        .ok_or_else(|| {
-            "tmux clipboard forwarding is unavailable: no attached client".to_string()
-        })?;
+        .ok_or_else(|| "tmux 剪贴板转发不可用：没有已连接的客户端".to_string())?;
     let tmux_info = tmux_info_fn(&client)?;
     if !tmux_info.lines().any(|line| {
         line.split_once("Ms: (string) ")
             .is_some_and(|(_, sequence)| !sequence.trim().is_empty())
     }) {
-        return Err("tmux clipboard forwarding is unavailable: missing Ms capability".to_string());
+        return Err("tmux 剪贴板转发不可用：缺少 Ms 能力".to_string());
     }
 
     Ok(client)

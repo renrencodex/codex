@@ -77,9 +77,7 @@ impl App {
             .await;
             match outcome {
                 Err(err) => {
-                    self.add_session_picker_error(format!(
-                        "Failed to determine working directory for resume: {err}"
-                    ));
+                    self.add_session_picker_error(format!("确定恢复会话的工作目录失败：{err}"));
                     return Err(AppRunControl::Continue);
                 }
                 Ok(crate::session_resume::ResolveCwdOutcome::Continue(Some(cwd)))
@@ -104,9 +102,7 @@ impl App {
         {
             Ok(cfg) => cfg,
             Err(err) => {
-                self.add_session_picker_error(format!(
-                    "Failed to rebuild configuration for resume: {err}"
-                ));
+                self.add_session_picker_error(format!("重新构建恢复会话的配置失败：{err}"));
                 return Err(AppRunControl::Continue);
             }
         };
@@ -121,7 +117,7 @@ impl App {
                         .await
                         .map_err(|error| {
                             self.add_session_picker_error(format!(
-                                "Unable to check resumed folder: {error}"
+                                "无法检查恢复会话的文件夹：{error}"
                             ));
                             AppRunControl::Continue
                         })?,
@@ -173,7 +169,7 @@ impl App {
         )
         .await
         .map_err(|error| {
-            self.add_session_picker_error(format!("Unable to check folder trust: {error}"));
+            self.add_session_picker_error(format!("无法检查文件夹信任状态：{error}"));
             AppRunControl::Continue
         })?;
         if result.should_exit {
@@ -197,9 +193,7 @@ impl App {
             )
             .await
             .map_err(|error| {
-                self.add_session_picker_error(format!(
-                    "Failed to reload trusted folder settings: {error}"
-                ));
+                self.add_session_picker_error(format!("重新加载受信任文件夹设置失败：{error}"));
                 AppRunControl::Continue
             })?;
             if resumed_thread.is_none() {
@@ -216,9 +210,7 @@ impl App {
                     }
                     .await
                     .map_err(|error| {
-                        self.add_session_picker_error(format!(
-                            "Unable to load folder hooks: {error}"
-                        ));
+                        self.add_session_picker_error(format!("无法加载文件夹钩子：{error}"));
                         AppRunControl::Continue
                     })?
                 } else {
@@ -233,9 +225,7 @@ impl App {
                 )
                 .await
                 .map_err(|error| {
-                    self.add_session_picker_error(format!(
-                        "Unable to review folder hooks: {error}"
-                    ));
+                    self.add_session_picker_error(format!("无法审查文件夹钩子：{error}"));
                     AppRunControl::Continue
                 })? {
                     StartupHooksReviewOutcome::Continue => {}

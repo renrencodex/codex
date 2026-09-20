@@ -25,7 +25,7 @@ impl Chat {
         }) {
             &self.title
         } else {
-            "Chat usage unavailable"
+            "对话用量不可用"
         }
     }
 }
@@ -51,7 +51,7 @@ pub(super) async fn read(
         super::chats::roots(&handle),
     )
     .await
-    .map_err(|_| "Chat listing timed out. Press R to retry.".to_string())??;
+    .map_err(|_| "列出对话超时。按 R 重试。".to_string())??;
     session.backend.ensure_identity().await?;
     roots.sort_by(|a, b| {
         b.updated_at
@@ -81,7 +81,7 @@ pub(super) async fn read(
     for query in queries {
         let ids = std::iter::once(&query.thread_id).chain(&query.descendant_thread_ids);
         if ids.clone().any(|id| !seen.insert(id.clone())) {
-            return Err("Task descendant groups overlap.".into());
+            return Err("任务的后代会话组发生重叠。".into());
         }
         let size = 1 + query.descendant_thread_ids.len();
         if count + size > 1_000 || batch.len() == 100 {
@@ -122,7 +122,7 @@ pub(super) async fn read(
                         .as_deref()
                         .map(chrono::DateTime::parse_from_rfc3339)
                         .transpose()
-                        .map_err(|_| "Invalid task usage timestamp.")?
+                        .map_err(|_| "任务用量时间戳无效。")?
                         .map(|time| time.with_timezone(&chrono::Utc)),
                 );
                 usage.extend(
@@ -163,7 +163,7 @@ pub(super) async fn read(
                     .filter(|name| !name.trim().is_empty())
                     .unwrap_or_else(|| {
                         if thread.preview.trim().is_empty() {
-                            "Untitled chat".into()
+                            "无标题对话".into()
                         } else {
                             thread.preview
                         }
@@ -200,16 +200,16 @@ async fn descendants(
                 let parent = thread
                     .parent_thread_id
                     .filter(|_| thread.id != root.id)
-                    .ok_or("Task descendant discovery is unsupported.")?;
+                    .ok_or("不支持发现任务的后代会话。")?;
                 parents.insert(thread.id.clone(), parent);
                 ids.insert(thread.id);
             }
             if ids.len() >= 1_000 {
-                return Err("Task exceeds the reporting limit.".into());
+                return Err("任务超过报告限制。".into());
             }
             match page.next_cursor {
                 Some(next) if seen.insert(next.clone()) => cursor = Some(next),
-                Some(_) => return Err("Task listing repeated a cursor.".into()),
+                Some(_) => return Err("列出任务时游标重复。".into()),
                 None => break,
             }
         }
@@ -220,11 +220,9 @@ async fn descendants(
         let mut chain = HashSet::new();
         while current != &root.id {
             if !chain.insert(current) {
-                return Err("Task descendant cycle.".into());
+                return Err("任务的后代会话存在循环。".into());
             }
-            current = parents
-                .get(current)
-                .ok_or("Task descendant discovery is incomplete.")?;
+            current = parents.get(current).ok_or("任务的后代会话发现不完整。")?;
         }
     }
     let mut descendant_thread_ids = ids.into_iter().collect::<Vec<_>>();

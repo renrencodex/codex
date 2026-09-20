@@ -76,7 +76,7 @@ async fn unavailable_thread_routes_local_and_recovery_commands() -> Result<()> {
     app.handle_tui_event(&mut tui, &mut session, TuiEvent::Key(KeyCode::Enter.into()))
         .await?;
     let history = drain_history(&mut app, &mut tui, &mut session, &mut events).await?;
-    assert!(history.contains("Current working directory:"));
+    assert!(history.contains("当前工作目录："));
     assert_snapshot!(
         "unavailable_thread_local_command",
         history.replace(&app.config.cwd.display().to_string(), "/project")

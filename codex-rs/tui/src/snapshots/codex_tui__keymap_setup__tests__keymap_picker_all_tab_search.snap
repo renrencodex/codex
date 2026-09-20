@@ -2,15 +2,15 @@
 source: tui/src/keymap_setup.rs
 expression: snapshot
 ---
-Open Agents | unbound | Global open_agents Open Agents Open the shared agent-session overview. unbound Default
-Open Transcript | ctrl-t | Global open_transcript Open Transcript Open the transcript overlay. ctrl-t Default
-Open External Editor | ctrl-g | Global open_external_editor Open External Editor Open the current draft in an external editor. ctrl-g Default
-Copy | ctrl-o | Global copy Copy Copy the last agent response to the clipboard. ctrl-o Default
-Clear Terminal | ctrl-l | Global clear_terminal Clear Terminal Clear the terminal UI. ctrl-l Default
-Toggle Vim Mode | unbound | Global toggle_vim_mode Toggle Vim Mode Turn Vim composer mode on or off. unbound Default
-Toggle Raw Output | alt-r | Global toggle_raw_output Toggle Raw Output Toggle raw scrollback mode. alt-r Default
-Toggle Side Conversation | ctrl-/ | Global toggle_side_conversation Toggle Side Conversation Switch between a side conversation and its parent. ctrl-/ Default
-Interrupt Turn | esc | Chat interrupt_turn Interrupt Turn Interrupt the active turn. esc Default
-Decrease Reasoning Effort | alt-,, shift-down | Chat decrease_reasoning_effort Decrease Reasoning Effort Decrease reasoning effort. alt-,, shift-down Default
-Increase Reasoning Effort | alt-., shift-up | Chat increase_reasoning_effort Increase Reasoning Effort Increase reasoning effort. alt-., shift-up Default
-Previous Permission Mode | unbound | Chat previous_permission_mode Previous Permission Mode Switch to the previous available permission mode. unbound Default
+打开智能体面板 | 未绑定 | 全局 open_agents 打开智能体面板 配置“打开智能体面板”操作的快捷键。 未绑定 默认
+打开对话记录 | ctrl-t | 全局 open_transcript 打开对话记录 配置“打开对话记录”操作的快捷键。 ctrl-t 默认
+打开外部编辑器 | ctrl-g | 全局 open_external_editor 打开外部编辑器 配置“打开外部编辑器”操作的快捷键。 ctrl-g 默认
+复制 | ctrl-o | 全局 copy 复制 配置“复制”操作的快捷键。 ctrl-o 默认
+清空终端 | ctrl-l | 全局 clear_terminal 清空终端 配置“清空终端”操作的快捷键。 ctrl-l 默认
+切换 Vim 模式 | 未绑定 | 全局 toggle_vim_mode 切换 Vim 模式 配置“切换 Vim 模式”操作的快捷键。 未绑定 默认
+切换原始输出 | alt-r | 全局 toggle_raw_output 切换原始输出 配置“切换原始输出”操作的快捷键。 alt-r 默认
+切换侧边对话 | ctrl-/ | 全局 toggle_side_conversation 切换侧边对话 配置“切换侧边对话”操作的快捷键。 ctrl-/ 默认
+中断当前轮次 | esc | 聊天 interrupt_turn 中断当前轮次 配置“中断当前轮次”操作的快捷键。 esc 默认
+降低推理强度 | alt-,, shift-down | 聊天 decrease_reasoning_effort 降低推理强度 配置“降低推理强度”操作的快捷键。 alt-,, shift-down 默认
+提高推理强度 | alt-., shift-up | 聊天 increase_reasoning_effort 提高推理强度 配置“提高推理强度”操作的快捷键。 alt-., shift-up 默认
+上一个权限模式 | 未绑定 | 聊天 previous_permission_mode 上一个权限模式 配置“上一个权限模式”操作的快捷键。 未绑定 默认

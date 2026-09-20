@@ -69,7 +69,7 @@ impl App {
                 self.chat_widget.clear_windows_sandbox_setup_status();
             }
             self.chat_widget.add_info_message(
-                "Windows sandbox setup requires local connections and executors.".to_string(),
+                "Windows 沙箱设置需要本地连接和执行器。".to_string(),
                 /*hint*/ None,
             );
             return Ok(AppRunControl::Continue);
@@ -103,12 +103,36 @@ impl App {
                 self.pending_update_action = Some(UpdateAction::Daemon(source));
                 return Ok(self.handle_exit_mode(app_server, ExitMode::Immediate).await);
             }
-            AppEvent::UserVerificationApproved { thread_id, server_name, request_id } => {
-                Box::pin(self.start_user_verification(app_server, thread_id, server_name, request_id)).await?;
+            AppEvent::UserVerificationApproved {
+                thread_id,
+                server_name,
+                request_id,
+            } => {
+                Box::pin(self.start_user_verification(
+                    app_server,
+                    thread_id,
+                    server_name,
+                    request_id,
+                ))
+                .await?;
             }
-            AppEvent::UserVerificationFinished { thread_id, server_name, request_id, attempt_id, result } => {
+            AppEvent::UserVerificationFinished {
+                thread_id,
+                server_name,
+                request_id,
+                attempt_id,
+                result,
+            } => {
                 // Keep this RPC future out of the event loop's stack frame.
-                Box::pin(self.finish_user_verification(app_server, thread_id, server_name, request_id, attempt_id, result)).await?;
+                Box::pin(self.finish_user_verification(
+                    app_server,
+                    thread_id,
+                    server_name,
+                    request_id,
+                    attempt_id,
+                    result,
+                ))
+                .await?;
             }
             AppEvent::ReviewMisalignment(review) => {
                 self.open_misalignment_review(tui, review);
@@ -116,7 +140,9 @@ impl App {
             AppEvent::ContinueMisalignment(review) => {
                 self.continue_misalignment(app_server, review).await;
             }
-            AppEvent::CloseMisalignmentReview => self.chat_widget.show_misalignment_policy_precaution(),
+            AppEvent::CloseMisalignmentReview => {
+                self.chat_widget.show_misalignment_policy_precaution()
+            }
             AppEvent::SkillsListLoaded { ref cwd, .. }
                 if cwds_differ(cwd, self.config.cwd.as_path()) =>
             {
@@ -137,7 +163,7 @@ impl App {
             AppEvent::StartManagedWorktree { mode, name } => {
                 if self.pending_start_managed_worktree.is_some() {
                     self.chat_widget
-                        .add_error_message("A worktree is already being created.".to_string());
+                        .add_error_message("正在创建另一个工作树。".to_string());
                 } else {
                     self.pending_start_managed_worktree = Some((mode, name));
                 }
@@ -156,7 +182,8 @@ impl App {
                 }
             }
             AppEvent::ManagedWorktreesLoaded { request, result } => {
-                self.chat_widget.on_managed_worktrees_loaded(request, result);
+                self.chat_widget
+                    .on_managed_worktrees_loaded(request, result);
             }
             AppEvent::ManagedWorktreeAction { request, action } => {
                 if let Some(event) = self.chat_widget.managed_worktree_action(&request, action) {
@@ -164,10 +191,12 @@ impl App {
                 }
             }
             AppEvent::ShowManagedWorktreeActions { request, entry } => {
-                self.chat_widget.show_managed_worktree_actions(request, entry);
+                self.chat_widget
+                    .show_managed_worktree_actions(request, entry);
             }
             AppEvent::ConfirmManagedWorktreeRemoval { request, root } => {
-                self.chat_widget.confirm_managed_worktree_removal(request, root);
+                self.chat_widget
+                    .confirm_managed_worktree_removal(request, root);
             }
             AppEvent::RemoveManagedWorktree { request, root } => {
                 if self.chat_widget.worktree_request_is_current(&request)
@@ -176,24 +205,21 @@ impl App {
                     let codex_home = self.config.codex_home.to_path_buf();
                     let tx = self.app_event_tx.clone();
                     tokio::spawn(async move {
-                        let result = crate::worktree_browser::remove(
-                            codex_home,
-                            request.cwd,
-                            root.clone(),
-                        )
-                        .await
-                        .map_err(|error| error.to_string());
+                        let result =
+                            crate::worktree_browser::remove(codex_home, request.cwd, root.clone())
+                                .await
+                                .map_err(|error| error.to_string());
                         tx.send(AppEvent::ManagedWorktreeRemoved { root, result });
                     });
                 }
             }
             AppEvent::ManagedWorktreeRemoved { root, result } => match result {
                 Ok(()) => self.chat_widget.add_info_message(
-                    format!("Removed worktree at {}. Thread history was kept.", root.display()),
+                    format!("已移除位于 {} 的工作树，并保留线程历史。", root.display()),
                     /*hint*/ None,
                 ),
                 Err(error) => self.chat_widget.add_error_message(format!(
-                    "Could not remove worktree at {}: {error}",
+                    "无法移除位于 {} 的工作树：{error}",
                     root.display()
                 )),
             },
@@ -206,17 +232,14 @@ impl App {
                     || !self.chat_widget.can_change_working_directory(thread_id)
                 {
                     self.chat_widget.add_error_message(
-                        "Changing directories requires an idle primary session without queued input."
-                            .to_string(),
+                        "更改目录需要主会话处于空闲状态且没有排队输入。".to_string(),
                     );
                 } else if crate::uses_remote_workspace_or_environment(
                     &self.app_server_target,
                     self.environment_manager.as_ref(),
                 ) {
-                    self.chat_widget.add_error_message(
-                        "Changing directories is not supported for remote workspaces or remote execution environments."
-                            .to_string(),
-                    );
+                    self.chat_widget
+                        .add_error_message("远程工作区或远程执行环境不支持更改目录。".to_string());
                 } else {
                     let cwd = AbsolutePathBuf::resolve_path_against_base(
                         requested_cwd.as_path(),
@@ -233,11 +256,10 @@ impl App {
                         }
                         Ok(_) => self
                             .chat_widget
-                            .add_error_message(format!("Not a directory: {}", cwd.display())),
-                        Err(error) => self.chat_widget.add_error_message(format!(
-                            "Cannot access directory {}: {error}",
-                            cwd.display()
-                        )),
+                            .add_error_message(format!("不是目录：{}", cwd.display())),
+                        Err(error) => self
+                            .chat_widget
+                            .add_error_message(format!("无法访问目录 {}：{error}", cwd.display())),
                     }
                 }
             }
@@ -314,7 +336,7 @@ impl App {
             AppEvent::ExportTranscript { destination } => {
                 if let Err(error) = self.export_transcript(app_server, destination).await {
                     self.chat_widget
-                        .add_error_message(format!("Export failed: {error}"));
+                        .add_error_message(format!("导出失败：{error}"));
                 }
                 if self.chat_widget.no_modal_or_popup_active() {
                     self.chat_widget
@@ -322,7 +344,11 @@ impl App {
                     self.chat_widget.maybe_send_next_queued_input();
                 }
             }
-            AppEvent::CopySelection { text, label, format } => {
+            AppEvent::CopySelection {
+                text,
+                label,
+                format,
+            } => {
                 self.chat_widget.copy_selection(text, label, format);
             }
             AppEvent::ClearUi { name } => {
@@ -346,7 +372,8 @@ impl App {
             }
             AppEvent::ClearUiAndSubmitUserMessage { text } => {
                 if self.reject_pending_permission_root_switch() {
-                    self.chat_widget.restore_user_message_to_composer(text.into());
+                    self.chat_widget
+                        .restore_user_message_to_composer(text.into());
                     return Ok(AppRunControl::Continue);
                 }
                 self.clear_terminal_ui(tui, /*redraw_header*/ false)?;
@@ -410,9 +437,8 @@ impl App {
                             .await;
                     }
                     Ok(None) => {
-                        self.chat_widget.add_error_message(format!(
-                            "No saved chat found matching '{id_or_name}'."
-                        ));
+                        self.chat_widget
+                            .add_error_message(format!("找不到与“{id_or_name}”匹配的已保存对话。"));
                     }
                     Err(err)
                         if err
@@ -446,32 +472,34 @@ impl App {
                     .add_plain_history_lines(vec!["/fork".magenta().into()]);
                 if let Some(thread_id) = self.chat_widget.thread_id() {
                     if self.pending_server_profiles.contains_key(&thread_id) {
-                        self.chat_widget.add_error_message(
-                            "Wait for permissions to update before forking.".into(),
-                        );
+                        self.chat_widget
+                            .add_error_message("请等待权限更新后再分叉。".into());
                         return Ok(AppRunControl::Continue);
                     }
                     self.refresh_in_memory_config_from_disk_best_effort("forking the thread")
                         .await;
                     let mut fork_config = self.config.clone();
                     if app_server.uses_remote_workspace() {
-                        fork_config.workspace_roots.clone_from(
-                            &self.chat_widget.config_ref().workspace_roots,
-                        );
+                        fork_config
+                            .workspace_roots
+                            .clone_from(&self.chat_widget.config_ref().workspace_roots);
                     }
                     fork_config.model = Some(self.chat_widget.current_model().to_string());
                     fork_config.model_reasoning_effort =
                         self.chat_widget.current_reasoning_effort();
                     let selected_profile = self.confirmed_server_profile(thread_id);
-                    match app_server.fork_thread_at(
-                        &self.local_settings,
-                        fork_config,
-                        thread_id,
-                        /*last_turn_id*/ None,
-                        /*before_turn_id*/ None,
-                        ForkGoalContinuation::StartIfIdle,
-                        selected_profile.as_ref(),
-                    ).await {
+                    match app_server
+                        .fork_thread_at(
+                            &self.local_settings,
+                            fork_config,
+                            thread_id,
+                            /*last_turn_id*/ None,
+                            /*before_turn_id*/ None,
+                            ForkGoalContinuation::StartIfIdle,
+                            selected_profile.as_ref(),
+                        )
+                        .await
+                    {
                         Ok(mut forked) => {
                             let name_error = if let Some(name) = name {
                                 match app_server
@@ -482,9 +510,7 @@ impl App {
                                         forked.session.thread_name = Some(name);
                                         None
                                     }
-                                    Err(err) => {
-                                        Some(format!("Failed to name the forked session: {err}"))
-                                    }
+                                    Err(err) => Some(format!("命名分叉会话失败：{err}")),
                                 }
                             } else {
                                 None
@@ -510,7 +536,7 @@ impl App {
                                         }
                                         if let Some(command) = summary.resume_hint {
                                             let spans = vec![
-                                                "To continue this session, run ".into(),
+                                                "要继续此会话，请运行 ".into(),
                                                 command.cyan(),
                                             ];
                                             lines.push(spans.into());
@@ -520,22 +546,20 @@ impl App {
                                 }
                                 Err(err) => {
                                     self.chat_widget.add_error_message(format!(
-                                        "Failed to attach to forked app-server thread: {err}"
+                                        "附加到分叉的应用服务器线程失败：{err}"
                                     ));
                                 }
                             }
                         }
                         Err(err) => {
                             self.chat_widget.add_error_message(format!(
-                                "Failed to fork current session through the app server: {err}"
+                                "通过应用服务器分叉当前会话失败：{err}"
                             ));
                         }
                     }
                 } else {
-                    self.chat_widget.add_error_message(
-                        "A thread must contain at least one turn before it can be forked."
-                            .to_string(),
-                    );
+                    self.chat_widget
+                        .add_error_message("线程至少需要包含一个回合才能分叉。".to_string());
                 }
 
                 self.chat_widget.maybe_send_next_queued_input();
@@ -551,9 +575,8 @@ impl App {
                 }
                 if self.pending_server_profiles.contains_key(&thread_id) {
                     self.chat_widget.restore_user_message_to_composer(prompt);
-                    self.chat_widget.add_error_message(
-                        "Wait for permissions to update before editing this prompt.".into(),
-                    );
+                    self.chat_widget
+                        .add_error_message("请等待权限更新后再编辑此提示词。".into());
                     tui.frame_requester().schedule_frame();
                     return Ok(AppRunControl::Continue);
                 }
@@ -622,22 +645,27 @@ impl App {
                         return Ok(AppRunControl::Continue);
                     }
                 };
-                let reverted = match app_server.revert_thread(thread_id, before_turn_id, &retained_turns).await {
+                let reverted = match app_server
+                    .revert_thread(thread_id, before_turn_id, &retained_turns)
+                    .await
+                {
                     Ok(reverted) => reverted,
                     Err(err) => {
-                    // Validation and unsupported-method errors leave history unchanged. Other
-                    // failures can arrive after the server has already committed the revert.
-                    if matches!(&err, codex_app_server_client::TypedRequestError::Server { source, .. }
-                        if matches!(source.code, -32602..=-32600)) {
-                        self.restore_backtrack_prompt_after_revert_error(prompt, err);
-                        tui.frame_requester().schedule_frame();
-                        return Ok(AppRunControl::Continue);
-                    }
-                    self.chat_widget.restore_user_message_to_composer(prompt);
-                    return Err(color_eyre::Report::new(err).wrap_err("prompt edit could not be confirmed; resume this session to reload its history"));
+                        // Validation and unsupported-method errors leave history unchanged. Other
+                        // failures can arrive after the server has already committed the revert.
+                        if matches!(&err, codex_app_server_client::TypedRequestError::Server { source, .. }
+                        if matches!(source.code, -32602..=-32600))
+                        {
+                            self.restore_backtrack_prompt_after_revert_error(prompt, err);
+                            tui.frame_requester().schedule_frame();
+                            return Ok(AppRunControl::Continue);
+                        }
+                        self.chat_widget.restore_user_message_to_composer(prompt);
+                        return Err(color_eyre::Report::new(err).wrap_err("prompt edit could not be confirmed; resume this session to reload its history"));
                     }
                 };
-                self.chat_widget.restore_user_message_to_composer(prompt.clone());
+                self.chat_widget
+                    .restore_user_message_to_composer(prompt.clone());
                 // Stop on any post-mutation failure: accepting input against the old displayed
                 // transcript would hide the fact that server history has already changed.
                 tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
@@ -659,21 +687,35 @@ impl App {
                 // Preserve the widget and unrelated threads; only replace this replay store.
                 self.chat_widget.restore_thread_input_state(
                     /*input_state*/ None,
-                    crate::chatwidget::ThreadInputStateRestoreMode { preserve_in_flight_turn: false },
+                    crate::chatwidget::ThreadInputStateRestoreMode {
+                        preserve_in_flight_turn: false,
+                    },
                 );
                 self.chat_widget.restore_user_message_to_composer(prompt);
-                self.chat_widget.set_queue_autosend_suppressed(/*suppressed*/ true);
+                self.chat_widget
+                    .set_queue_autosend_suppressed(/*suppressed*/ true);
                 self.abort_thread_event_listener(thread_id);
                 if let Some(mut rx) = self.active_thread_rx.take() {
                     while let Ok(event) = rx.try_recv() {
                         if let ThreadBufferedEvent::Notification(notification) = event {
-                            self.chat_widget.handle_server_notification(*notification, Some(ReplayKind::ThreadSnapshot));
+                            self.chat_widget.handle_server_notification(
+                                *notification,
+                                Some(ReplayKind::ThreadSnapshot),
+                            );
                         }
                     }
                 }
-                let mut session = self.thread_event_channels.get(&thread_id)
-                    .ok_or_else(|| color_eyre::eyre::eyre!("reverted thread is no longer available"))?
-                    .store.lock().await.session.clone()
+                let mut session = self
+                    .thread_event_channels
+                    .get(&thread_id)
+                    .ok_or_else(|| {
+                        color_eyre::eyre::eyre!("reverted thread is no longer available")
+                    })?
+                    .store
+                    .lock()
+                    .await
+                    .session
+                    .clone()
                     .ok_or_else(|| color_eyre::eyre::eyre!("reverted thread has no session"))?;
                 session.rollout_path = reverted.thread.path.clone();
                 if self.primary_thread_id == Some(thread_id) {
@@ -685,21 +727,32 @@ impl App {
                 self.recap.seed_from_turns(&retained_turns, Instant::now());
                 self.retain_realtime_replay_state_before_replace();
                 self.forget_realtime_replay_thread(thread_id);
-                self.chat_widget.reset_after_prompt_revert(reverted.thread.path, &retained_turns);
-                self.ensure_thread_channel(thread_id).store.lock().await
+                self.chat_widget
+                    .reset_after_prompt_revert(reverted.thread.path, &retained_turns);
+                self.ensure_thread_channel(thread_id)
+                    .store
+                    .lock()
+                    .await
                     .set_session(session, retained_turns);
                 self.activate_thread_channel(thread_id).await;
                 // Apply the trim after any transcript inserts produced by shutdown notifications.
                 // The existing reset barrier keeps terminal input blocked until then.
                 self.pending_thread_switch_resets += 1;
                 self.app_event_tx.send(AppEvent::FinishPromptRevert {
-                    thread_id, nth_user_message,
+                    thread_id,
+                    nth_user_message,
                 });
             }
-            AppEvent::FinishPromptRevert { thread_id, nth_user_message } => {
+            AppEvent::FinishPromptRevert {
+                thread_id,
+                nth_user_message,
+            } => {
                 self.pending_thread_switch_resets -= 1;
                 if self.chat_widget.thread_id() == Some(thread_id) {
-                    if let Some(index) = crate::app_backtrack::nth_user_position(&self.transcript_cells, nth_user_message) {
+                    if let Some(index) = crate::app_backtrack::nth_user_position(
+                        &self.transcript_cells,
+                        nth_user_message,
+                    ) {
                         self.transcript_cells.truncate(index);
                     }
                     self.deferred_history_lines.clear();
@@ -707,7 +760,8 @@ impl App {
                     self.last_thread_usage_status_cell = None;
                     self.pending_thread_usage_history_refresh = false;
                     self.backtrack_render_pending = true;
-                    self.chat_widget.set_queue_autosend_suppressed(/*suppressed*/ false);
+                    self.chat_widget
+                        .set_queue_autosend_suppressed(/*suppressed*/ false);
                     self.chat_widget.emit_prompt_edit_thread_event();
                     tui.frame_requester().schedule_frame();
                 }
@@ -805,7 +859,10 @@ impl App {
                 self.commit_animation = None;
             }
             AppEvent::Exit(mode) => {
-                if matches!(mode, ExitMode::ShutdownFirst | ExitMode::ShutdownAfterInterrupt) {
+                if matches!(
+                    mode,
+                    ExitMode::ShutdownFirst | ExitMode::ShutdownAfterInterrupt
+                ) {
                     self.show_shutdown_feedback(tui)?;
                 }
                 return Ok(self.handle_exit_mode(app_server, mode).await);
@@ -830,7 +887,7 @@ impl App {
                             .await
                     {
                         self.chat_widget
-                            .add_error_message(format!("Failed to interrupt task: {error}"));
+                            .add_error_message(format!("中断任务失败：{error}"));
                     }
                 }
                 RunningTaskExitAction::Exit => {
@@ -846,7 +903,7 @@ impl App {
                             .await
                     {
                         self.chat_widget
-                            .add_error_message(format!("Failed to pause task goal: {error}"));
+                            .add_error_message(format!("暂停任务目标失败：{error}"));
                         return Ok(AppRunControl::Continue);
                     }
                     let turn_id = self
@@ -860,7 +917,7 @@ impl App {
                         }
                         Err(error) => {
                             self.chat_widget
-                                .add_error_message(format!("Failed to interrupt task: {error}"));
+                                .add_error_message(format!("中断任务失败：{error}"));
                         }
                     }
                 }
@@ -875,7 +932,7 @@ impl App {
                 Err(err) => {
                     tracing::error!("failed to logout: {err}");
                     self.chat_widget
-                        .add_error_message(format!("Logout failed: {err}"));
+                        .add_error_message(format!("退出登录失败：{err}"));
                 }
             },
             AppEvent::FatalExitRequest(message) => {
@@ -945,8 +1002,7 @@ impl App {
                         self.chat_widget
                             .restore_undelivered_realtime_speech(delivery_id);
                     }
-                    if self.recover_transport_error(&err)
-                    {
+                    if self.recover_transport_error(&err) {
                         return Ok(AppRunControl::Continue);
                     }
                     let unsupported_permissions = err
@@ -964,9 +1020,9 @@ impl App {
                         ) || unsupported_permissions)
                         && self
                             .chat_widget
-                            .handle_turn_start_rejection(format!("Failed to start turn: {err:#}"));
+                            .handle_turn_start_rejection(format!("启动回合失败：{err:#}"));
                     if is_realtime_conversation {
-                        let message = format!("Voice conversation failed: {err:#}");
+                        let message = format!("语音对话失败：{err:#}");
                         if is_realtime_stop {
                             if self.chat_widget.thread_id() == realtime_stop_thread_id {
                                 self.chat_widget.record_realtime_failure();
@@ -1065,13 +1121,13 @@ impl App {
                 // Enter alternate screen using TUI helper and build pager lines
                 let _ = tui.enter_alt_screen();
                 let pager_lines: Vec<ratatui::text::Line<'static>> = if text.trim().is_empty() {
-                    vec!["No changes detected.".italic().into()]
+                    vec!["未检测到更改。".italic().into()]
                 } else {
                     text.lines().map(ansi_escape_line).collect()
                 };
                 self.overlay = Some(Overlay::new_static_with_lines(
                     pager_lines,
-                    "D I F F".to_string(),
+                    "差 异".to_string(),
                     self.keymap.pager.clone(),
                 ));
                 tui.frame_requester().schedule_frame();
@@ -1531,26 +1587,25 @@ impl App {
                     }
                 };
                 match result {
-                Ok(response) => {
-                    let rate_limit_reset_credits = response.rate_limit_reset_credits.clone();
-                    let snapshots = if accepted
-                    {
-                        self.chat_widget.update_backend_banner(&response);
-                        self.apply_backend_banner_fallback(app_server).await;
-                        app_server_rate_limit_snapshots(response)
-                    } else {
-                        Vec::new()
-                    };
-                    match origin {
-                        RateLimitRefreshOrigin::Recovery | RateLimitRefreshOrigin::Periodic => {
-                            for snapshot in snapshots {
-                                self.chat_widget.on_rate_limit_snapshot(Some(snapshot));
+                    Ok(response) => {
+                        let rate_limit_reset_credits = response.rate_limit_reset_credits.clone();
+                        let snapshots = if accepted {
+                            self.chat_widget.update_backend_banner(&response);
+                            self.apply_backend_banner_fallback(app_server).await;
+                            app_server_rate_limit_snapshots(response)
+                        } else {
+                            Vec::new()
+                        };
+                        match origin {
+                            RateLimitRefreshOrigin::Recovery | RateLimitRefreshOrigin::Periodic => {
+                                for snapshot in snapshots {
+                                    self.chat_widget.on_rate_limit_snapshot(Some(snapshot));
+                                }
                             }
-                        }
-                        RateLimitRefreshOrigin::StartupPrefetch {
-                            reset_hint_request_id,
-                        } => {
-                            if self.chat_widget.finish_rate_limit_reset_hint_refresh(
+                            RateLimitRefreshOrigin::StartupPrefetch {
+                                reset_hint_request_id,
+                            } => {
+                                if self.chat_widget.finish_rate_limit_reset_hint_refresh(
                                 reset_hint_request_id,
                                 snapshots,
                                 rate_limit_reset_credits.ok_or_else(|| {
@@ -1560,10 +1615,10 @@ impl App {
                             ) {
                                 self.insert_pending_usage_output_if_ready(tui);
                             }
-                            tui.frame_requester().schedule_frame();
-                        }
-                        RateLimitRefreshOrigin::ResetConsume { request_id } => {
-                            self.chat_widget.finish_post_consume_reset_credits_refresh(
+                                tui.frame_requester().schedule_frame();
+                            }
+                            RateLimitRefreshOrigin::ResetConsume { request_id } => {
+                                self.chat_widget.finish_post_consume_reset_credits_refresh(
                                 request_id,
                                 snapshots,
                                 rate_limit_reset_credits.ok_or_else(|| {
@@ -1571,14 +1626,14 @@ impl App {
                                         .to_string()
                                 }),
                             );
-                            tui.frame_requester().schedule_frame();
-                        }
-                        RateLimitRefreshOrigin::StatusCommand { request_id } => {
-                            self.chat_widget
-                                .finish_status_rate_limit_refresh(request_id, snapshots);
-                        }
-                        RateLimitRefreshOrigin::UsageMenu { request_id } => {
-                            self.chat_widget.finish_usage_menu_rate_limit_refresh(
+                                tui.frame_requester().schedule_frame();
+                            }
+                            RateLimitRefreshOrigin::StatusCommand { request_id } => {
+                                self.chat_widget
+                                    .finish_status_rate_limit_refresh(request_id, snapshots);
+                            }
+                            RateLimitRefreshOrigin::UsageMenu { request_id } => {
+                                self.chat_widget.finish_usage_menu_rate_limit_refresh(
                                 request_id,
                                 snapshots,
                                 rate_limit_reset_credits.ok_or_else(|| {
@@ -1586,9 +1641,9 @@ impl App {
                                     .to_string()
                                 }),
                             );
-                        }
-                        RateLimitRefreshOrigin::ResetPicker { request_id } => {
-                            self.chat_widget.finish_rate_limit_reset_credits_refresh(
+                            }
+                            RateLimitRefreshOrigin::ResetPicker { request_id } => {
+                                self.chat_widget.finish_rate_limit_reset_credits_refresh(
                                 request_id,
                                 snapshots,
                                 rate_limit_reset_credits.ok_or_else(|| {
@@ -1596,67 +1651,72 @@ impl App {
                                         .to_string()
                                 }),
                             );
+                            }
                         }
                     }
-                }
-                Err(err) => {
-                    // A failed read is not authoritative recovery. Keep the last valid banner.
-                    tracing::warn!("account/rateLimits/read failed during TUI refresh: {err}");
-                    match origin {
-                        RateLimitRefreshOrigin::Recovery | RateLimitRefreshOrigin::Periodic => {
-                            // Re-evaluate snapshot age even when the backend cannot refresh it.
-                            // This updates display freshness without authorizing model recovery.
-                            self.chat_widget.refresh_status_surfaces();
-                        },
-                        RateLimitRefreshOrigin::StartupPrefetch {
-                            reset_hint_request_id,
-                        } => {
-                            self.chat_widget.finish_rate_limit_reset_hint_refresh(
+                    Err(err) => {
+                        // A failed read is not authoritative recovery. Keep the last valid banner.
+                        tracing::warn!("account/rateLimits/read failed during TUI refresh: {err}");
+                        match origin {
+                            RateLimitRefreshOrigin::Recovery | RateLimitRefreshOrigin::Periodic => {
+                                // Re-evaluate snapshot age even when the backend cannot refresh it.
+                                // This updates display freshness without authorizing model recovery.
+                                self.chat_widget.refresh_status_surfaces();
+                            }
+                            RateLimitRefreshOrigin::StartupPrefetch {
                                 reset_hint_request_id,
-                                Vec::new(),
-                                Err(err),
-                            );
-                        }
-                        RateLimitRefreshOrigin::ResetConsume { request_id } => {
-                            self.chat_widget.finish_post_consume_reset_credits_refresh(
-                                request_id,
-                                Vec::new(),
-                                Err(err),
-                            );
-                        }
-                        RateLimitRefreshOrigin::StatusCommand { request_id } => {
-                            self.chat_widget
-                                .finish_status_rate_limit_refresh(request_id, Vec::new());
-                        }
-                        RateLimitRefreshOrigin::UsageMenu { request_id } => {
-                            self.chat_widget.finish_usage_menu_rate_limit_refresh(
-                                request_id,
-                                Vec::new(),
-                                Err(err),
-                            );
-                        }
-                        RateLimitRefreshOrigin::ResetPicker { request_id } => {
-                            self.chat_widget.finish_rate_limit_reset_credits_refresh(
-                                request_id,
-                                Vec::new(),
-                                Err(err),
-                            );
+                            } => {
+                                self.chat_widget.finish_rate_limit_reset_hint_refresh(
+                                    reset_hint_request_id,
+                                    Vec::new(),
+                                    Err(err),
+                                );
+                            }
+                            RateLimitRefreshOrigin::ResetConsume { request_id } => {
+                                self.chat_widget.finish_post_consume_reset_credits_refresh(
+                                    request_id,
+                                    Vec::new(),
+                                    Err(err),
+                                );
+                            }
+                            RateLimitRefreshOrigin::StatusCommand { request_id } => {
+                                self.chat_widget
+                                    .finish_status_rate_limit_refresh(request_id, Vec::new());
+                            }
+                            RateLimitRefreshOrigin::UsageMenu { request_id } => {
+                                self.chat_widget.finish_usage_menu_rate_limit_refresh(
+                                    request_id,
+                                    Vec::new(),
+                                    Err(err),
+                                );
+                            }
+                            RateLimitRefreshOrigin::ResetPicker { request_id } => {
+                                self.chat_widget.finish_rate_limit_reset_credits_refresh(
+                                    request_id,
+                                    Vec::new(),
+                                    Err(err),
+                                );
+                            }
                         }
                     }
                 }
-                }
-                if (accepted || matches!(
-                    origin,
-                    RateLimitRefreshOrigin::Recovery | RateLimitRefreshOrigin::ResetConsume { .. }
-                )) && !self.rate_limit_refresh_state.has_pending_recovery()
+                if (accepted
+                    || matches!(
+                        origin,
+                        RateLimitRefreshOrigin::Recovery
+                            | RateLimitRefreshOrigin::ResetConsume { .. }
+                    ))
+                    && !self.rate_limit_refresh_state.has_pending_recovery()
                 {
                     self.chat_widget.finish_rate_limit_recovery();
                 }
-            },
+            }
             AppEvent::OpenAnalytics { view: summary_view } => {
                 tui.enter_alt_screen()?;
                 let mut view = self.retained_analytics.take().unwrap_or_else(|| {
-                    Box::new(crate::analytics::AnalyticsView::new(self.keymap.list.clone()))
+                    Box::new(crate::analytics::AnalyticsView::new(
+                        self.keymap.list.clone(),
+                    ))
                 });
                 view.keymap = self.keymap.list.clone();
                 if summary_view.is_some() {
@@ -1746,7 +1806,11 @@ impl App {
             } => {
                 self.finish_thread_usage_refresh(tui, thread_id, request_id, result)?;
             }
-            AppEvent::AgentsOverviewUsageLoaded { thread_id, request_id, result } => {
+            AppEvent::AgentsOverviewUsageLoaded {
+                thread_id,
+                request_id,
+                result,
+            } => {
                 self.finish_agents_overview_usage(thread_id, request_id, result);
             }
             AppEvent::CommitPendingUsageOutput => {
@@ -1810,7 +1874,11 @@ impl App {
                         .await;
                 }
             }
-            AppEvent::AstraSelectedFromModelPicker { thread_id, model, action } => {
+            AppEvent::AstraSelectedFromModelPicker {
+                thread_id,
+                model,
+                action,
+            } => {
                 // Check and apply in the same event so a queued backend update cannot turn a
                 // no-op picker confirmation into a sparkle.
                 let should_offer = self.chat_widget.current_model() != model
@@ -1822,7 +1890,8 @@ impl App {
                 ))
                 .await?;
                 if should_offer {
-                    self.chat_widget.on_sparkle_model_selected_from_picker(&model);
+                    self.chat_widget
+                        .on_sparkle_model_selected_from_picker(&model);
                 }
                 return Ok(control);
             }
@@ -1872,10 +1941,9 @@ impl App {
             }
             AppEvent::SettingsSelectionSettled => {
                 if self.chat_widget.no_modal_or_popup_active()
-                    && !self
-                        .chat_widget
-                        .thread_id()
-                        .is_some_and(|thread_id| self.pending_server_profiles.contains_key(&thread_id))
+                    && !self.chat_widget.thread_id().is_some_and(|thread_id| {
+                        self.pending_server_profiles.contains_key(&thread_id)
+                    })
                 {
                     let config = self.chat_widget.config_ref();
                     let permissions_override = Self::turn_permissions_override_from_config(
@@ -1894,8 +1962,14 @@ impl App {
                     }
                 }
             }
-            AppEvent::FetchPermissionProfiles { request_id, thread_cwd } => {
-                if self.chat_widget.permission_popup_request_is_current(request_id) {
+            AppEvent::FetchPermissionProfiles {
+                request_id,
+                thread_cwd,
+            } => {
+                if self
+                    .chat_widget
+                    .permission_popup_request_is_current(request_id)
+                {
                     crate::permission_discovery::fetch(
                         app_server,
                         request_id,
@@ -1906,7 +1980,8 @@ impl App {
                 }
             }
             AppEvent::PermissionProfilesLoaded { request_id, result } => {
-                self.chat_widget.on_permission_profiles_loaded(request_id, result);
+                self.chat_widget
+                    .on_permission_profiles_loaded(request_id, result);
             }
             AppEvent::FetchModels { request_id } => {
                 if self.chat_widget.model_popup_request_is_current(request_id) {
@@ -1917,7 +1992,8 @@ impl App {
                 if self.chat_widget.on_models_loaded(request_id, result) {
                     self.model_catalog = self.chat_widget.model_catalog();
                     app_server.set_available_models(self.model_catalog.try_list_models()?);
-                    self.sync_active_thread_service_tier_to_cached_session().await;
+                    self.sync_active_thread_service_tier_to_cached_session()
+                        .await;
                 }
             }
             AppEvent::OpenReasoningPopup { model } => {
@@ -1956,23 +2032,24 @@ impl App {
                     .await;
 
                 if let Some(default_effort) = default_effort.as_ref()
-                    && let Err(err) = self.persist_model_defaults(
-                        app_server.request_handle(),
-                        crate::config_update::build_model_selection_edits(
-                            model.as_str(),
-                            Some(default_effort),
-                        ),
-                        "default model and reasoning effort",
-                    )
-                    .await
+                    && let Err(err) = self
+                        .persist_model_defaults(
+                            app_server.request_handle(),
+                            crate::config_update::build_model_selection_edits(
+                                model.as_str(),
+                                Some(default_effort),
+                            ),
+                            "default model and reasoning effort",
+                        )
+                        .await
                 {
                     let error = format_config_error(&err);
                     tracing::error!(error = %error, "failed to persist conversation model");
                     self.chat_widget
-                        .add_error_message(format!("Failed to save default model: {error}"));
+                        .add_error_message(format!("保存默认模型失败：{error}"));
                 } else {
                     self.chat_widget.add_info_message(
-                        format!("Model changed to {model} {effort} for this conversation"),
+                        format!("此对话的模型已更改为 {model} {effort}"),
                         /*hint*/ None,
                     );
                 }
@@ -1995,14 +2072,19 @@ impl App {
                     profile_selection,
                 );
             }
-            AppEvent::ApplyPermissionShortcut { thread_id, selection } => {
-                self.apply_permission_shortcut(app_server, thread_id, selection).await;
+            AppEvent::ApplyPermissionShortcut {
+                thread_id,
+                selection,
+            } => {
+                self.apply_permission_shortcut(app_server, thread_id, selection)
+                    .await;
             }
             AppEvent::OpenFeedbackNote {
                 category,
                 include_logs,
             } => {
-                self.chat_widget.open_feedback_note(category, include_logs, self.feedback_audience);
+                self.chat_widget
+                    .open_feedback_note(category, include_logs, self.feedback_audience);
             }
             AppEvent::OpenFeedbackConsent { category } => {
                 self.chat_widget.open_feedback_consent(category);
@@ -2031,7 +2113,8 @@ impl App {
             }
             AppEvent::RefreshWindowsSandbox { thread_id } => {
                 #[cfg(any(target_os = "windows", test))]
-                self.refresh_windows_sandbox_for_thread(app_server, thread_id).await;
+                self.refresh_windows_sandbox_for_thread(app_server, thread_id)
+                    .await;
                 #[cfg(not(any(target_os = "windows", test)))]
                 let _ = thread_id;
             }
@@ -2118,44 +2201,43 @@ impl App {
                         .verify_windows_sandbox_mode_after_setup(app_server, selected_mode)
                         .await
                     {
-                            self.chat_widget.windows_sandbox_elevated_setup_complete =
-                                elevated_enabled;
-                            if let Some(selection) = profile_selection {
-                                self.select_permission_profile(app_server, selection).await;
-                            } else {
-                                self.app_event_tx.send(AppEvent::CodexOp(
-                                    AppCommand::override_turn_context(
-                                        /*cwd*/ None,
-                                        Some(AskForApproval::from(preset.approval)),
-                                        Some(self.config.approvals_reviewer),
-                                        Some(preset.permission_profile.clone()),
-                                        Some(preset.active_permission_profile.clone()),
-                                        /*model*/ None,
-                                        /*effort*/ None,
-                                        /*summary*/ None,
-                                        /*service_tier*/ None,
-                                        /*collaboration_mode*/ None,
-                                        /*personality*/ None,
-                                    ),
+                        self.chat_widget.windows_sandbox_elevated_setup_complete = elevated_enabled;
+                        if let Some(selection) = profile_selection {
+                            self.select_permission_profile(app_server, selection).await;
+                        } else {
+                            self.app_event_tx.send(AppEvent::CodexOp(
+                                AppCommand::override_turn_context(
+                                    /*cwd*/ None,
+                                    Some(AskForApproval::from(preset.approval)),
+                                    Some(self.config.approvals_reviewer),
+                                    Some(preset.permission_profile.clone()),
+                                    Some(preset.active_permission_profile.clone()),
+                                    /*model*/ None,
+                                    /*effort*/ None,
+                                    /*summary*/ None,
+                                    /*service_tier*/ None,
+                                    /*collaboration_mode*/ None,
+                                    /*personality*/ None,
+                                ),
+                            ));
+                            self.app_event_tx.send(AppEvent::UpdateAskForApprovalPolicy(
+                                AskForApproval::from(preset.approval),
+                            ));
+                            self.app_event_tx
+                                .send(AppEvent::UpdateActivePermissionProfile(
+                                    preset.active_permission_profile.clone(),
                                 ));
-                                self.app_event_tx.send(AppEvent::UpdateAskForApprovalPolicy(
-                                    AskForApproval::from(preset.approval),
-                                ));
-                                self.app_event_tx
-                                    .send(AppEvent::UpdateActivePermissionProfile(
-                                        preset.active_permission_profile.clone(),
-                                    ));
-                            }
-                                self.chat_widget.add_plain_history_lines(vec![
-                                    Line::from(vec!["• ".dim(), "Sandbox ready".into()]),
-                                    Line::from(vec![
-                                        "  ".into(),
-                                        "Codex can now safely edit files and execute commands in your computer"
-                                            .dark_gray(),
-                                    ]),
-                                ]);
+                        }
+                        self.chat_widget.add_plain_history_lines(vec![
+                            Line::from(vec!["• ".dim(), "沙箱已就绪".into()]),
+                            Line::from(vec![
+                                "  ".into(),
+                                "Codex 现在可以安全地编辑文件并在你的计算机上执行命令".dark_gray(),
+                            ]),
+                        ]);
                     } else {
-                        self.chat_widget.retain_input_after_failed_permission_selection();
+                        self.chat_widget
+                            .retain_input_after_failed_permission_selection();
                     }
                 }
                 #[cfg(not(target_os = "windows"))]
@@ -2164,15 +2246,16 @@ impl App {
                 }
             }
             AppEvent::PersistModelSelection { model, effort } => {
-                match self.persist_model_defaults(
-                    app_server.request_handle(),
-                    crate::config_update::build_model_selection_edits(
-                        model.as_str(),
-                        effort.as_ref(),
-                    ),
-                    "default model and reasoning effort",
-                )
-                .await
+                match self
+                    .persist_model_defaults(
+                        app_server.request_handle(),
+                        crate::config_update::build_model_selection_edits(
+                            model.as_str(),
+                            effort.as_ref(),
+                        ),
+                        "default model and reasoning effort",
+                    )
+                    .await
                 {
                     Ok(()) => {
                         let effort_label = effort
@@ -2180,7 +2263,7 @@ impl App {
                             .map(std::string::ToString::to_string)
                             .unwrap_or_else(|| "default".to_string());
                         tracing::info!("Selected model: {model}, Selected effort: {effort_label}");
-                        let mut message = format!("Model changed to {model}");
+                        let mut message = format!("模型已更改为 {model}");
                         if let Some(label) = Self::reasoning_label_for(&model, effort.as_ref()) {
                             message.push(' ');
                             message.push_str(&label);
@@ -2194,7 +2277,7 @@ impl App {
                             "failed to persist model selection"
                         );
                         self.chat_widget
-                            .add_error_message(format!("Failed to save default model: {error}"));
+                            .add_error_message(format!("保存默认模型失败：{error}"));
                     }
                 }
             }
@@ -2203,7 +2286,7 @@ impl App {
             }
             AppEvent::CyberModelAutoReviewNotice => {
                 self.chat_widget.add_warning_message(
-                    "Cyber models default to \"Approve for me\" for safety reasons.".to_string(),
+                    "出于安全考虑，网络安全模型默认使用“自动批准”。".to_string(),
                 );
             }
             AppEvent::PluginUninstallLoaded {
@@ -2250,22 +2333,26 @@ impl App {
                 let edits = crate::config_update::build_service_tier_selection_edits(
                     service_tier.as_deref(),
                 );
-                match self.persist_model_defaults(app_server.request_handle(), edits, "default service tier")
+                match self
+                    .persist_model_defaults(
+                        app_server.request_handle(),
+                        edits,
+                        "default service tier",
+                    )
                     .await
                 {
                     Ok(()) => {
                         let message = if let Some(service_tier) = service_tier {
-                            format!("Service tier set to {service_tier}")
+                            format!("服务层级已设置为 {service_tier}")
                         } else {
-                            "Service tier cleared".to_string()
+                            "服务层级已清除".to_string()
                         };
                         self.chat_widget.add_info_message(message, /*hint*/ None);
                     }
                     Err(err) => {
                         tracing::error!(error = %err, "failed to persist service tier selection");
-                        self.chat_widget.add_error_message(format!(
-                            "Failed to save default service tier: {err}"
-                        ));
+                        self.chat_widget
+                            .add_error_message(format!("保存默认服务层级失败：{err}"));
                     }
                 }
             }
@@ -2277,7 +2364,7 @@ impl App {
                 if !self.try_set_approval_policy_on_config(
                     &mut config,
                     policy,
-                    "Failed to set approval policy",
+                    "设置批准策略失败",
                     "failed to set approval policy on app config",
                 ) {
                     return Ok(AppRunControl::Continue);
@@ -2300,7 +2387,7 @@ impl App {
                     .try_set_builtin_active_permission_profile_on_config(
                         &mut config,
                         active_permission_profile.clone(),
-                        "Failed to set permission profile",
+                        "设置权限配置文件失败",
                         "failed to set active permission profile on app config",
                     )
                 else {
@@ -2320,7 +2407,7 @@ impl App {
                 {
                     tracing::warn!(%err, "failed to set permission profile on chat config");
                     self.chat_widget
-                        .add_error_message(format!("Failed to set permission profile: {err}"));
+                        .add_error_message(format!("设置权限配置文件失败：{err}"));
                     return Ok(AppRunControl::Continue);
                 }
                 self.runtime_permission_profile_override =
@@ -2357,15 +2444,22 @@ impl App {
                         "failed to persist approvals reviewer update"
                     );
                     self.chat_widget.add_error_message(format!(
-                        "Failed to save approvals reviewer: {}",
+                        "保存批准审查者失败：{}",
                         format_config_error(&err)
                     ));
                 }
             }
-            AppEvent::FetchExperimentalFeatures { thread_id, response_tx } => {
+            AppEvent::FetchExperimentalFeatures {
+                thread_id,
+                response_tx,
+            } => {
                 self.fetch_experimental_features(app_server, thread_id, response_tx);
             }
-            AppEvent::SaveExperimentalFeatures { thread_id, updates, response_tx } => {
+            AppEvent::SaveExperimentalFeatures {
+                thread_id,
+                updates,
+                response_tx,
+            } => {
                 self.save_experimental_features(app_server, thread_id, updates, response_tx);
             }
             AppEvent::EnableFeatureForNewThreads(feature) => {
@@ -2399,18 +2493,19 @@ impl App {
             }
             AppEvent::PersistRateLimitSwitchPromptHidden => {
                 self.local_settings.notices.hide_rate_limit_model_nudge = Some(true);
-                if let Err(err) = ConfigEditsBuilder::for_config_path(self.local_settings.user_config_path.as_path())
-                    .set_hide_rate_limit_model_nudge(/*acknowledged*/ true)
-                    .apply()
-                    .await
+                if let Err(err) = ConfigEditsBuilder::for_config_path(
+                    self.local_settings.user_config_path.as_path(),
+                )
+                .set_hide_rate_limit_model_nudge(/*acknowledged*/ true)
+                .apply()
+                .await
                 {
                     tracing::error!(
                         error = %err,
                         "failed to persist rate limit switch prompt preference"
                     );
-                    self.chat_widget.add_error_message(format!(
-                        "Failed to save rate limit reminder preference: {err}"
-                    ));
+                    self.chat_widget
+                        .add_error_message(format!("保存用量限制提醒偏好失败：{err}"));
                 }
             }
             AppEvent::PersistPlanModeReasoningEffort(effort) => {
@@ -2423,38 +2518,39 @@ impl App {
                 } else {
                     crate::config_update::clear_config_value(key_path)
                 };
-                if let Err(err) = self.persist_model_defaults(
-                    app_server.request_handle(),
-                    vec![edit],
-                    "Plan mode reasoning effort",
-                )
-                .await
+                if let Err(err) = self
+                    .persist_model_defaults(
+                        app_server.request_handle(),
+                        vec![edit],
+                        "计划模式推理强度",
+                    )
+                    .await
                 {
                     tracing::error!(
                         error = %err,
                         "failed to persist plan mode reasoning effort"
                     );
-                    self.chat_widget.add_error_message(format!(
-                        "Failed to save Plan mode reasoning effort: {err}"
-                    ));
+                    self.chat_widget
+                        .add_error_message(format!("保存计划模式推理强度失败：{err}"));
                 }
             }
             AppEvent::PersistModelMigrationPromptAcknowledged {
                 from_model,
                 to_model,
             } => {
-                if let Err(err) = ConfigEditsBuilder::for_config_path(self.local_settings.user_config_path.as_path())
-                    .record_model_migration_seen(from_model.as_str(), to_model.as_str())
-                    .apply()
-                    .await
+                if let Err(err) = ConfigEditsBuilder::for_config_path(
+                    self.local_settings.user_config_path.as_path(),
+                )
+                .record_model_migration_seen(from_model.as_str(), to_model.as_str())
+                .apply()
+                .await
                 {
                     tracing::error!(
                         error = %err,
                         "failed to persist model migration prompt acknowledgement"
                     );
-                    self.chat_widget.add_error_message(format!(
-                        "Failed to save model migration prompt preference: {err}"
-                    ));
+                    self.chat_widget
+                        .add_error_message(format!("保存模型迁移提示偏好失败：{err}"));
                 }
             }
             AppEvent::OpenAgentsOverview => {
@@ -2470,7 +2566,11 @@ impl App {
                 {
                     AppRunControl::Continue
                         if self.primary_thread_id.is_none()
-                            && self.chat_widget.selected_index_for_present_view(AGENTS_OVERVIEW_VIEW_ID).is_none() => {
+                            && self
+                                .chat_widget
+                                .selected_index_for_present_view(AGENTS_OVERVIEW_VIEW_ID)
+                                .is_none() =>
+                    {
                         self.open_agents_overview(app_server);
                     }
                     AppRunControl::Continue => {}
@@ -2485,7 +2585,11 @@ impl App {
             }
             AppEvent::AgentsOverviewWorktreeCreated(result) => {
                 self.pending_managed_worktree_creation = false;
-                self.agents_overview.view_state.lock().unwrap_or_else(std::sync::PoisonError::into_inner).creating_worktree = false;
+                self.agents_overview
+                    .view_state
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
+                    .creating_worktree = false;
                 match result {
                     Ok(mut pending) => {
                         let Some(checkout) = pending.checkout.take() else {
@@ -2493,7 +2597,14 @@ impl App {
                         };
                         let manager = pending.manager.clone();
                         let cwd = AbsolutePathBuf::try_from(checkout.cwd.clone())?;
-                        return Box::pin(self.start_agents_overview_session(tui, app_server, Some(cwd), Some((manager, checkout)), /*startup_draft*/ None)).await;
+                        return Box::pin(self.start_agents_overview_session(
+                            tui,
+                            app_server,
+                            Some(cwd),
+                            Some((manager, checkout)),
+                            /*startup_draft*/ None,
+                        ))
+                        .await;
                     }
                     Err(error) => self.add_agents_overview_error(error),
                 }
@@ -2509,7 +2620,7 @@ impl App {
                             state.input = name;
                             state.renaming = true;
                         }
-                        self.add_agents_overview_error(format!("Failed to rename task: {error}"));
+                        self.add_agents_overview_error(format!("重命名任务失败：{error}"));
                     }
                 }
             }
@@ -2572,9 +2683,9 @@ impl App {
                         }
                     }
                     ThreadTitleDestination::RenameSuggestion { request_id } => {
-                        let suggestion = result
-                            .ok()
-                            .and_then(|response| super::thread_title::parse_thread_title(&response));
+                        let suggestion = result.ok().and_then(|response| {
+                            super::thread_title::parse_thread_title(&response)
+                        });
 
                         self.chat_widget.apply_thread_name_suggestion(
                             thread_id,
@@ -2592,7 +2703,8 @@ impl App {
                 self.confirm_agents_overview_action(thread_id, action);
             }
             AppEvent::RunAgentsOverviewAction { thread_id, action } => {
-                self.run_agents_overview_action(tui, app_server, thread_id, action).await?;
+                self.run_agents_overview_action(tui, app_server, thread_id, action)
+                    .await?;
             }
             AppEvent::StopAgentsOverviewThread { thread_id } => {
                 self.stop_agents_overview_thread(app_server, thread_id)
@@ -2605,13 +2717,13 @@ impl App {
             #[cfg(any(unix, windows))]
             AppEvent::AgentsDaemonStarted { result } => match result {
                 Ok(()) => self.chat_widget.add_info_message(
-                    "Background server started. Run `codex agents` in another terminal; this session remains unchanged."
+                    "后台服务已启动。请在另一个终端中运行 `codex agents`；当前会话保持不变。"
                         .to_string(),
                     /*hint*/ None,
                 ),
                 Err(error) => self
                     .chat_widget
-                    .add_error_message(format!("Failed to start the background server: {error}")),
+                    .add_error_message(format!("启动后台服务失败：{error}")),
             },
             AppEvent::OpenAgentPicker => {
                 self.open_agent_picker(app_server).await;
@@ -2654,9 +2766,8 @@ impl App {
                     }
                     Err(err) => {
                         let path_display = path.display();
-                        self.chat_widget.add_error_message(format!(
-                            "Failed to update skill config for {path_display}: {err}"
-                        ));
+                        self.chat_widget
+                            .add_error_message(format!("更新技能配置 {path_display} 失败：{err}"));
                     }
                 }
             }
@@ -2689,9 +2800,8 @@ impl App {
                         self.chat_widget.update_connector_enabled(&id, enabled);
                     }
                     Err(err) => {
-                        self.chat_widget.add_error_message(format!(
-                            "Failed to update app config for {id}: {err}"
-                        ));
+                        self.chat_widget
+                            .add_error_message(format!("更新应用配置 {id} 失败：{err}"));
                     }
                 }
             }
@@ -2740,7 +2850,11 @@ impl App {
                 #[cfg(any(target_os = "windows", test))]
                 if self.chat_widget.windows_sandbox_local_server
                     && self.windows_sandbox_host() != WindowsSandboxHost::Remote
-                    && self.chat_widget.windows_sandbox_config.requirements.is_none()
+                    && self
+                        .chat_widget
+                        .windows_sandbox_config
+                        .requirements
+                        .is_none()
                     && !self.refresh_windows_sandbox_config(app_server).await
                 {
                     return Ok(AppRunControl::Continue);
@@ -2773,8 +2887,10 @@ impl App {
             AppEvent::FullScreenUserVerificationRequest(request) => {
                 let _ = tui.enter_alt_screen();
                 self.overlay = Some(Overlay::new_static_with_renderables(
-                    vec![crate::bottom_pane::user_verification::prompt_header(&request)],
-                    "U S E R  V E R I F I C A T I O N".to_string(),
+                    vec![crate::bottom_pane::user_verification::prompt_header(
+                        &request,
+                    )],
+                    "用 户 验 证".to_string(),
                     self.keymap.pager.clone(),
                 ));
             }
@@ -2784,7 +2900,7 @@ impl App {
                     let diff_summary = DiffSummary::new(request.changes, request.cwd);
                     self.overlay = Some(Overlay::new_static_with_renderables(
                         vec![diff_summary.into()],
-                        "P A T C H".to_string(),
+                        "补 丁".to_string(),
                         self.keymap.pager.clone(),
                     ));
                 }
@@ -2794,7 +2910,7 @@ impl App {
                     let full_cmd_lines = highlight_bash_to_lines(&full_cmd);
                     self.overlay = Some(Overlay::new_static_with_lines(
                         full_cmd_lines,
-                        "E X E C".to_string(),
+                        "命 令 执 行".to_string(),
                         self.keymap.pager.clone(),
                     ));
                 }
@@ -2802,41 +2918,35 @@ impl App {
                     let _ = tui.enter_alt_screen();
                     let mut lines = Vec::new();
                     if let Some(environment_id) = request.environment_id {
-                        lines.push(Line::from(vec![
-                            "Environment: ".into(),
-                            environment_id.bold(),
-                        ]));
+                        lines.push(Line::from(vec!["环境：".into(), environment_id.bold()]));
                         lines.push(Line::from(""));
                     }
                     if let Some(reason) = request.reason {
-                        lines.push(Line::from(vec!["Reason: ".into(), reason.italic()]));
+                        lines.push(Line::from(vec!["原因：".into(), reason.italic()]));
                         lines.push(Line::from(""));
                     }
                     if let Some(rule_line) =
                         crate::bottom_pane::format_requested_permissions_rule(&request.permissions)
                     {
-                        lines.push(Line::from(vec![
-                            "Permission rule: ".into(),
-                            rule_line.cyan(),
-                        ]));
+                        lines.push(Line::from(vec!["权限规则：".into(), rule_line.cyan()]));
                     }
                     self.overlay = Some(Overlay::new_static_with_renderables(
                         vec![Box::new(Paragraph::new(lines).wrap(Wrap { trim: false }))],
-                        "P E R M I S S I O N S".to_string(),
+                        "权 限".to_string(),
                         self.keymap.pager.clone(),
                     ));
                 }
                 ApprovalRequest::McpElicitation(request) => {
                     let _ = tui.enter_alt_screen();
                     let paragraph = Paragraph::new(vec![
-                        Line::from(vec!["Server: ".into(), request.server_name.bold()]),
+                        Line::from(vec!["服务器：".into(), request.server_name.bold()]),
                         Line::from(""),
                         Line::from(request.message),
                     ])
                     .wrap(Wrap { trim: false });
                     self.overlay = Some(Overlay::new_static_with_renderables(
                         vec![Box::new(paragraph)],
-                        "E L I C I T A T I O N".to_string(),
+                        "信 息 请 求".to_string(),
                         self.keymap.pager.clone(),
                     ));
                 }
@@ -2849,10 +2959,12 @@ impl App {
                 let items_edit = crate::legacy_core::config::edit::status_line_items_edit(&ids);
                 let colors_edit =
                     crate::legacy_core::config::edit::status_line_use_colors_edit(use_theme_colors);
-                let apply_result = ConfigEditsBuilder::for_config_path(self.local_settings.user_config_path.as_path())
-                    .with_edits([items_edit, colors_edit])
-                    .apply()
-                    .await;
+                let apply_result = ConfigEditsBuilder::for_config_path(
+                    self.local_settings.user_config_path.as_path(),
+                )
+                .with_edits([items_edit, colors_edit])
+                .apply()
+                .await;
                 match apply_result {
                     Ok(()) => {
                         self.local_settings.tui.status_line = Some(ids.clone());
@@ -2862,9 +2974,8 @@ impl App {
                     Err(err) => {
                         let error = format_config_error(&err);
                         tracing::error!(error = %error, "failed to persist status line settings; keeping previous selection");
-                        self.chat_widget.add_error_message(format!(
-                            "Failed to save status line settings: {error}"
-                        ));
+                        self.chat_widget
+                            .add_error_message(format!("保存状态栏设置失败：{error}"));
                     }
                 }
             }
@@ -2890,10 +3001,12 @@ impl App {
             AppEvent::TerminalTitleSetup { items } => {
                 let ids = items.iter().map(ToString::to_string).collect::<Vec<_>>();
                 let edit = crate::legacy_core::config::edit::terminal_title_items_edit(&ids);
-                let apply_result = ConfigEditsBuilder::for_config_path(self.local_settings.user_config_path.as_path())
-                    .with_edits([edit])
-                    .apply()
-                    .await;
+                let apply_result = ConfigEditsBuilder::for_config_path(
+                    self.local_settings.user_config_path.as_path(),
+                )
+                .with_edits([edit])
+                .apply()
+                .await;
                 match apply_result {
                     Ok(()) => {
                         self.local_settings.tui.terminal_title = Some(ids.clone());
@@ -2902,9 +3015,8 @@ impl App {
                     Err(err) => {
                         tracing::error!(error = %err, "failed to persist terminal title items; keeping previous selection");
                         self.chat_widget.revert_terminal_title_setup_preview();
-                        self.chat_widget.add_error_message(format!(
-                            "Failed to save terminal title items: {err}"
-                        ));
+                        self.chat_widget
+                            .add_error_message(format!("保存终端标题项目失败：{err}"));
                     }
                 }
             }
@@ -2916,10 +3028,12 @@ impl App {
             }
             AppEvent::SyntaxThemeSelected { name } => {
                 let edit = crate::legacy_core::config::edit::syntax_theme_edit(&name);
-                let apply_result = ConfigEditsBuilder::for_config_path(self.local_settings.user_config_path.as_path())
-                    .with_edits([edit])
-                    .apply()
-                    .await;
+                let apply_result = ConfigEditsBuilder::for_config_path(
+                    self.local_settings.user_config_path.as_path(),
+                )
+                .with_edits([edit])
+                .apply()
+                .await;
                 match apply_result {
                     Ok(()) => {
                         // Ensure the selected theme is active in the current
@@ -2941,7 +3055,7 @@ impl App {
                         self.refresh_status_line();
                         tracing::error!(error = %err, "failed to persist theme selection");
                         self.chat_widget
-                            .add_error_message(format!("Failed to save theme: {err}"));
+                            .add_error_message(format!("保存主题失败：{err}"));
                     }
                 }
             }
@@ -2991,9 +3105,8 @@ impl App {
             AppEvent::GenerateRecap { thread_id } => {
                 if self.current_displayed_thread_id() == Some(thread_id) {
                     if self.chat_widget.is_user_turn_pending_or_running() {
-                        self.chat_widget.add_error_message(
-                            "Wait for the current task to finish before running /recap.".to_string(),
-                        );
+                        self.chat_widget
+                            .add_error_message("请等待当前任务完成后再运行 /recap。".to_string());
                     } else {
                         self.request_recap(app_server, thread_id, RecapTrigger::Manual);
                     }
@@ -3040,7 +3153,8 @@ impl App {
                 turn_revision,
                 result,
             } => {
-                self.temporary_structured_requests.remove(&temporary_thread_id);
+                self.temporary_structured_requests
+                    .remove(&temporary_thread_id);
                 if let Some(cell) = self.handle_generated_recap(
                     recap::RecapRequest {
                         thread_id,
@@ -3124,7 +3238,7 @@ impl App {
             Err(err) => {
                 tracing::error!(error = %err, "failed to persist keymap binding");
                 self.chat_widget
-                    .add_error_message(format!("Failed to save shortcut: {err}"));
+                    .add_error_message(format!("保存快捷键失败：{err}"));
             }
         }
     }
@@ -3153,7 +3267,7 @@ impl App {
             Ok(runtime_keymap) => runtime_keymap,
             Err(err) => {
                 self.chat_widget
-                    .add_error_message(format!("Failed to refresh shortcuts: {err}"));
+                    .add_error_message(format!("刷新快捷键失败：{err}"));
                 return;
             }
         };
@@ -3174,14 +3288,14 @@ impl App {
                 self.chat_widget
                     .return_to_keymap_picker(&context, &action, &runtime_keymap);
                 self.chat_widget.add_info_message(
-                    format!("Removed custom shortcut for `{context}.{action}`."),
+                    format!("已移除 `{context}.{action}` 的自定义快捷键。"),
                     /*hint*/ None,
                 );
             }
             Err(err) => {
                 tracing::error!(error = %err, "failed to clear keymap binding");
                 self.chat_widget
-                    .add_error_message(format!("Failed to remove shortcut: {err}"));
+                    .add_error_message(format!("移除快捷键失败：{err}"));
             }
         }
     }
@@ -3254,13 +3368,12 @@ impl App {
     ) -> Result<AppRunControl> {
         let Some(thread_id) = self.active_thread_id.or(self.chat_widget.thread_id()) else {
             self.chat_widget
-                .add_error_message("A thread must start before it can be archived.".to_string());
+                .add_error_message("会话开始后才能归档。".to_string());
             return Ok(AppRunControl::Continue);
         };
         if self.side_threads.contains_key(&thread_id) {
             self.chat_widget.add_error_message(
-                "'/archive' is unavailable in side conversations. Press Ctrl+C to return to the main thread first."
-                    .to_string(),
+                "旁路对话中无法使用 '/archive'。请先按 Ctrl+C 返回主会话。".to_string(),
             );
             return Ok(AppRunControl::Continue);
         }
@@ -3301,7 +3414,7 @@ impl App {
             }
             Err(err) => {
                 self.chat_widget
-                    .add_error_message(format!("Failed to archive current thread: {err}"));
+                    .add_error_message(format!("归档当前线程失败：{err}"));
                 AppRunControl::Continue
             }
         })
@@ -3314,13 +3427,12 @@ impl App {
     ) -> Result<AppRunControl> {
         let Some(thread_id) = self.active_thread_id.or(self.chat_widget.thread_id()) else {
             self.chat_widget
-                .add_error_message("A thread must start before it can be deleted.".to_string());
+                .add_error_message("线程启动后才能删除。".to_string());
             return Ok(AppRunControl::Continue);
         };
         if self.side_threads.contains_key(&thread_id) {
             self.chat_widget.add_error_message(
-                "'/delete' is unavailable in side conversations. Press Ctrl+C to return to the main thread first."
-                    .to_string(),
+                "旁路对话中无法使用 /delete。请先按 Ctrl+C 返回主线程。".to_string(),
             );
             return Ok(AppRunControl::Continue);
         }
@@ -3361,7 +3473,7 @@ impl App {
             }
             Err(err) => {
                 self.chat_widget
-                    .add_error_message(format!("Failed to delete current thread: {err}"));
+                    .add_error_message(format!("删除当前线程失败：{err}"));
                 AppRunControl::Continue
             }
         })

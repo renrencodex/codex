@@ -2,10 +2,10 @@
 source: tui/src/chatwidget/tests/usage.rs
 expression: "render_bottom_popup(&chat, 80)"
 ---
-  Usage
-  View account usage or redeem an earned reset.
+  用 量
+  查 看 账 户 用 量 ， 或 兑 换 已 获 得 的 重 置 机 会 。
 
-› 1. View analytics            Browse account usage and activity.
-     Redeem usage limit reset  No usage limit resets available.
+› 1. 查 看 分 析               浏 览 账 户 用 量 和 活 动 。
+     兑 换 用 量 限 制 重 置 机 会   没 有 可 用 的 用 量 限 制 重 置 机 会 。
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

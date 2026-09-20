@@ -2,16 +2,16 @@
 source: tui/src/chatwidget/tests/popups_and_settings.rs
 expression: popup
 ---
-  Plugins
-  Browse plugins from available marketplaces.
-  Installed 1 of 4 available plugins.
+  插 件
+  浏 览 可 用 插 件 市 场 中 的 插 件 。
+  4 个 可 用 插 件 中 已 安 装  1 个 。
 
-  [All Plugins]  Installed (1)  OpenAI Curated  Workspace  Repo Marketplace  Add Marketplace
+  [全 部 插 件 ]  已 安 装 （ 1）   OpenAI 精 选   工 作 区   Repo Marketplace  添 加 插 件 市 场
 
-  Type to search plugins
-› [ ] Alpha Sync          Disabled         Space to enable; Enter view details.
-  [-] Bravo Search        Available      · OpenAI Curated · Search docs and tickets.
-  [-] Hidden Repo Plugin  Available      · Repo Marketplace · Should not be shown in /plugins.
-  [-] Starter             Admin assigned · OpenAI Curated · Included by default.
+  输 入 内 容 以 搜 索 插 件
+› [ ] Alpha Sync          已 禁 用    Space 启 用 ； Enter 查 看 详 细 信 息 。
+  [-] Bravo Search        可 安 装  · OpenAI 精 选  · Search docs and tickets.
+  [-] Hidden Repo Plugin  可 安 装  · Repo Marketplace · Should not be shown in /plugins.
+  [-] Starter             管 理 员 已 分 配  · OpenAI 精 选  · Included by default.
 
-  space enable/disable · ←/→ select marketplace · enter view details · esc close
+  space 启 用 /禁 用  · ←/→ 选 择 插 件 市 场  · enter 查 看 详 情  · esc 关 闭

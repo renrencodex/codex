@@ -117,10 +117,7 @@ impl ChatWidget {
                 selection: selection.clone(),
             });
         } else {
-            self.add_info_message(
-                "No other permission modes are available.".to_string(),
-                /*hint*/ None,
-            );
+            self.add_info_message("没有其他可用的权限模式。".to_string(), /*hint*/ None);
         }
         true
     }

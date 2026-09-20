@@ -15,24 +15,22 @@ pub(super) async fn run_main_inner(
 ) -> std::io::Result<AppExitInfo> {
     if cli.no_daemon && explicit_remote_endpoint.is_some() {
         return Err(std::io::Error::other(
-            "--no-daemon cannot be used with --remote.",
+            "--no-daemon 不能与 --remote 同时使用。",
         ));
     }
     if explicit_remote_endpoint.is_some() && !cli.add_dir.is_empty() {
         return Err(std::io::Error::other(
-            "--add-dir is not supported with --remote. Configure additional workspace roots on the server.",
+            "--remote 不支持 --add-dir。请在服务器上配置其他工作区根目录。",
         ));
     }
     let strict_config = cli.strict_config;
     if cli.shared.worktree {
         if explicit_remote_endpoint.is_some() {
-            return Err(std::io::Error::other(
-                "`--worktree` is only supported for local sessions",
-            ));
+            return Err(std::io::Error::other("`--worktree` 仅支持本地会话"));
         }
         if cli.fork_picker || cli.fork_last {
             return Err(std::io::Error::other(
-                "`codex fork --worktree` requires an explicit session ID",
+                "`codex fork --worktree` 需要明确的会话 ID",
             ));
         }
     }
@@ -68,7 +66,7 @@ pub(super) async fn run_main_inner(
         Ok(v) => v,
         #[allow(clippy::print_stderr)]
         Err(e) => {
-            eprintln!("Error parsing -c overrides: {e}");
+            eprintln!("解析 -c 覆盖项时出错：{e}");
             std::process::exit(1);
         }
     };
@@ -79,7 +77,7 @@ pub(super) async fn run_main_inner(
         })
     {
         return Err(std::io::Error::other(
-            "sandbox_workspace_write.writable_roots overrides are not supported with --remote. Configure additional workspace roots on the server.",
+            "--remote 不支持 sandbox_workspace_write.writable_roots 覆盖项。请在服务器上配置其他工作区根目录。",
         ));
     }
 
@@ -88,7 +86,7 @@ pub(super) async fn run_main_inner(
     let codex_home = match find_codex_home() {
         Ok(codex_home) => codex_home.to_path_buf(),
         Err(err) => {
-            eprintln!("Error finding codex home: {err}");
+            eprintln!("查找 Codex 主目录时出错：{err}");
             std::process::exit(1);
         }
     };
@@ -248,9 +246,7 @@ pub(super) async fn run_main_inner(
         && (app_server_target.uses_remote_workspace()
             || prepared_environment_manager.default_environment_is_remote())
     {
-        return Err(std::io::Error::other(
-            "`--worktree` is only supported for local sessions",
-        ));
+        return Err(std::io::Error::other("`--worktree` 仅支持本地会话"));
     }
     let cwd = cli.cwd.clone();
     let config_cwd = config_cwd_for_app_server_target(
@@ -347,9 +343,7 @@ pub(super) async fn run_main_inner(
             };
             let provider = selection.provider;
             if provider == "__CANCELLED__" {
-                return Err(std::io::Error::other(
-                    "OSS provider selection was cancelled by user",
-                ));
+                return Err(std::io::Error::other("用户已取消 OSS 提供商选择"));
             }
             if selection.manually_selected {
                 manually_selected_oss_provider = Some(provider.clone());
@@ -457,7 +451,7 @@ pub(super) async fn run_main_inner(
             .is_none()
     {
         // The Bedrock wizard configures its provider through the embedded server.
-        daemon_exclusion = Some("Bedrock sign-in");
+        daemon_exclusion = Some("Bedrock 登录");
         app_server_target = AppServerTarget::Embedded;
     }
     let daemon_features = daemon_startup::server_features(&cli_kv_overrides);
@@ -495,16 +489,12 @@ pub(super) async fn run_main_inner(
     };
     if compatibility_warning.is_some() {
         app_server_target = AppServerTarget::Embedded;
-        daemon_exclusion = Some("daemon feature settings");
+        daemon_exclusion = Some("后台服务功能设置");
     }
     let daemon_startup_warning = compatibility_warning.or_else(|| {
         daemon_exclusion
             .filter(|_| auto_start_daemon)
-            .map(|reason| {
-                format!(
-                    "Running without the shared background server: {reason} requires embedded mode."
-                )
-            })
+            .map(|reason| format!("未使用共享后台服务器运行：{reason}需要嵌入模式。"))
     });
     #[cfg(target_os = "macos")]
     let local_runtime_paths = local_runtime_paths.with_allowed_symlinked_codex_home(
@@ -535,7 +525,7 @@ pub(super) async fn run_main_inner(
                 .with_restored(|| async {
                     #[allow(clippy::print_stderr)]
                     {
-                        eprintln!("Could not create otel exporter: {e}");
+                        eprintln!("无法创建 OTEL 导出器：{e}");
                     }
                 })
                 .await;
@@ -544,7 +534,7 @@ pub(super) async fn run_main_inner(
         Err(_) => {
             #[allow(clippy::print_stderr)]
             {
-                eprintln!("Could not create otel exporter: panicked during initialization");
+                eprintln!("无法创建 OTEL 导出器：初始化期间发生 panic");
             }
             startup_draft.tui_mut().recover_after_caught_panic()?;
             None
@@ -655,7 +645,7 @@ pub(super) async fn run_main_inner(
         #[allow(clippy::print_stderr)]
         {
             restore_terminal_before_fatal_exit();
-            eprintln!("Error adding directories: {warning}");
+            eprintln!("添加目录时出错：{warning}");
             if let Some(worktree) = managed_worktree.as_ref() {
                 worktree.report_startup_failure();
             }
@@ -738,7 +728,7 @@ pub(super) async fn run_main_inner(
             None => {
                 error!("OSS provider unexpectedly not set when oss flag is used");
                 return Err(std::io::Error::other(
-                    "OSS provider not set but oss flag was used",
+                    "使用了 oss 标志，但未设置 OSS 提供商",
                 ));
             }
         };

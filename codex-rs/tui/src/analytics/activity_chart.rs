@@ -45,9 +45,9 @@ impl TokenActivityView {
 
     pub(crate) fn label(self) -> &'static str {
         match self {
-            Self::Daily => "Daily",
-            Self::Weekly => "Weekly",
-            Self::Cumulative => "Cumulative",
+            Self::Daily => "每日",
+            Self::Weekly => "每周",
+            Self::Cumulative => "累计",
         }
     }
 }
@@ -126,7 +126,7 @@ fn weekday_label(view: TokenActivityView, row: usize) -> Span<'static> {
         // as a coarse Y-axis: peak at the top, baseline at the bottom.
         return Span::styled(
             match row {
-                0 => "max ",
+                0 => "最大",
                 6 => "  0 ",
                 _ => "    ",
             },
@@ -135,13 +135,13 @@ fn weekday_label(view: TokenActivityView, row: usize) -> Span<'static> {
     }
     Span::styled(
         match row {
-            0 => " Su ",
-            1 => " Mo ",
-            2 => " Tu ",
-            3 => " We ",
-            4 => " Th ",
-            5 => " Fr ",
-            6 => " Sa ",
+            0 => " 日 ",
+            1 => " 一 ",
+            2 => " 二 ",
+            3 => " 三 ",
+            4 => " 四 ",
+            5 => " 五 ",
+            6 => " 六 ",
             _ => "    ",
         },
         label_style(),
@@ -169,11 +169,11 @@ fn bar_caption(view: TokenActivityView, values: &[i64]) -> Line<'static> {
     let weeks = weekly_totals(values);
     let (lead, peak) = match view {
         TokenActivityView::Weekly => (
-            "Each column = 1 week · tallest ",
+            "每列 = 1 周 · 最高 ",
             weeks.iter().copied().max().unwrap_or(/*default*/ 0),
         ),
         TokenActivityView::Cumulative => (
-            "Running total · top ",
+            "累计总计 · 最高 ",
             weeks
                 .iter()
                 .fold(/*init*/ 0_i64, |sum, value| sum.saturating_add(*value)),
@@ -181,7 +181,7 @@ fn bar_caption(view: TokenActivityView, values: &[i64]) -> Line<'static> {
         TokenActivityView::Daily => ("", 0),
     };
     if peak <= 0 {
-        return Span::styled("   No token activity in the last 12 months", label_style()).into();
+        return Span::styled("   过去 12 个月没有 Token 活动", label_style()).into();
     }
     vec![
         Span::styled(format!("   {lead}"), label_style()),

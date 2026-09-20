@@ -36,7 +36,7 @@ fn main() -> anyhow::Result<()> {
         .await?;
         let is_fatal = match &exit_info.exit_reason {
             ExitReason::Fatal(message) => {
-                eprintln!("ERROR: {message}");
+                eprintln!("错误：{message}");
                 true
             }
             ExitReason::UserRequested

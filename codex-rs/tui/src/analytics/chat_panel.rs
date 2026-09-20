@@ -21,7 +21,7 @@ impl AnalyticsView {
         let width = width.clamp(/*min*/ 1, /*max*/ 96);
         let wrap = |lines: Vec<Line<'static>>| word_wrap_lines(lines, RtOptions::new(width));
         let mut lines = wrap(vec![
-            "Active in past 30 days · sorted by lifetime credits"
+            "过去 30 天活跃 · 按累计 credits 排序"
                 .set_style(secondary_style())
                 .into(),
         ]);
@@ -35,19 +35,16 @@ impl AnalyticsView {
         };
         if chats.rows.is_empty() {
             lines.extend(wrap(vec![
-                "No recent local chats.".set_style(secondary_style()).into(),
+                "近期没有本地对话。".set_style(secondary_style()).into(),
             ]));
             return (lines, 0..1);
         }
         let missing = chats.rows.iter().filter(|row| row.usage.is_none()).count();
         if missing > 0 {
             lines.extend(wrap(vec![
-                format!(
-                    "{missing} chat estimate{} unavailable",
-                    if missing == 1 { "" } else { "s" }
-                )
-                .set_style(secondary_style())
-                .into(),
+                format!("{missing} 个对话的估算不可用",)
+                    .set_style(secondary_style())
+                    .into(),
             ]));
         }
         lines.push(Line::default());
@@ -58,13 +55,13 @@ impl AnalyticsView {
         });
         let stacked_amounts = show_usd && width < 70;
         lines.extend(wrap(vec![columns(
-            "  Chat".bold().into(),
+            "  对话".bold().into(),
             if stacked_amounts {
-                "Est. $ / credits"
+                "估算 $ / credits"
             } else if show_usd {
-                "Est. $ spent  Lifetime credits"
+                "估算支出 $  累计 credits"
             } else {
-                "Lifetime credits"
+                "累计 credits"
             }
             .bold()
             .into(),
@@ -165,27 +162,26 @@ impl AnalyticsView {
                             if table {
                                 format!(
                                     "  {:<model_width$}  {:<12}  {:<12}",
-                                    "Model",
-                                    "Effort",
-                                    "Speed",
+                                    "模型",
+                                    "强度",
+                                    "速度",
                                     model_width = width - 46
                                 )
                                 .set_style(secondary_style())
                                 .into()
                             } else {
-                                "  Model / effort / speed"
+                                "  模型 / 推理强度 / 速度"
                                     .set_style(secondary_style())
                                     .into()
                             },
-                            "Credits".bold().into(),
+                            "额度".bold().into(),
                             width,
                         ));
                     }
                     for group in groups {
-                        let model =
-                            self.model_name(group.model.as_deref().unwrap_or("Not reported"));
-                        let effort = group.reasoning_effort.as_deref().unwrap_or("Not reported");
-                        let speed = group.speed.as_deref().unwrap_or("Not reported");
+                        let model = self.model_name(group.model.as_deref().unwrap_or("未上报"));
+                        let effort = group.reasoning_effort.as_deref().unwrap_or("未上报");
+                        let speed = group.speed.as_deref().unwrap_or("未上报");
                         let amount = data::credits(group.estimated_usage_credits_micros);
                         let label = if table {
                             // Wrap long model names instead of hiding distinctions between groups.
@@ -226,26 +222,21 @@ impl AnalyticsView {
                         }
                     }
                     if usage.groups.is_empty() {
-                        row.push(
-                            "  Breakdown unavailable"
-                                .set_style(secondary_style())
-                                .into(),
-                        );
+                        row.push("  明细不可用".set_style(secondary_style()).into());
                     }
                     if zeros > 0 {
                         row.push(
                             format!(
-                                "  {zeros} zero-credit {}{} · a {}",
-                                if zeros == 1 { "group" } else { "groups" },
+                                "  {zeros} 个零 credit 分组{} · 按 a {}",
                                 if self.show_zero_credit_groups {
                                     ""
                                 } else {
-                                    " hidden"
+                                    "已隐藏"
                                 },
                                 if self.show_zero_credit_groups {
-                                    "hide zeros"
+                                    "隐藏零值"
                                 } else {
-                                    "show all"
+                                    "显示全部"
                                 },
                             )
                             .set_style(secondary_style())
@@ -258,7 +249,7 @@ impl AnalyticsView {
             })
             .collect::<Vec<_>>();
         let coverage = wrap(vec![
-            "Local chats · excludes archived chats and subagent usage"
+            "本地对话 · 不含已归档对话和子代理用量"
                 .set_style(secondary_style())
                 .into(),
         ]);
@@ -275,7 +266,7 @@ impl AnalyticsView {
         let wrap = |lines: Vec<Line<'static>>| word_wrap_lines(lines, RtOptions::new(width));
         let count = rows.len();
         let range_height = wrap(vec![
-            format!("Showing {count}–{count} of {count} chats").into(),
+            format!("显示第 {count}–{count} 个，共 {count} 个对话").into(),
         ])
         .len();
         // Measure wrapped details before choosing neighbors so the range describes the rendered rows.
@@ -307,7 +298,7 @@ impl AnalyticsView {
         }
         lines.push(Line::default());
         lines.extend(wrap(vec![
-            format!("Showing {}–{end} of {count} chats", first + 1)
+            format!("显示第 {}–{end} 个，共 {count} 个对话", first + 1)
                 .set_style(secondary_style())
                 .into(),
         ]));

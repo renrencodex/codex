@@ -1,6 +1,5 @@
 ---
 source: tui/src/chatwidget/tests/status_and_layout.rs
-assertion_line: 34
 expression: rendered
 ---
 "                                                            "
@@ -11,9 +10,9 @@ expression: rendered
 "                                                            "
 "                                                            "
 "                                                            "
-" voice ● listening              ctrl+x mute     /voice stop "
+" voice ● 正在聆听               ctrl+x mute     /voice stop " Hidden by multi-width symbols: [(10, " "), (12, " "), (14, " "), (16, " ")]
 "   mic ▁▁▁▁▁▁  codex ▁▁▁▁▁▁                                 "
 "                                                            "
 "› Ask Codex to do anything                                  "
 "                                                            "
-"  GPT-5.6-Sol default · /tmp/project                        "
+"  GPT-5.6-Sol 默认 · /tmp/project                           " Hidden by multi-width symbols: [(15, " "), (17, " ")]

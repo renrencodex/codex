@@ -25,10 +25,10 @@ pub(super) fn background_terminals_blocker(
                             || source.message.contains("unknown method"))) =>
         {
             Some(
-                "The local Codex service cannot check background terminals. Run `codex app-server daemon update`, then restart Codex.",
+                "本地 Codex 服务无法检查后台终端。请运行 `codex app-server daemon update`，然后重启 Codex。",
             )
         }
-        _ => Some("Active background terminals block /cd."),
+        _ => Some("活动的后台终端会阻止 /cd。"),
     }
 }
 
@@ -40,31 +40,26 @@ impl App {
         name: Option<String>,
     ) {
         if !self.config.features.enabled(Feature::Worktrees) {
-            self.chat_widget.add_error_message(
-                "Enable worktrees in your Codex configuration to create a worktree.".to_string(),
-            );
+            self.chat_widget
+                .add_error_message("请在 Codex 配置中启用工作树，才能创建工作树。".to_string());
         } else if self.config.active_project.is_untrusted() {
-            self.chat_widget.add_error_message(
-                "Cannot create a worktree from an explicitly untrusted source.".to_string(),
-            );
+            self.chat_widget
+                .add_error_message("无法从明确不受信任的源创建工作树。".to_string());
         } else if crate::uses_remote_workspace_or_environment(
             &self.app_server_target,
             self.environment_manager.as_ref(),
         ) {
-            self.chat_widget.add_error_message(
-                "Managed worktrees are only supported for local sessions.".to_string(),
-            );
+            self.chat_widget
+                .add_error_message("仅本地会话支持托管工作树。".to_string());
         } else if self
             .primary_thread_id
             .is_none_or(|thread_id| !self.chat_widget.can_change_working_directory(thread_id))
         {
-            self.chat_widget.add_error_message(
-                "Creating a worktree requires an idle primary session without queued input."
-                    .to_string(),
-            );
+            self.chat_widget
+                .add_error_message("创建工作树需要主会话处于空闲状态且没有排队输入。".to_string());
         } else if self.pending_managed_worktree_creation {
             self.chat_widget
-                .add_error_message("A worktree is already being created.".to_string());
+                .add_error_message("正在创建另一个工作树。".to_string());
         } else {
             // These source-only checks must precede allocation. The transition repeats them
             // after the background task, since the session can change while Git is running.
@@ -73,12 +68,11 @@ impl App {
                 .iter()
                 .any(|cell| cell.as_any().is::<LoadingCell>())
             {
-                return self.working_directory_error("MCP inventory is still loading.");
+                return self.working_directory_error("MCP 清单仍在加载。");
             }
             let Some(thread_id) = self.primary_thread_id else {
-                return self.working_directory_error(
-                    "Creating a worktree requires an idle primary session without queued input.",
-                );
+                return self
+                    .working_directory_error("创建工作树需要主会话处于空闲状态且没有排队输入。");
             };
             let agents = self.agent_navigation.ordered_threads();
             let closed_agents: HashSet<_> = agents
@@ -98,7 +92,7 @@ impl App {
                     .iter()
                     .any(|(id, agent)| *id != thread_id && agent.is_running)
             {
-                return self.working_directory_error("Cannot change: another agent is running.");
+                return self.working_directory_error("无法更改：另一个代理正在运行。");
             }
             let rollout = self.chat_widget.rollout_path();
             let has_rollout = rollout.as_deref().is_some_and(rollout_path_is_resumable);
@@ -119,7 +113,7 @@ impl App {
                             })
                         }))
             {
-                return self.working_directory_error("Conversation history is not saved.");
+                return self.working_directory_error("对话历史尚未保存。");
             }
             let mut ids: HashSet<_> = self
                 .thread_event_channels
@@ -157,7 +151,7 @@ impl App {
                     .map_err(|error| anyhow::anyhow!(error.to_string()))?;
                 anyhow::ensure!(
                     !source.active_project.is_untrusted(),
-                    "Cannot create a worktree from an explicitly untrusted source."
+                    "无法从明确不受信任的源创建工作树。"
                 );
                 let host = crate::legacy_core::config::load_config_toml_with_layer_stack(
                     &self.config.codex_home,
@@ -191,9 +185,7 @@ impl App {
                                 .map_err(|error| error.to_string())
                         })
                         .await
-                        .unwrap_or_else(|error| {
-                            Err(format!("Worktree creation task failed: {error}"))
-                        });
+                        .unwrap_or_else(|error| Err(format!("工作树创建任务失败：{error}")));
                         sender.send(AppEvent::ManagedWorktreeCreated(Box::new(
                             ManagedWorktreeCreated {
                                 source_thread_id: thread_id,
@@ -234,7 +226,7 @@ impl App {
         if !can_continue {
             return self.retained_worktree_error(
                 &checkout,
-                "Cannot continue into the new worktree while the source session changed or is unavailable.",
+                "源会话已更改或不可用，无法在新工作树中继续。",
             );
         }
         match self
@@ -243,25 +235,19 @@ impl App {
         {
             Ok(config) if !config.active_project.is_untrusted() => {}
             Ok(_) | Err(_) => {
-                return self.retained_worktree_error(
-                    &checkout,
-                    "Cannot continue into the new worktree because source configuration changed.",
-                );
+                return self
+                    .retained_worktree_error(&checkout, "源配置已更改，无法在新工作树中继续。");
             }
         }
         let config = match self.rebuild_config_for_cwd(checkout.cwd.clone()).await {
             Ok(config) if config.active_project.trust_level.is_some() => config,
             Ok(_) => {
-                return self.retained_worktree_error(
-                    &checkout,
-                    "The new worktree is not trusted; run Codex there.",
-                );
+                return self
+                    .retained_worktree_error(&checkout, "新工作树不受信任；请在其中运行 Codex。");
             }
             Err(error) => {
-                return self.retained_worktree_error(
-                    &checkout,
-                    format!("Cannot load the new worktree configuration: {error}"),
-                );
+                return self
+                    .retained_worktree_error(&checkout, format!("无法加载新工作树配置：{error}"));
             }
         };
         self.pending_managed_worktree_transition = Some(Box::new(ManagedWorktreeTransition {

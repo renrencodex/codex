@@ -2,11 +2,10 @@
 source: tui/src/chatwidget/tests/permissions.rs
 expression: "render_bottom_popup(&chat, 120)"
 ---
-  Your organization requires the default Codex agent sandbox to continue. Set it up to protect your files and control
-  network access.
-  Learn more <https://developers.openai.com/codex/windows>
+  你 的 组 织 要 求 先 启 用 默 认  Codex 智 能 体 沙 箱 才 能 继 续 。 请 设 置 沙 箱 以 保 护 文 件 并 控 制 网 络 访 问 。
+  了 解 详 情  <https://developers.openai.com/codex/windows>
 
-› 1. Set up default sandbox (requires Administrator permissions)
-  2. Quit
+› 1. 设 置 默 认 沙 箱 （ 需 要 管 理 员 权 限 ）
+  2. 退 出
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

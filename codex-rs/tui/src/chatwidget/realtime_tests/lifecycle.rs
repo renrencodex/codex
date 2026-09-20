@@ -24,7 +24,7 @@ async fn enabling_voice_on_an_open_thread_snapshots_the_new_thread_notice() {
         })
         .collect::<Vec<_>>()
         .join("\n");
-    insta::assert_snapshot!(rendered, @"• Voice conversations will be available in new threads.");
+    insta::assert_snapshot!(rendered, @"• 语音对话将在新会话中可用。");
 }
 
 #[tokio::test]

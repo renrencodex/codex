@@ -409,7 +409,7 @@ const LARGE_PASTE_CHAR_THRESHOLD: usize = 1000;
 
 fn user_input_too_large_message(actual_chars: usize) -> String {
     format!(
-        "Message exceeds the maximum length of {MAX_USER_INPUT_TEXT_CHARS} characters ({actual_chars} provided)."
+        "消息超过 {MAX_USER_INPUT_TEXT_CHARS} 个字符的长度上限（当前为 {actual_chars} 个字符）。"
     )
 }
 
@@ -1672,7 +1672,7 @@ impl ChatComposer {
 
     pub(crate) fn set_parent_owned_thread(&mut self) {
         self.blocks_direct_input = true;
-        self.placeholder_text = "Viewing sub-agent — direct input is disabled".to_string();
+        self.placeholder_text = "正在查看子代理 — 已停用直接输入".to_string();
     }
 
     /// Move the cursor to the end of the current text buffer.
@@ -3085,9 +3085,7 @@ impl ChatComposer {
                 .slash_input()
                 .validate_submission(&text, input_starts_with_space)
         {
-            let message = format!(
-                r#"Unrecognized command '/{name}'. Type "/" for a list of supported commands."#
-            );
+            let message = format!(r#"无法识别命令“/{name}”。输入“/”可查看支持的命令列表。"#);
             self.app_event_tx.send(AppEvent::InsertHistoryCell(Box::new(
                 history_cell::new_info_event(message, /*hint*/ None),
             )));
@@ -3124,8 +3122,7 @@ impl ChatComposer {
             if self.footer.hint_override.is_some() {
                 self.show_footer_flash(
                     Line::from(
-                        format!("Message too long; limit {MAX_USER_INPUT_TEXT_CHARS} characters")
-                            .red(),
+                        format!("消息过长；上限为 {MAX_USER_INPUT_TEXT_CHARS} 个字符").red(),
                     ),
                     Duration::from_secs(5),
                 );
@@ -3436,10 +3433,7 @@ impl ChatComposer {
         {
             return false;
         }
-        let message = format!(
-            "'/{}' is disabled while a task is in progress.",
-            command.command()
-        );
+        let message = format!("任务进行期间无法使用 '/{}'。", command.command());
         self.app_event_tx.send(AppEvent::InsertHistoryCell(Box::new(
             history_cell::new_error_event(message),
         )));
@@ -3622,7 +3616,7 @@ impl ChatComposer {
     fn shell_mode_footer_line(&self) -> Option<Line<'static>> {
         self.is_bang_shell_command()
             .then_some(())
-            .map(|_| Line::from(vec![Span::from("Shell mode").light_red()]))
+            .map(|_| Line::from(vec![Span::from("Shell 模式").light_red()]))
     }
 
     /// Handles keys that mutate the textarea, including paste-burst detection.
@@ -4290,7 +4284,7 @@ impl ChatComposer {
                     .unwrap_or((plugin.config_name.as_str(), ""));
                 let mut capability_labels = Vec::new();
                 if plugin.has_skills {
-                    capability_labels.push("skills".to_string());
+                    capability_labels.push("技能".to_string());
                 }
                 if !plugin.mcp_server_names.is_empty() {
                     let mcp_server_count = plugin.mcp_server_names.len();
@@ -4310,9 +4304,9 @@ impl ChatComposer {
                 }
                 let description = plugin.description.clone().or_else(|| {
                     Some(if capability_labels.is_empty() {
-                        "Plugin".to_string()
+                        "插件".to_string()
                     } else {
-                        format!("Plugin · {}", capability_labels.join(" · "))
+                        format!("插件 · {}", capability_labels.join(" · "))
                     })
                 });
                 let mut search_terms = vec![plugin_name.to_string(), plugin.config_name.clone()];
@@ -4390,7 +4384,7 @@ impl ChatComposer {
     }
 
     pub(crate) fn show_shutdown_in_progress(&mut self) {
-        self.set_input_enabled(/*enabled*/ false, Some("Shutting down...".to_string()));
+        self.set_input_enabled(/*enabled*/ false, Some("正在关闭...".to_string()));
         self.footer.quit_shortcut_expires_at = None;
         self.footer.mode = FooterMode::ComposerEmpty;
         self.footer.hint_override = Some(Vec::new());
@@ -5010,7 +5004,7 @@ impl ChatComposer {
                 self.draft
                     .input_disabled_placeholder
                     .as_deref()
-                    .unwrap_or("Input disabled.")
+                    .unwrap_or("输入已停用。")
                     .to_string()
             };
             if !textarea_rect.is_empty() {
@@ -5543,7 +5537,7 @@ mod tests {
             /*has_input_focus*/ true,
             sender,
             /*enhanced_keys_supported*/ true,
-            "Ask Codex to do anything".to_string(),
+            "让 Codex 帮你完成任务".to_string(),
             /*disable_paste_burst*/ false,
         );
         composer.set_status_line_enabled(/*enabled*/ true);
@@ -5565,7 +5559,7 @@ mod tests {
             .map(|x| buf[(x, footer_y)].symbol().chars().next().unwrap_or(' '))
             .collect::<String>();
         let shell_label_x = footer_text
-            .find("Shell mode")
+            .find("Shell 模式")
             .expect("expected shell mode footer label");
         assert_eq!(
             buf[(shell_label_x as u16, footer_y)].style().fg,

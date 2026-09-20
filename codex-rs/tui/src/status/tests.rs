@@ -272,9 +272,9 @@ fn permissions_text_for_width(config: &Config, width: u16) -> Option<String> {
     );
     render_lines(&composite.display_lines(width))
         .iter()
-        .find(|line| line.contains("Permissions:"))
+        .find(|line| line.contains("权限:"))
         .and_then(|line| {
-            line.split("Permissions:")
+            line.split("权限:")
                 .nth(1)
                 .map(str::trim)
                 .map(|text| text.trim_end_matches('│'))
@@ -444,7 +444,7 @@ async fn status_permissions_non_default_workspace_write_uses_workspace_label() {
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Custom (workspace with network access, Ask for approval)")
+        Some("自定义（工作区，可访问网络，请求审批）")
     );
 }
 
@@ -467,7 +467,7 @@ async fn status_permissions_named_read_only_profile_shows_builtin_label() {
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Read Only (Ask for approval)")
+        Some("只读（请求审批）")
     );
 }
 
@@ -497,7 +497,7 @@ async fn status_permissions_read_only_profile_shows_additional_writable_roots() 
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Read Only (Ask for approval)")
+        Some("只读（请求审批）")
     );
 }
 
@@ -520,7 +520,7 @@ async fn status_permissions_named_workspace_profile_shows_builtin_label() {
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Workspace (Ask for approval)")
+        Some("工作区（请求审批）")
     );
 }
 
@@ -544,7 +544,7 @@ async fn status_permissions_workspace_auto_review_shows_reviewer_label() {
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Workspace (Approve for me)")
+        Some("工作区（代我审批）")
     );
 }
 
@@ -573,7 +573,7 @@ async fn status_permissions_named_profile_shows_additional_writable_roots() {
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Workspace (Ask for approval)")
+        Some("工作区（请求审批）")
     );
 }
 
@@ -602,10 +602,7 @@ async fn status_permissions_workspace_roots_show_additional_directories() {
 
     assert_eq!(
         permissions_text_for(&config),
-        Some(format!(
-            "Workspace [{}] (Ask for approval)",
-            extra_root.display()
-        ))
+        Some(format!("工作区 [{}]（请求审批）", extra_root.display()))
     );
 }
 
@@ -638,10 +635,7 @@ async fn status_permissions_workspace_roots_include_profile_defined_directories(
 
     assert_eq!(
         permissions_text_for(&config),
-        Some(format!(
-            "Workspace [{}] (Ask for approval)",
-            profile_root.display()
-        ))
+        Some(format!("工作区 [{}]（请求审批）", profile_root.display()))
     );
 }
 
@@ -669,7 +663,7 @@ async fn status_permissions_broadened_workspace_profile_shows_builtin_label() {
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Workspace with network access (Ask for approval)")
+        Some("工作区，可访问网络（请求审批）")
     );
 }
 
@@ -687,7 +681,7 @@ async fn status_permissions_user_defined_profile_shows_name() {
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Profile locked (read-only, Ask for approval)")
+        Some("配置 locked（只读，请求审批）")
     );
 }
 
@@ -904,7 +898,7 @@ async fn status_permissions_full_disk_managed_with_network_is_danger_full_access
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Custom (danger-full-access, Ask for approval)")
+        Some("自定义（danger-full-access，请求审批）")
     );
 }
 
@@ -927,7 +921,7 @@ async fn status_permissions_full_disk_managed_without_network_is_external_sandbo
 
     assert_eq!(
         permissions_text_for(&config).as_deref(),
-        Some("Custom (external-sandbox, Ask for approval)")
+        Some("自定义（external-sandbox，请求审批）")
     );
 }
 
@@ -1247,8 +1241,8 @@ async fn status_snapshot_shows_unlimited_credits() {
     assert!(
         rendered
             .iter()
-            .any(|line| line.contains("Credits:") && line.contains("Unlimited")),
-        "expected Credits: Unlimited line, got {rendered:?}"
+            .any(|line| line.contains("点数:") && line.contains("无限制")),
+        "expected 点数: Unlimited line, got {rendered:?}"
     );
 }
 
@@ -1300,8 +1294,8 @@ async fn status_snapshot_shows_positive_credits() {
     assert!(
         rendered
             .iter()
-            .any(|line| line.contains("Credits:") && line.contains("13 credits")),
-        "expected Credits line with rounded credits, got {rendered:?}"
+            .any(|line| line.contains("点数:") && line.contains("13 点")),
+        "expected rounded credits line, got {rendered:?}"
     );
 }
 
@@ -1360,8 +1354,8 @@ async fn status_snapshot_shows_available_credits_without_display_balance() {
         assert!(
             rendered
                 .iter()
-                .any(|line| line.contains("Credits:") && line.contains("Available")),
-            "expected Credits: Available line, got {rendered:?}"
+                .any(|line| line.contains("点数:") && line.contains("可用")),
+            "expected available credits line, got {rendered:?}"
         );
     }
 }
@@ -1414,8 +1408,8 @@ async fn status_snapshot_respects_unlimited_without_has_credits_flag() {
     assert!(
         rendered
             .iter()
-            .any(|line| line.contains("Credits:") && line.contains("Unlimited")),
-        "expected Credits: Unlimited line, got {rendered:?}"
+            .any(|line| line.contains("点数:") && line.contains("无限制")),
+        "expected 点数: Unlimited line, got {rendered:?}"
     );
 }
 
@@ -1773,7 +1767,7 @@ async fn transcript_overlay_remeasures_status_after_rate_limit_refresh() {
         &model_slug,
         /*collaboration_mode*/ None,
         /*reasoning_effort_override*/ None,
-        "<none>".to_string(),
+        "<无>".to_string(),
         /*refreshing_rate_limits*/ true,
     );
     let mut overlay =
@@ -1815,7 +1809,7 @@ async fn transcript_overlay_remeasures_status_after_rate_limit_refresh() {
         "status output was clipped: {after:?}"
     );
     assert!(
-        after.contains("5h limit"),
+        after.contains("5h 限制"),
         "status output was clipped: {after:?}"
     );
     assert!(
@@ -2218,7 +2212,7 @@ async fn status_context_window_uses_last_usage() {
     let rendered_lines = render_lines(&composite.display_lines(/*width*/ 80));
     let context_line = rendered_lines
         .into_iter()
-        .find(|line| line.contains("Context window"))
+        .find(|line| line.contains("上下文窗口"))
         .expect("context line");
 
     assert!(
@@ -2260,6 +2254,6 @@ async fn status_permissions_include_executor_profile_root() {
 
     assert_snapshot!(
         permissions_text_for_width(&config, /*width*/ 160).expect("permissions line"),
-        @r"Profile executor (workspace [\\server\share\foreign], Ask for approval)"
+        @r"配置 executor（工作区 [\\server\share\foreign]，请求审批）"
     );
 }

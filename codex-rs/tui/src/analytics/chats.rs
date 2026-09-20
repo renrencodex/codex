@@ -26,7 +26,7 @@ impl Chat {
         if self.usage.is_some() {
             &self.title
         } else {
-            "Chat usage unavailable"
+            "对话用量不可用"
         }
     }
 }
@@ -47,7 +47,7 @@ pub(super) async fn read(
     session.backend.ensure_identity().await?;
     let threads = tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 60), roots(&handle))
         .await
-        .map_err(|_| "Chat listing timed out. Press R to retry.".to_string())??;
+        .map_err(|_| "列出对话超时。按 R 重试。".to_string())??;
     session.backend.ensure_identity().await?;
     if threads.is_empty() {
         return Ok(Some(Chats { rows: Vec::new() }));
@@ -86,7 +86,7 @@ pub(super) async fn read(
                 .filter(|name| !name.trim().is_empty())
                 .unwrap_or_else(|| {
                     if thread.preview.trim().is_empty() {
-                        "Untitled chat".into()
+                        "无标题对话".into()
                     } else {
                         thread.preview
                     }
@@ -128,7 +128,7 @@ pub(super) async fn roots(
         }));
         match page.next_cursor {
             Some(next) if !seen_cursors.insert(next.clone()) => {
-                return Err("Chat listing repeated a cursor. Press R to retry.".into());
+                return Err("列出对话时游标重复。按 R 重试。".into());
             }
             Some(next) if !reached_cutoff => cursor = Some(next),
             _ => break,

@@ -22,7 +22,7 @@ pub(super) enum SessionCollection {
 #[derive(Debug, thiserror::Error)]
 pub(crate) enum AmbiguousSessionName {
     #[error(
-        "Multiple sessions match '{name}' (including {first_id} and {second_id}); use a session UUID to disambiguate."
+        "有多个会话与“{name}”匹配（包括 {first_id} 和 {second_id}）；请使用会话 UUID 加以区分。"
     )]
     Multiple {
         name: String,
@@ -30,7 +30,7 @@ pub(crate) enum AmbiguousSessionName {
         second_id: String,
     },
     #[error(
-        "Cannot verify a unique session label across server pages; matching session UUID: {0}. Use it only if this is the session you want."
+        "无法跨服务器分页确认会话标签是否唯一；匹配的会话 UUID：{0}。请仅在确认这是所需会话时使用。"
     )]
     Paginated(String),
 }

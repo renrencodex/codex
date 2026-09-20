@@ -26,7 +26,7 @@ pub(super) fn filtered_history(
         let date = record
             .date
             .parse::<NaiveDate>()
-            .map_err(|_| "Invalid token report date.")?;
+            .map_err(|_| "Token 报告日期无效。")?;
         if date < start || date > end {
             continue;
         }
@@ -36,13 +36,13 @@ pub(super) fn filtered_history(
                 .map(|group| {
                     (
                         if group.is_other {
-                            "Other".into()
+                            "其他".into()
                         } else {
                             group
                                 .dimensions
                                 .get("model")
                                 .cloned()
-                                .unwrap_or_else(|| "Unknown".into())
+                                .unwrap_or_else(|| "未知".into())
                         },
                         [
                             group.uncached_text_input_tokens,
@@ -69,7 +69,7 @@ pub(super) fn filtered_history(
                 })
                 .collect()
         } else {
-            return Err("Token breakdown is not available in this report.".into());
+            return Err("此报告不提供 Token 明细。".into());
         };
         let values = days.entry(date).or_default();
         for (model, counts, total) in groups {
@@ -81,21 +81,19 @@ pub(super) fn filtered_history(
                 && let Some(total) = total.filter(|total| *total != 0.0 || missing_components)
             {
                 if !total.is_finite() || total < 0.0 || total.fract() != 0.0 {
-                    return Err("Invalid token count.".into());
+                    return Err("Token 数量无效。".into());
                 }
                 *values.entry(model).or_default() += total;
                 continue;
             }
             if missing_components {
-                return Err("Token counts were not reported.".into());
+                return Err("未上报 Token 数量。".into());
             }
-            for (label, count) in ["Uncached input", "Cached input", "Output"]
-                .into_iter()
-                .zip(counts)
+            for (label, count) in ["未缓存输入", "已缓存输入", "输出"].into_iter().zip(counts)
             {
                 let count = count.unwrap_or(/*default*/ 0.0);
                 if !count.is_finite() || count < 0.0 || count.fract() != 0.0 {
-                    return Err("Invalid token count.".into());
+                    return Err("Token 数量无效。".into());
                 }
                 let key = if grouping == AccountAnalyticsGrouping::Model {
                     &model

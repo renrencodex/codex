@@ -1,6 +1,5 @@
 ---
 source: tui/src/chatwidget/realtime_tests/handoffs.rs
-assertion_line: 514
 expression: "rendered_history.join(\"\\n\")"
 ---
-• Voice conversation started. Use /voice mute to mute or /voice to stop.
+• 语音对话已开始。 使用 /voice mute 静音，或使用 /voice stop 停止。

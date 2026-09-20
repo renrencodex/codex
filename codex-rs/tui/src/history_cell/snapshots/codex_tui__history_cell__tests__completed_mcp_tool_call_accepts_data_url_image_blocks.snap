@@ -2,5 +2,5 @@
 source: tui/src/history_cell/tests.rs
 expression: rendered
 ---
-• Called image.generate({"prompt":"tiny image"})
-  └ Returned image
+• 已调用 image.generate({"prompt":"tiny image"})
+  └ 已返回图像

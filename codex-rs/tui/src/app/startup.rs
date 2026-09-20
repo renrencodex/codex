@@ -456,9 +456,7 @@ impl App {
                 {
                     return shutdown_on_startup_error(
                         app_server,
-                        color_eyre::eyre::eyre!(
-                            "Permission overrides are not supported when resuming a remote task."
-                        ),
+                        color_eyre::eyre::eyre!("恢复远程任务时不支持权限覆盖。"),
                     )
                     .await;
                 }
@@ -576,9 +574,7 @@ impl App {
                 {
                     return shutdown_on_startup_error(
                         app_server,
-                        color_eyre::eyre::eyre!(
-                            "Permission overrides are not supported when forking a remote task."
-                        ),
+                        color_eyre::eyre::eyre!("派生远程任务时不支持权限覆盖。"),
                     )
                     .await;
                 }
@@ -709,9 +705,9 @@ impl App {
         let runtime_keymap =
             RuntimeKeymap::from_config(&local_settings.tui.keymap).map_err(|err| {
                 color_eyre::eyre::eyre!(
-                    "Invalid `tui.keymap` configuration: {err}\n\
-Fix the config and retry.\n\
-See the Codex keymap documentation for supported actions and examples."
+                    "`tui.keymap` 配置无效：{err}\n\
+请修复配置后重试。\n\
+有关支持的操作和示例，请参阅 Codex 按键映射文档。"
                 )
             })?;
         #[cfg(not(debug_assertions))]
@@ -1161,7 +1157,7 @@ See the Codex keymap documentation for supported actions and examples."
                                 app.chat_widget.reconnect_failed();
                                 app.chat_widget.add_error_message(error.to_string());
                                 if let Ok(mut state) = app.agents_overview.view_state.lock() {
-                                    state.connection_notice = Some("Reconnect failed — agent list is stale; relaunch to retry");
+                                    state.connection_notice = Some("重新连接失败 — 代理列表已过期；请重新启动后重试");
                                 }
                             }
                         }

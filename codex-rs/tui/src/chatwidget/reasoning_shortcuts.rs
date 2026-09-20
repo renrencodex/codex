@@ -34,8 +34,8 @@ impl ReasoningShortcutDirection {
     fn bound_message(self, effort: &ReasoningEffortConfig) -> String {
         let label = ChatWidget::reasoning_effort_sentence_label(effort);
         match self {
-            Self::Lower => format!("Reasoning is already at the lowest level ({label})."),
-            Self::Raise => format!("Reasoning is already at the highest level ({label})."),
+            Self::Lower => format!("推理强度已处于最低级别（{label}）。"),
+            Self::Raise => format!("推理强度已处于最高级别（{label}）。"),
         }
     }
 }
@@ -80,7 +80,7 @@ impl ChatWidget {
 
         if !self.is_session_configured() {
             self.add_info_message(
-                "Reasoning shortcuts are disabled until startup completes.".to_string(),
+                "启动完成前无法使用推理快捷键。".to_string(),
                 /*hint*/ None,
             );
             return true;
@@ -89,7 +89,7 @@ impl ChatWidget {
         let current_model = self.current_model().to_string();
         let Some(preset) = self.current_model_preset() else {
             self.add_info_message(
-                format!("Reasoning shortcuts are unavailable for {current_model}."),
+                format!("{current_model} 不支持推理快捷键。"),
                 /*hint*/ None,
             );
             return true;
@@ -124,21 +124,14 @@ impl ChatWidget {
                 .filter(|effort| Self::is_advanced_reasoning_effort(effort))
                 .map(Self::reasoning_effort_label)
                 .collect::<Vec<_>>()
-                .join(" and ");
-            let verb = if advanced_label.contains(" and ") {
-                "are"
-            } else {
-                "is"
-            };
+                .join("和");
             let model_path = if current_model.starts_with("codex-auto-") {
                 current_model
             } else {
-                format!("All models → {current_model}")
+                format!("所有模型 → {current_model}")
             };
             self.add_info_message(
-                format!(
-                    "{advanced_label} {verb} available under /model → {model_path} → More reasoning…"
-                ),
+                format!("可在 /model → {model_path} → 更高推理强度… 中选择{advanced_label}。"),
                 /*hint*/ None,
             );
             return true;

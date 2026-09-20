@@ -1374,7 +1374,7 @@ async fn review_custom_prompt_escape_navigates_back_then_dismisses() {
     // Verify child view is on top.
     let header = render_bottom_first_row(&chat, /*width*/ 60);
     assert!(
-        header.contains("Custom review instructions"),
+        header.contains("自定义审查说明"),
         "expected custom prompt view header: {header:?}"
     );
 
@@ -1382,7 +1382,7 @@ async fn review_custom_prompt_escape_navigates_back_then_dismisses() {
     chat.handle_key_event(KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE));
     let header = render_bottom_first_row(&chat, /*width*/ 60);
     assert!(
-        header.contains("Select a review preset"),
+        header.contains("选择审查预设"),
         "expected to return to parent review popup: {header:?}"
     );
 
@@ -1410,7 +1410,7 @@ async fn review_branch_picker_escape_navigates_back_then_dismisses() {
     // Verify child view header.
     let header = render_bottom_first_row(&chat, /*width*/ 60);
     assert!(
-        header.contains("Select a base branch"),
+        header.contains("选择基准分支"),
         "expected branch picker header: {header:?}"
     );
 
@@ -1418,7 +1418,7 @@ async fn review_branch_picker_escape_navigates_back_then_dismisses() {
     chat.handle_key_event(KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE));
     let header = render_bottom_first_row(&chat, /*width*/ 60);
     assert!(
-        header.contains("Select a review preset"),
+        header.contains("选择审查预设"),
         "expected to return to parent review popup: {header:?}"
     );
 

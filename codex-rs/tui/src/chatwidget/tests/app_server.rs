@@ -116,14 +116,14 @@ async fn session_and_settings_sync_server_provider_id() {
             .handle
             .copy_text()
     };
-    assert!(!status(&mut chat).contains("Model provider:"));
+    assert!(!status(&mut chat).contains("模型提供商："));
 
     let first_id = ThreadId::new();
     let mut first = configured_thread_session(first_id);
     first.model_provider_id = "server-ollama".to_string();
     chat.handle_thread_session(first.clone());
     let displayed = status(&mut chat);
-    assert!(displayed.contains("Model provider:") && displayed.contains("server-ollama"));
+    assert!(displayed.contains("模型提供商：") && displayed.contains("server-ollama"));
     assert!(!displayed.contains("local-provider.example"));
 
     let mut other = configured_thread_session(ThreadId::new());
@@ -1731,7 +1731,7 @@ async fn live_app_server_cyber_policy_error_renders_dedicated_notice() {
     let cells = drain_insert_history(&mut rx);
     assert_eq!(cells.len(), 1);
     let rendered = lines_to_single_string(&cells[0]);
-    assert!(rendered.contains("This content can’t be shown"));
+    assert!(rendered.contains("无法显示此内容"));
     assert!(rendered.contains("We take extra care with some cybersecurity requests"));
     assert!(!rendered.contains("server fallback message"));
     assert!(!chat.bottom_pane.is_task_running());
@@ -1765,7 +1765,7 @@ async fn app_server_safety_access_errors_render_dedicated_notice() {
         let cells = drain_insert_history(&mut rx);
         assert_eq!(cells.len(), 1);
         let rendered = lines_to_single_string(&cells[0]);
-        assert!(rendered.contains("This content can't be shown"));
+        assert!(rendered.contains("无法显示此内容"));
         assert!(rendered.contains("biological research"));
         rendered_cases.push((case, rendered));
     }

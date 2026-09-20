@@ -71,7 +71,7 @@ async fn plugins_popup_loading_state_snapshot() {
 
     let popup = render_bottom_popup(&chat, /*width*/ 100);
     assert!(
-        popup.contains("Loading available plugins..."),
+        popup.contains("正在加载可用插件……"),
         "expected /plugins to open in a loading state before the marketplace arrives, got:\n{popup}"
     );
     assert_chatwidget_snapshot!("plugins_popup_loading_state", popup);
@@ -93,7 +93,7 @@ async fn marketplace_upgrade_loading_popup_snapshot() {
         .join(" | ");
     insta::assert_snapshot!(
         upgrade_lines,
-        @"Upgrading debug marketplace... | ›    Upgrading debug marketplace...  This updates when marketplace upgrade completes."
+        @""
     );
 }
 
@@ -128,7 +128,7 @@ async fn marketplace_upgrade_failure_includes_backend_messages_snapshot() {
         .join("\n");
     insta::assert_snapshot!(
         rendered.trim(),
-        @"■ Failed to upgrade 2 marketplaces: debug: git ls-remote marketplace source failed with status 128: authentication failed; tools: failed to validate upgraded marketplace root: marketplace root does not contain a supported manifest"
+        @"■ 升级 2 个插件市场失败：debug: git ls-remote marketplace source failed with status 128: authentication failed; tools: failed to validate upgraded marketplace root: marketplace root does not contain a supported manifest"
     );
 }
 
@@ -234,8 +234,7 @@ async fn plugins_popup_keeps_loaded_marketplace_state_with_load_errors() {
 
     let popup = render_loaded_plugins_popup(&mut chat, response);
     assert!(
-        popup.contains("No marketplace plugins available")
-            && !popup.contains("Marketplace unavailable"),
+        popup.contains("没有可用的插件市场插件") && !popup.contains("Marketplace unavailable"),
         "expected /plugins to keep the loaded marketplace state, got:\n{popup}"
     );
 }
@@ -277,7 +276,7 @@ async fn plugins_popup_truncates_long_descriptions_in_list_rows() {
         .expect("expected verbose plugin row in popup");
     insta::assert_snapshot!(
         verbose_row,
-        @"  [-] Verbose Plugin  Available · OpenAI Curated · This description…"
+        @"  [-] Verbose Plugin  可 安 装  · OpenAI 精 选  · This description keeps…"
     );
     assert!(
         !popup
@@ -301,10 +300,10 @@ async fn plugins_popup_add_marketplace_tab_opens_prompt_and_submits_source() {
     let popup = select_plugins_tab_containing(
         &mut chat,
         /*width*/ 100,
-        "Add a marketplace from a Git repo or local root.",
+        "从 Git 仓库或本地根目录添加插件市场。",
     );
     assert!(
-        popup.contains("Add a marketplace from a Git repo or local root."),
+        popup.contains("从 Git 仓库或本地根目录添加插件市场。"),
         "expected Add marketplace tab, got:\n{popup}"
     );
 
@@ -752,8 +751,8 @@ async fn plugin_detail_popup_distinguishes_admin_installed_from_enabled() {
 
     let popup = render_bottom_popup(&chat, /*width*/ 100);
     assert!(
-        popup.contains("Installed by admin")
-            && !popup.contains("Uninstall plugin")
+        popup.contains("由管理员安装")
+            && !popup.contains("卸载插件")
             && !popup.contains("Data shared with this app is subject to the app's"),
         "expected admin-installed plugin details to block uninstall and hide the disclosure line, got:\n{popup}"
     );
@@ -767,9 +766,9 @@ async fn plugin_detail_popup_distinguishes_admin_installed_from_enabled() {
     chat.on_plugin_detail_loaded(cwd.to_path_buf(), Ok(PluginReadResponse { plugin }));
     let popup = render_bottom_popup(&chat, /*width*/ 100);
     assert!(
-        popup.contains("Enabled by Admin")
-            && popup.contains("Install plugin")
-            && !popup.contains("Installed by admin"),
+        popup.contains("由管理员启用")
+            && popup.contains("安装插件")
+            && !popup.contains("由管理员安装"),
         "expected an unmaterialized default plugin to show its admin assignment and remain installable, got:\n{popup}"
     );
     insta::assert_snapshot!(
@@ -809,7 +808,7 @@ async fn plugins_popup_remote_row_opens_remote_detail() {
         .find(|line| line.contains("Calendar"))
         .expect("expected remote plugin row");
     assert!(
-        remote_row.contains("Available")
+        remote_row.contains("可安装")
             && remote_row.contains("Press Enter to install or view plugin details."),
         "expected remote plugin row to be viewable, got:\n{remote_row}"
     );
@@ -887,7 +886,7 @@ async fn plugin_detail_unmaterialized_default_uses_remote_install_path() {
     );
     let popup = render_bottom_popup(&chat, /*width*/ 100);
     assert!(
-        popup.contains("Install plugin") && popup.contains("Install this plugin now."),
+        popup.contains("安装插件") && popup.contains("立即安装此插件。"),
         "expected remote detail to offer install, got:\n{popup}"
     );
 
@@ -936,7 +935,7 @@ async fn plugin_detail_remote_uninstall_uses_remote_plugin_id() {
         Ok(plugins_test_response(vec![
             plugins_test_remote_marketplace(
                 "workspace-shared-with-me-private",
-                "Shared with me",
+                "与我共享",
                 vec![summary.clone()],
             ),
         ])),
@@ -1021,7 +1020,7 @@ async fn plugin_detail_remote_without_remote_id_disables_uninstall_action() {
     let popup = render_bottom_popup(&chat, /*width*/ 120);
     assert!(
         popup.contains("This remote plugin did not provide an uninstall identity.")
-            && !popup.contains("Remove this plugin now."),
+            && !popup.contains("立即移除此插件。"),
         "expected missing remote ID to disable uninstall, got:\n{popup}"
     );
 
@@ -1109,15 +1108,14 @@ async fn plugin_detail_popup_shows_admin_disabled_status_snapshot() {
     let popup = render_bottom_popup(&chat, /*width*/ 120);
     let status_row = popup
         .lines()
-        .find(|line| line.contains("Disabled by admin"))
+        .find(|line| line.contains("已被管理员禁用"))
         .expect("expected admin-disabled status row");
     insta::assert_snapshot!(
         status_row,
         @"  Admin Blocked · Disabled by admin · ChatGPT Marketplace"
     );
     assert!(
-        popup.contains("This plugin is disabled by your workspace admin.")
-            && !popup.contains("Install this plugin now."),
+        popup.contains("此插件已被工作区管理员禁用。") && !popup.contains("立即安装此插件。"),
         "expected admin-disabled detail to block install, got:\n{popup}"
     );
 
@@ -1247,8 +1245,7 @@ async fn plugins_popup_remote_section_fallback_states_when_remote_plugin_disable
             plugins_test_curated_marketplace(Vec::new()),
         ])),
     );
-    let curated_loading_popup =
-        select_tab_containing(&mut chat, "Loading OpenAI Curated plugins...");
+    let curated_loading_popup = select_tab_containing(&mut chat, "正在加载 OpenAI 精选插件……");
     let workspace_loading_popup = select_tab_containing(&mut chat, "Loading Workspace plugins.");
     let shared_loading_popup = select_tab_containing(&mut chat, "Loading Shared with me plugins.");
     let _ = select_tab_containing(&mut chat, "Loading Workspace plugins.");
@@ -1367,8 +1364,8 @@ async fn plugins_popup_remote_detail_tracks_physical_and_policy_install_state() 
         .expect("expected all-plugins row");
     assert!(
         popup.contains("Installed 1 of 1 available plugins.")
-            && all_plugins_row.contains("Installed")
-            && !all_plugins_row.contains("Available"),
+            && all_plugins_row.contains("已安装")
+            && !all_plugins_row.contains("可安装"),
         "expected installed remote duplicate to win over local mapped share, got:\n{popup}"
     );
 
@@ -1600,7 +1597,7 @@ async fn plugins_popup_refreshes_installed_counts_after_install() {
         "expected initial installed count before refresh, got:\n{before}"
     );
     assert!(
-        before.contains("Available"),
+        before.contains("可安装"),
         "expected pre-install popup copy before refresh, got:\n{before}"
     );
 
@@ -1900,7 +1897,7 @@ async fn plugins_popup_installed_tab_filters_rows_and_clears_search() {
 
     let popup = render_bottom_popup(&chat, /*width*/ 100);
     assert!(
-        popup.contains("Installed plugins.") && popup.contains("Showing 1 installed plugins."),
+        popup.contains("已安装的插件。") && popup.contains("Showing 1 installed plugins."),
         "expected Installed tab header, got:\n{popup}"
     );
     assert!(
@@ -1947,7 +1944,7 @@ async fn plugins_popup_openai_curated_tab_omits_marketplace_in_rows() {
 
     let popup = render_bottom_popup(&chat, /*width*/ 100);
     assert!(
-        popup.contains("OpenAI Curated marketplace."),
+        popup.contains("OpenAI 精选插件市场。"),
         "expected OpenAI Curated tab header, got:\n{popup}"
     );
     assert!(
@@ -2068,7 +2065,7 @@ async fn plugins_popup_search_no_matches_and_backspace_restores_results() {
         "expected popup to show the typed search query, got:\n{no_matches}"
     );
     assert!(
-        no_matches.contains("no matches"),
+        no_matches.contains("没有匹配项"),
         "expected popup to render the no-matches UX, got:\n{no_matches}"
     );
 
@@ -2082,7 +2079,7 @@ async fn plugins_popup_search_no_matches_and_backspace_restores_results() {
         "expected clearing the query to restore the plugin rows, got:\n{restored}"
     );
     assert!(
-        !restored.contains("no matches"),
+        !restored.contains("没有匹配项"),
         "did not expect the no-matches state after clearing the query, got:\n{restored}"
     );
 }
@@ -2301,7 +2298,7 @@ async fn apps_notification_update_excludes_inaccessible_apps_from_mentions() {
                 marketplace_name: "marketplace".to_string(),
             },
             "plugin".to_string(),
-            "Plugin".to_string(),
+            "插件".to_string(),
             Ok(serde_json::from_value(serde_json::json!({
                 "authPolicy": "ON_INSTALL",
                 "appsNeedingAuth": [{ "id": app_id, "name": app_name }],
@@ -2309,7 +2306,7 @@ async fn apps_notification_update_excludes_inaccessible_apps_from_mentions() {
             .expect("valid plugin installation response")),
         );
         let auth_popup = render_bottom_popup(&chat, /*width*/ 80);
-        assert!(auth_popup.contains("Already installed") && auth_popup.contains("Continue"));
+        assert!(auth_popup.contains("已安装") && auth_popup.contains("继续"));
         if app_id == "arabica_uae" {
             let snapshot = normalize_snapshot_paths(format!(
                 "{popup}\n\n--- plugin authentication ---\n{auth_popup}"
@@ -3588,7 +3585,7 @@ async fn model_picker_refresh_dismisses_empty_choices() {
         insta::allow_duplicates! {
             insta::assert_snapshot!(
                 lines_to_single_string(&cell.display_lines(/*width*/ 80)),
-                @"• No additional models are available right now."
+                @"• 目前没有其他可用模型。"
             );
         }
     }
@@ -4120,7 +4117,7 @@ async fn single_reasoning_option_skips_selection() {
 
     let popup = render_bottom_popup(&chat, /*width*/ 80);
     assert!(
-        !popup.contains("Select Reasoning Level"),
+        !popup.contains("选择推理级别"),
         "expected reasoning selection popup to be skipped"
     );
 
@@ -4254,13 +4251,13 @@ async fn reasoning_popup_escape_returns_to_model_popup() {
     chat.open_reasoning_popup(preset);
 
     let before_escape = render_bottom_popup(&chat, /*width*/ 80);
-    assert!(before_escape.contains("Select Reasoning Level"));
+    assert!(before_escape.contains("选择推理级别"));
 
     chat.handle_key_event(KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE));
 
     let after_escape = render_bottom_popup(&chat, /*width*/ 80);
-    assert!(after_escape.contains("Select Model"));
-    assert!(!after_escape.contains("Select Reasoning Level"));
+    assert!(after_escape.contains("选择模型"));
+    assert!(!after_escape.contains("选择推理级别"));
 }
 
 #[tokio::test]

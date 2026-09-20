@@ -42,7 +42,7 @@ impl ChatWidget {
                 prepare_images(images, remote_bytes)
             })
             .await
-            .unwrap_or_else(|error| Err(format!("Failed to prepare images: {error}")));
+            .unwrap_or_else(|error| Err(format!("准备图像失败：{error}")));
             if tx.send(prepared).is_ok() {
                 events.send(AppEvent::ImagesPrepared(id));
             }
@@ -68,7 +68,7 @@ impl ChatWidget {
         match pending
             .result
             .try_recv()
-            .unwrap_or_else(|error| Err(format!("Failed to prepare images: {error}")))
+            .unwrap_or_else(|error| Err(format!("准备图像失败：{error}")))
         {
             Ok(images) => {
                 let (accepted, _) = self.submit_user_message_with_prepared_images(
@@ -161,9 +161,7 @@ fn prepare_images(
                 }
                 Ok(())
             })();
-            prepared.map_err(|error| {
-                format!("Failed to prepare image: {}: {error}", image.path.display())
-            })?;
+            prepared.map_err(|error| format!("准备图像 {} 失败：{error}", image.path.display()))?;
             let mut input = UserInput::from(input);
             if let UserInput::Image { detail, .. } = &mut input {
                 *detail = None;

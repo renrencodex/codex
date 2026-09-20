@@ -4,6 +4,7 @@ use crate::status::StatusAccountDisplay;
 use crate::text_formatting;
 use crate::width::display_width;
 use chrono::DateTime;
+use chrono::Datelike;
 use chrono::Local;
 use codex_protocol::account::PlanType;
 use codex_utils_path_uri::PathConvention;
@@ -20,14 +21,14 @@ pub(crate) fn compose_model_display(
 ) -> (String, Vec<String>) {
     let mut details: Vec<String> = Vec::new();
     if let Some((_, effort)) = entries.iter().find(|(k, _)| *k == "reasoning effort") {
-        details.push(format!("reasoning {}", effort.to_ascii_lowercase()));
+        details.push(format!("推理强度 {}", effort.to_ascii_lowercase()));
     }
     if let Some((_, summary)) = entries.iter().find(|(k, _)| *k == "reasoning summaries") {
         let summary = summary.trim();
         if summary.eq_ignore_ascii_case("none") || summary.eq_ignore_ascii_case("off") {
-            details.push("summaries off".to_string());
+            details.push("推理摘要已关闭".to_string());
         } else if !summary.is_empty() {
-            details.push(format!("summaries {}", summary.to_ascii_lowercase()));
+            details.push(format!("推理摘要 {}", summary.to_ascii_lowercase()));
         }
     }
 
@@ -52,7 +53,7 @@ pub(crate) fn compose_agents_summary(config: &Config, paths: &[PathUri]) -> Stri
         let file_name = p
             .file_name()
             .map(|name| name.to_string_lossy().to_string())
-            .unwrap_or_else(|| "<unknown>".to_string());
+            .unwrap_or_else(|| "<未知>".to_string());
         let display = if let Some(parent) = p.parent() {
             if parent == config.cwd.as_path() {
                 file_name.clone()
@@ -84,7 +85,7 @@ pub(crate) fn compose_agents_summary(config: &Config, paths: &[PathUri]) -> Stri
     }
 
     if rels.is_empty() {
-        "<none>".to_string()
+        "<无>".to_string()
     } else {
         rels.join(", ")
     }
@@ -185,7 +186,7 @@ pub(crate) fn format_reset_timestamp(dt: DateTime<Local>, captured_at: DateTime<
     if dt.date_naive() == captured_at.date_naive() {
         time
     } else {
-        format!("{time} on {}", dt.format("%-d %b"))
+        format!("{}月{}日 {time}", dt.month(), dt.day())
     }
 }
 

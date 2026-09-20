@@ -32,15 +32,13 @@ impl App {
             .remote_connection
             .as_ref()
             .filter(|_| matches!(self.app_server_target, AppServerTarget::LocalDaemon { .. }))
-            .map(|connection| format!("Running daemon: {}", connection.version))
-            .unwrap_or_else(|| "Not connected to the local background server.".to_string());
-        let mut header = vec![Line::from("Daemon".bold()), Line::from(status.dim())];
+            .map(|connection| format!("后台服务正在运行：{}", connection.version))
+            .unwrap_or_else(|| "未连接到本地后台服务器。".to_string());
+        let mut header = vec![Line::from("后台服务".bold()), Line::from(status.dim())];
         let unavailable = if matches!(self.app_server_target, AppServerTarget::Remote { .. }) {
-            Some(
-                "Manage this server on its host. Local daemon updates are unavailable for remote connections.",
-            )
+            Some("请在主机上管理此服务器。远程连接无法执行本地后台服务更新。")
         } else if self.daemon_cli_executable.is_none() {
-            Some("Run the Codex CLI to manage the daemon from this menu.")
+            Some("运行 Codex CLI，即可从此菜单管理后台服务。")
         } else {
             None
         };
@@ -57,11 +55,8 @@ impl App {
             .is_some()
         });
         let items = [
-            (
-                DaemonUpdateSource::PublicStable,
-                "Install latest public stable",
-            ),
-            (DaemonUpdateSource::ThisCli, "Use this CLI build"),
+            (DaemonUpdateSource::PublicStable, "安装最新公开稳定版"),
+            (DaemonUpdateSource::ThisCli, "使用当前 CLI 构建"),
         ]
         .into_iter()
         .map(|(source, name)| SelectionItem {
@@ -70,7 +65,7 @@ impl App {
             disabled_reason: (unavailable.is_none()
                 && source == DaemonUpdateSource::ThisCli
                 && !has_package)
-                .then(|| "This CLI has no local package to copy.".to_string()),
+                .then(|| "此 CLI 没有可复制的本地软件包。".to_string()),
             actions: vec![Box::new(move |tx| {
                 tx.send(AppEvent::ConfirmDaemonUpdate(source));
             })],
@@ -93,27 +88,27 @@ impl App {
             return;
         }
         let mut explanation = match source {
-            DaemonUpdateSource::PublicStable => "Install the latest public stable release (version resolved when the command runs). Production update eligibility will be restored; your automatic-update setting is preserved.".to_string(),
+            DaemonUpdateSource::PublicStable => "安装最新公开稳定版（运行命令时解析版本）。这将恢复正式版更新资格，并保留自动更新设置。".to_string(),
             DaemonUpdateSource::ThisCli => {
                 let version = codex_install_context::InstallContext::current()
                     .package_manifest()
                     .map_or_else(|| CODEX_CLI_VERSION.to_string(), |manifest| manifest.version.to_string());
-                format!("Use this CLI package v{version} from {}. The complete local package will be copied and pinned against automatic updates.", executable.display())
+                format!("使用来自 {} 的当前 CLI 软件包 v{version}。完整的本地软件包将被复制并固定，不再自动更新。", executable.display())
             }
         };
-        explanation.push_str("\nThe daemon will restart if needed. Active or queued work may be interrupted.\nCodex will exit and run the update in this terminal, then return to the shell. Relaunch Codex afterward.");
-        let mut header = vec![Line::from("Update daemon and exit Codex?".bold())];
+        explanation.push_str("\n后台服务会在需要时重启，正在进行或排队的工作可能被中断。\nCodex 将退出并在此终端中执行更新，随后返回 shell。之后请重新启动 Codex。");
+        let mut header = vec![Line::from("更新后台服务并退出 Codex？".bold())];
         header.extend(explanation.lines().map(|line| Line::from(line.to_owned())));
         self.chat_widget.show_selection_view(SelectionViewParams {
             header: Box::new(DaemonMenuHeader(header)),
             items: vec![
                 SelectionItem {
-                    name: "Cancel".to_string(),
+                    name: "取消".to_string(),
                     dismiss_on_select: true,
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: "Update and exit".to_string(),
+                    name: "更新并退出".to_string(),
                     actions: vec![Box::new(move |tx| {
                         tx.send(AppEvent::RunDaemonUpdate(source))
                     })],

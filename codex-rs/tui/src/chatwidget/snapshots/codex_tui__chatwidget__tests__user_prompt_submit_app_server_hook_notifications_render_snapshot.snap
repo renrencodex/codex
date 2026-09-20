@@ -2,6 +2,6 @@
 source: tui/src/chatwidget/tests/status_and_layout.rs
 expression: combined
 ---
-• Hook stopped
+• 钩子已停止
   └ go-workflow must start from PlanMode
   └ prompt blocked

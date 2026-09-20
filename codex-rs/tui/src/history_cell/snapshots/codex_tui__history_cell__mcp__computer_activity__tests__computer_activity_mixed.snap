@@ -2,7 +2,7 @@
 source: tui/src/history_cell/computer_activity_tests.rs
 expression: "render(&cell, 90)"
 ---
-• Used computer · 5 actions · 1 failed
-  ├ Failed: Open browser — No browser is available
-  ├ Captured screenshot · Capture the reproduced bug
-  └ 3 more · ctrl+t
+• 已操作电脑 · 5 个操作 · 1 个失败
+  ├ 失败：Open browser — No browser is available
+  ├ 已截取屏幕截图 · Capture the reproduced bug
+  └ 另有 3 个 · ctrl+t

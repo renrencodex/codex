@@ -1742,7 +1742,7 @@ impl BottomPane {
         self.pause_status_timer_for_modal();
         self.set_composer_input_enabled(
             /*enabled*/ false,
-            Some("Answer the questions to continue.".to_string()),
+            Some("回答问题后继续。".to_string()),
         );
         self.push_view(Box::new(modal));
     }
@@ -1783,10 +1783,10 @@ impl BottomPane {
                     description: None,
                     instructions: match suggestion_type {
                         AppLinkSuggestionType::Install => {
-                            "Install this app in your browser, then return here.".to_string()
+                            "请在浏览器中安装此应用，然后返回这里。".to_string()
                         }
                         AppLinkSuggestionType::Enable => {
-                            "Enable this app to use it for the current request.".to_string()
+                            "启用此应用后即可用于当前请求。".to_string()
                         }
                         AppLinkSuggestionType::Auth => unreachable!(
                             "auth uses URL mode elicitation, not tool suggestion forms"
@@ -1812,7 +1812,7 @@ impl BottomPane {
             self.pause_status_timer_for_modal();
             self.set_composer_input_enabled(
                 /*enabled*/ false,
-                Some("Respond to the tool suggestion to continue.".to_string()),
+                Some("响应工具建议后继续。".to_string()),
             );
             self.push_view(Box::new(view));
             return;
@@ -1829,7 +1829,7 @@ impl BottomPane {
         self.pause_status_timer_for_modal();
         self.set_composer_input_enabled(
             /*enabled*/ false,
-            Some("Respond to the MCP server request to continue.".to_string()),
+            Some("响应 MCP 服务器请求后继续。".to_string()),
         );
         self.push_view(Box::new(modal));
     }

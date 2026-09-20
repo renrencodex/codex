@@ -16,21 +16,12 @@ use std::sync::RwLock;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
-const REASONING_ORDER: [&str; 8] = [
-    "None",
-    "Minimal",
-    "Light",
-    "Medium",
-    "High",
-    "Extra High",
-    "Max",
-    "Ultra",
-];
-const SPEED_ORDER: [&str; 3] = ["Fast mode", "Ultrafast", "Standard"];
-const MODELS_LABEL: &str = "  Models";
-const REASONING_LABEL: &str = "  Reasoning";
-const SPEED_LABEL: &str = "  Speed";
-const BILLED_TOKENS_LABEL: &str = "  Billed tokens";
+const REASONING_ORDER: [&str; 8] = ["无", "最低", "低", "中", "高", "超高", "最大", "极致"];
+const SPEED_ORDER: [&str; 3] = ["快速模式", "极速", "标准"];
+const MODELS_LABEL: &str = "  模型";
+const REASONING_LABEL: &str = "  推理";
+const SPEED_LABEL: &str = "  速度";
+const BILLED_TOKENS_LABEL: &str = "  计费 Token";
 
 /// Shared state updates a committed `/status` card when its asynchronous estimate arrives.
 #[derive(Clone, Debug, Default)]
@@ -68,7 +59,7 @@ impl StatusThreadUsage {
         let Some(estimate) = stored_estimate.as_ref() else {
             return;
         };
-        push_label(labels, seen, "Thread usage");
+        push_label(labels, seen, "会话用量");
         if !estimate.groups.is_empty() {
             push_label(labels, seen, MODELS_LABEL);
             push_label(labels, seen, REASONING_LABEL);
@@ -98,7 +89,7 @@ impl StatusThreadUsage {
         };
 
         let credits_micros = estimate.estimated_usage_credits_micros;
-        let mut usage = vec![format!("{} credits", format_credit_micros(credits_micros)).into()];
+        let mut usage = vec![format!("{} 点", format_credit_micros(credits_micros)).into()];
         if let Some(cost) = estimate
             .estimated_usage_usd_micros
             .and_then(format_estimated_usd_micros)
@@ -106,7 +97,7 @@ impl StatusThreadUsage {
             usage.push(" · ".dim());
             usage.push(cost.into());
         }
-        let mut lines = vec![formatter.line("Thread usage", usage)];
+        let mut lines = vec![formatter.line("会话用量", usage)];
 
         for (label, dimension) in [
             (MODELS_LABEL, BreakdownDimension::Model),
@@ -141,16 +132,19 @@ impl StatusThreadUsage {
         if !estimate.groups.is_empty() && (input_tokens.is_some() || output_tokens.is_some()) {
             let mut tokens = Vec::new();
             if let Some(input_tokens) = input_tokens {
-                tokens.push(format!("{} input", format_tokens_compact(input_tokens)));
+                tokens.push(format!("{} 输入", format_tokens_compact(input_tokens)));
                 if let Some(cached_tokens) = cached_tokens {
-                    tokens.push(format!("({} cached)", format_tokens_compact(cached_tokens)));
+                    tokens.push(format!(
+                        "（{} 已缓存）",
+                        format_tokens_compact(cached_tokens)
+                    ));
                 }
             }
             if let Some(output_tokens) = output_tokens {
                 if !tokens.is_empty() {
                     tokens.push("+".to_string());
                 }
-                tokens.push(format!("{} output", format_tokens_compact(output_tokens)));
+                tokens.push(format!("{} 输出", format_tokens_compact(output_tokens)));
             }
             lines.push(formatter.line(BILLED_TOKENS_LABEL, vec![tokens.join(" ").into()]));
         }
@@ -180,26 +174,26 @@ fn grouped_usage(
                 .model
                 .as_deref()
                 .map(format_model_display_name)
-                .unwrap_or_else(|| "Other".to_string()),
+                .unwrap_or_else(|| "其他".to_string()),
             BreakdownDimension::Reasoning => match group.reasoning_effort.as_deref() {
-                Some("none") => "None",
-                Some("minimal") => "Minimal",
-                Some("low") => "Light",
-                Some("medium") => "Medium",
-                Some("high") => "High",
-                Some("xhigh") => "Extra High",
-                Some("max") => "Max",
-                Some("ultra") => "Ultra",
+                Some("none") => "无",
+                Some("minimal") => "最低",
+                Some("low") => "低",
+                Some("medium") => "中",
+                Some("high") => "高",
+                Some("xhigh") => "超高",
+                Some("max") => "最大",
+                Some("ultra") => "极致",
                 Some(other) => other,
-                None => "Other",
+                None => "其他",
             }
             .to_string(),
             BreakdownDimension::Speed => match group.speed.as_deref() {
-                Some("fast") => "Fast mode",
-                Some("ultrafast") => "Ultrafast",
-                Some("standard") => "Standard",
+                Some("fast") => "快速模式",
+                Some("ultrafast") => "极速",
+                Some("standard") => "标准",
                 Some(other) => other,
-                None => "Other",
+                None => "其他",
             }
             .to_string(),
         };

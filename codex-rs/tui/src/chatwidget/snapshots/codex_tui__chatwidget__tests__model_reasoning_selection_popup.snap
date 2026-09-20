@@ -2,13 +2,13 @@
 source: tui/src/chatwidget/tests/popups_and_settings.rs
 expression: popup
 ---
-  Select Reasoning Level for GPT-5.5
+  选 择  GPT-5.5 的 推 理 级 别
 
-  1. Low               Fast responses with lighter reasoning
-  2. Medium (default)  Balances speed and reasoning depth for everyday tasks
-› 3. High (current)    Greater reasoning depth for complex problems
-  4. Extra high        Extra high reasoning depth for complex problems
-  5. Persistent        Continue working until put to sleep
-  6. More reasoning…   Max and Ultra consume usage limits faster
+  1. 低              Fast responses with lighter reasoning
+  2. 中 （ 默 认 ）      Balances speed and reasoning depth for everyday tasks
+› 3. 高 （ 当 前 ）      Greater reasoning depth for complex problems
+  4. 超 高            Extra high reasoning depth for complex problems
+  5. 持 续            Continue working until put to sleep
+  6. 更 高 推 理 强 度 …  最 大 和 极 致 会 更 快 消 耗 用 量 限 额
 
-  enter to set as default · s for this session · esc to go back
+  enter 设 为 默 认  · s 仅 用 于 此 会 话  · esc 返 回

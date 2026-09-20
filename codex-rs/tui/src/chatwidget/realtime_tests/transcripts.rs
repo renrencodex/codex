@@ -211,10 +211,10 @@ async fn voice_transcripts_stream_in_the_conversation_instead_of_the_footer() {
         .join("\n");
     assert!(live.contains("pick a number"));
     let footer = render_bottom_popup(&chat, /*width*/ 80);
-    assert!(footer.contains("voice ● listening"));
+    assert!(footer.contains("voice ● 正在聆听"));
     let status_line = footer
         .lines()
-        .find(|line| line.contains("voice ● listening"))
+        .find(|line| line.contains("voice ● 正在聆听"))
         .unwrap_or_default();
     assert!(!status_line.contains("pick a number"));
     assert!(events.try_recv().is_err());

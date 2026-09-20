@@ -268,8 +268,8 @@ fn visualization_link_labels(file: &str) -> (String, String) {
         .unwrap_or("generated");
     let escaped_name = escape_markdown_label(name);
     (
-        format!("Open {escaped_name} visualization in the browser"),
-        format!("Open {name} visualization in the browser"),
+        format!("在浏览器中打开 {escaped_name} 可视化内容"),
+        format!("在浏览器中打开 {name} 可视化内容"),
     )
 }
 

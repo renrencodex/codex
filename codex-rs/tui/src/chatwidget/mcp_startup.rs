@@ -14,8 +14,8 @@ use codex_app_server_protocol::McpServerStatusUpdatedNotification;
 
 use super::ChatWidget;
 
-const MCP_STARTUP_SINGLE_HEADER_PREFIX: &str = "Booting MCP server:";
-const MCP_STARTUP_MULTI_HEADER_PREFIX: &str = "Starting MCP servers";
+const MCP_STARTUP_SINGLE_HEADER_PREFIX: &str = "正在启动 MCP 服务器：";
+const MCP_STARTUP_MULTI_HEADER_PREFIX: &str = "正在启动 MCP 服务器";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum McpStartupStatus {
@@ -184,7 +184,7 @@ impl ChatWidget {
         }
         Some(if total > 1 {
             format!(
-                "{MCP_STARTUP_MULTI_HEADER_PREFIX} ({completed}/{total}): {}",
+                "{MCP_STARTUP_MULTI_HEADER_PREFIX}（{completed}/{total}）：{}",
                 to_show.join(", ")
             )
         } else {
@@ -203,7 +203,7 @@ impl ChatWidget {
         if !cancelled.is_empty() {
             self.add_mcp_startup_warning(
                 vec![format!(
-                    "MCP startup interrupted. The following servers were not initialized: {}",
+                    "MCP 启动已中断。以下服务器未初始化：{}",
                     cancelled.join(", ")
                 )],
                 cancelled,
@@ -212,11 +212,11 @@ impl ChatWidget {
         }
         let mut parts = Vec::new();
         if !failed.is_empty() {
-            parts.push(format!("failed: {}", failed.join(", ")));
+            parts.push(format!("失败：{}", failed.join(", ")));
         }
         if !parts.is_empty() {
             self.add_mcp_startup_warning(
-                vec![format!("MCP startup incomplete ({})", parts.join("; "))],
+                vec![format!("MCP 启动不完整（{}）", parts.join("；"))],
                 failed,
                 /*failure_reason*/ None,
             );
@@ -318,9 +318,9 @@ impl ChatWidget {
             McpServerStartupState::Ready => McpStartupStatus::Ready,
             McpServerStartupState::Failed => McpStartupStatus::Failed {
                 failure_reason: notification.failure_reason,
-                error: notification.error.unwrap_or_else(|| {
-                    format!("MCP client for `{}` failed to start", notification.name)
-                }),
+                error: notification
+                    .error
+                    .unwrap_or_else(|| format!("MCP 客户端 `{}` 启动失败", notification.name)),
             },
             McpServerStartupState::Cancelled => McpStartupStatus::Cancelled,
         };

@@ -18,7 +18,7 @@ use ratatui::text::Line;
 use std::cmp::Ordering;
 use std::ops::Range;
 
-pub(super) const METRICS: [&str; 3] = ["Weekly %", "5-hour %", "Balance credits"];
+pub(super) const METRICS: [&str; 3] = ["每周 %", "5 小时 %", "余额 credits"];
 
 fn compare(a: Option<&TaskUsageAmounts>, b: Option<&TaskUsageAmounts>, metric: usize) -> Ordering {
     if metric == 2 {
@@ -113,7 +113,7 @@ impl AnalyticsView {
                 wrap(vec![
                     self.tasks
                         .message()
-                        .unwrap_or("No task usage reported.")
+                        .unwrap_or("没有上报任务用量。")
                         .to_string()
                         .into(),
                 ]),
@@ -122,22 +122,19 @@ impl AnalyticsView {
         };
         let metric = self.task_metric();
         let mut lines = wrap(vec![
-            format!(
-                "Usage estimates · active in past 30 days · sorted by {}",
-                METRICS[metric]
-            )
-            .set_style(secondary_style())
-            .into(),
+            format!("用量估算 · 过去 30 天活跃 · 按{}排序", METRICS[metric])
+                .set_style(secondary_style())
+                .into(),
             if metric == 2 {
-                "Credits debited from balance · includes adjustments"
+                "从余额扣除的 credits · 包含调整"
             } else {
-                "Recorded usage / current full limit · may exceed 100%"
+                "记录用量 / 当前完整限额 · 可能超过 100%"
             }
             .set_style(secondary_style())
             .into(),
         ]);
         if chats.rows.is_empty() {
-            lines.push("No recent local chats.".into());
+            lines.push("近期没有本地对话。".into());
             return (lines, 0..1);
         }
         let missing = chats
@@ -156,7 +153,7 @@ impl AnalyticsView {
             .count();
         if missing + partial > 0 {
             lines.extend(wrap(vec![
-                format!("Partial ranking · {partial} partial · {missing} unavailable")
+                format!("排名不完整 · {partial} 项部分可用 · {missing} 项不可用")
                     .set_style(secondary_style())
                     .into(),
             ]));
@@ -197,7 +194,7 @@ impl AnalyticsView {
         };
         lines.push(Line::default());
         lines.push(columns(
-            "  Chat".bold().into(),
+            "  对话".bold().into(),
             metric_text(/*chat*/ None).bold().into(),
             width,
         ));
@@ -214,7 +211,7 @@ impl AnalyticsView {
                     .as_ref()
                     .is_some_and(|task| task.data_status == TaskUsageStatus::Partial)
                 {
-                    " · partial"
+                    " · 部分可用"
                 } else {
                     ""
                 };
@@ -265,13 +262,13 @@ impl AnalyticsView {
                             });
                             row.push(Line::default());
                             row.push(columns(
-                                "  Model / effort / speed".bold().into(),
+                                "  模型 / 推理强度 / 速度".bold().into(),
                                 METRICS[metric].bold().into(),
                                 width,
                             ));
                             for group in groups {
-                                let model = self
-                                    .model_name(group.model.as_deref().unwrap_or("Not reported"));
+                                let model =
+                                    self.model_name(group.model.as_deref().unwrap_or("未上报"));
                                 let value = amount(Some(&group.amounts), metric);
                                 row.push(columns(
                                     truncate(
@@ -284,12 +281,9 @@ impl AnalyticsView {
                                 row.push(
                                     format!(
                                         "    {} · {} · {}",
-                                        group.reasoning_effort.as_deref().unwrap_or("Not reported"),
-                                        group.speed.as_deref().unwrap_or("Not reported"),
-                                        group
-                                            .product_experience
-                                            .as_deref()
-                                            .unwrap_or("Not reported")
+                                        group.reasoning_effort.as_deref().unwrap_or("未上报"),
+                                        group.speed.as_deref().unwrap_or("未上报"),
+                                        group.product_experience.as_deref().unwrap_or("未上报")
                                     )
                                     .set_style(secondary_style())
                                     .into(),
@@ -297,11 +291,7 @@ impl AnalyticsView {
                             }
                         }
                     } else {
-                        row.push(
-                            "  Task usage unavailable."
-                                .set_style(secondary_style())
-                                .into(),
-                        );
+                        row.push("  任务用量不可用。".set_style(secondary_style()).into());
                     }
                     row.push(Line::default());
                 }
@@ -309,13 +299,13 @@ impl AnalyticsView {
             })
             .collect::<Vec<_>>();
         let mut coverage = vec![
-            "Local chats · includes discovered descendants · excludes archived roots"
+            "本地对话 · 包含已发现的后代会话 · 不含已归档根会话"
                 .set_style(secondary_style())
                 .into(),
         ];
         if chats.truncated {
             coverage.push(
-                "Partial ranking · 100 most recently active chats"
+                "排名不完整 · 最近活跃的 100 个对话"
                     .set_style(secondary_style())
                     .into(),
             );
@@ -323,7 +313,7 @@ impl AnalyticsView {
         if let Some(time) = chats.updated_at {
             coverage.push(
                 format!(
-                    "Updated {} UTC · recent activity may be delayed",
+                    "更新于 {} UTC · 近期活动可能有延迟",
                     time.format("%b %-d %H:%M")
                 )
                 .set_style(secondary_style())
@@ -334,7 +324,7 @@ impl AnalyticsView {
             let count = rows.len();
             lines.extend(rows.into_iter().take(/*n*/ 5).flatten());
             lines.push(Line::default());
-            lines.push(format!("Showing top {} of {count} chats", count.min(/*other*/ 5)).into());
+            lines.push(format!("显示 {count} 个对话中的前 {} 个", count.min(/*other*/ 5)).into());
             lines.extend(wrap(coverage));
             (lines, 0..1)
         } else {

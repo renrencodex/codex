@@ -90,11 +90,8 @@ impl App {
             .harness_overrides(overrides)
             .loader_overrides(self.loader_overrides.clone())
             .cloud_config_bundle(self.cloud_config_bundle.clone());
-        build_config_on_runtime_worker(
-            builder,
-            format!("Failed to rebuild config for cwd {cwd_display}"),
-        )
-        .await
+        build_config_on_runtime_worker(builder, format!("为 cwd {cwd_display} 重新构建配置失败"))
+            .await
     }
 
     pub(super) async fn rebuild_config_for_permission_profile(
@@ -114,7 +111,7 @@ impl App {
             .cloud_config_bundle(self.cloud_config_bundle.clone());
         build_config_on_runtime_worker(
             builder,
-            format!("Failed to rebuild config for permission profile {profile_id}"),
+            format!("为权限配置文件 {profile_id} 重新构建配置失败"),
         )
         .await
     }
@@ -143,9 +140,8 @@ impl App {
                     profile_id,
                     "failed to resolve selected permission profile"
                 );
-                self.chat_widget.add_error_message(format!(
-                    "Failed to set permission profile `{profile_id}`: {err}"
-                ));
+                self.chat_widget
+                    .add_error_message(format!("设置权限配置文件 `{profile_id}` 失败：{err}"));
                 return false;
             }
         };
@@ -158,7 +154,7 @@ impl App {
             && !self.try_set_approval_policy_on_config(
                 &mut config,
                 policy,
-                "Failed to set approval policy",
+                "设置审批策略失败",
                 "failed to set selected permission profile approval policy on app config",
             )
         {
@@ -178,9 +174,8 @@ impl App {
                 profile_id,
                 "failed to set selected permission profile on app config"
             );
-            self.chat_widget.add_error_message(format!(
-                "Failed to set permission profile `{profile_id}`: {err}"
-            ));
+            self.chat_widget
+                .add_error_message(format!("设置权限配置文件 `{profile_id}` 失败：{err}"));
             return false;
         }
         if let Some(reviewer) = approvals_reviewer {
@@ -203,9 +198,8 @@ impl App {
                 profile_id,
                 "failed to set selected permission profile on chat config"
             );
-            self.chat_widget.add_error_message(format!(
-                "Failed to set permission profile `{profile_id}`: {err}"
-            ));
+            self.chat_widget
+                .add_error_message(format!("设置权限配置文件 `{profile_id}` 失败：{err}"));
             return false;
         }
         if let Some(reviewer) = approvals_reviewer {
@@ -237,7 +231,7 @@ impl App {
             )));
         self.app_event_tx.send(AppEvent::InsertHistoryCell(Box::new(
             history_cell::new_info_event(
-                format!("Permissions updated to {display_label}"),
+                format!("权限已更新为 {display_label}"),
                 /*hint*/ None,
             ),
         )));
@@ -269,9 +263,8 @@ impl App {
         let Some(thread_id) = self.chat_widget.thread_id() else {
             self.chat_widget
                 .retain_input_after_failed_permission_selection();
-            self.chat_widget.add_error_message(
-                "Wait for the task to connect before selecting permissions.".into(),
-            );
+            self.chat_widget
+                .add_error_message("请等待任务连接后再选择权限。".into());
             return;
         };
         if !selection.profile_id.starts_with(':')
@@ -279,9 +272,8 @@ impl App {
         {
             self.chat_widget
                 .retain_input_after_failed_permission_selection();
-            self.chat_widget.add_error_message(
-                "Wait for the current turn to finish before changing permissions.".into(),
-            );
+            self.chat_widget
+                .add_error_message("请等待当前回合结束后再更改权限。".into());
             return;
         }
         let config = self.chat_widget.config_ref();
@@ -317,10 +309,7 @@ impl App {
                 self.pending_server_profiles
                     .insert(thread_id, selection.clone());
                 self.chat_widget.add_info_message(
-                    format!(
-                        "Permission selection requested: {}",
-                        selection.display_label
-                    ),
+                    format!("已请求选择权限：{}", selection.display_label),
                     /*hint*/ None,
                 );
                 self.chat_widget.submit_initial_user_message_if_pending();
@@ -329,13 +318,13 @@ impl App {
                 self.chat_widget
                     .retain_input_after_failed_permission_selection();
                 self.chat_widget
-                    .add_error_message("Permission selection requires a newer app server.".into());
+                    .add_error_message("选择权限需要更新版本的 app server。".into());
             }
             Err(error) => {
                 self.chat_widget
                     .retain_input_after_failed_permission_selection();
                 self.chat_widget
-                    .add_error_message(format!("Failed to select permissions: {error:#}"));
+                    .add_error_message(format!("选择权限失败：{error:#}"));
             }
         }
     }
@@ -346,9 +335,8 @@ impl App {
             .thread_id()
             .is_some_and(|thread_id| self.pending_server_profiles.contains_key(&thread_id))
         {
-            self.chat_widget.add_error_message(
-                "Wait for permissions to update before changing permissions.".into(),
-            );
+            self.chat_widget
+                .add_error_message("请等待权限更新完成后再更改权限。".into());
             return true;
         }
         false
@@ -363,7 +351,7 @@ impl App {
             return false;
         }
         self.chat_widget
-            .add_error_message("Wait for permissions to update before switching tasks.".into());
+            .add_error_message("请等待权限更新完成后再切换任务。".into());
         true
     }
 
@@ -438,7 +426,7 @@ impl App {
                     "failed to refresh effective config after an overridden write"
                 );
                 self.chat_widget.add_error_message(format!(
-                    "{setting} were saved, but Codex could not refresh the effective config: {err}"
+                    "已保存{setting}，但 Codex 无法刷新有效配置：{err}"
                 ));
                 None
             }
@@ -485,9 +473,8 @@ impl App {
                 .set(policy.policy().to_core())
         {
             tracing::warn!(%err, "failed to carry forward approval policy override");
-            self.chat_widget.add_error_message(format!(
-                "Failed to carry forward approval policy override: {err}"
-            ));
+            self.chat_widget
+                .add_error_message(format!("沿用审批策略覆盖值失败：{err}"));
         }
         if let Some(profile_override) = self.runtime_permission_profile_override.as_ref()
             && (scope == RuntimePolicyOverrideScope::All
@@ -501,9 +488,9 @@ impl App {
                 .can_set(&profile_override.approvals_reviewer)
             {
                 Ok(()) => config.approvals_reviewer = profile_override.approvals_reviewer,
-                Err(error) => self.chat_widget.add_error_message(format!(
-                    "Failed to carry forward approvals reviewer: {error}"
-                )),
+                Err(error) => self
+                    .chat_widget
+                    .add_error_message(format!("沿用审批审查者失败：{error}")),
             }
             match config
                 .permissions
@@ -518,9 +505,8 @@ impl App {
                 }
                 Err(err) => {
                     tracing::warn!(%err, "failed to carry forward permission profile override");
-                    self.chat_widget.add_error_message(format!(
-                        "Failed to carry forward permission profile override: {err}"
-                    ));
+                    self.chat_widget
+                        .add_error_message(format!("沿用权限配置文件覆盖值失败：{err}"));
                 }
             }
         }
@@ -541,7 +527,7 @@ impl App {
         if let Err(err) = config.permissions.approval_policy.set(policy.to_core()) {
             tracing::warn!(error = %err, "{log_message}");
             self.chat_widget
-                .add_error_message(format!("{user_message_prefix}: {err}"));
+                .add_error_message(format!("{user_message_prefix}：{err}"));
             return false;
         }
 
@@ -563,7 +549,7 @@ impl App {
                 "{log_message}: unsupported active permission profile"
             );
             self.chat_widget.add_error_message(format!(
-                "{user_message_prefix}: unsupported active permission profile `{}`",
+                "{user_message_prefix}：不支持活动权限配置文件 `{}`",
                 active_permission_profile.id
             ));
             return None;
@@ -578,7 +564,7 @@ impl App {
         {
             tracing::warn!(error = %err, "{log_message}");
             self.chat_widget
-                .add_error_message(format!("{user_message_prefix}: {err}"));
+                .add_error_message(format!("{user_message_prefix}：{err}"));
             return None;
         }
 
@@ -621,9 +607,8 @@ impl App {
                     feature = feature_key,
                     "failed to update constrained feature flags"
                 );
-                self.chat_widget.add_error_message(format!(
-                    "Failed to update experimental feature `{feature_key}`: {err}"
-                ));
+                self.chat_widget
+                    .add_error_message(format!("更新实验性功能 `{feature_key}` 失败：{err}"));
                 continue;
             }
             let effective_enabled = feature_config.features.enabled(feature);
@@ -639,7 +624,7 @@ impl App {
                         serde_json::json!(auto_review_preset.approvals_reviewer.to_string()),
                     ));
                     if previous_approvals_reviewer != auto_review_preset.approvals_reviewer {
-                        permissions_history_label = Some("Approve for me");
+                        permissions_history_label = Some("为我审批");
                     }
                 } else if !effective_enabled {
                     feature_edits.push(crate::config_update::clear_config_value(
@@ -647,7 +632,7 @@ impl App {
                     ));
                     feature_config.approvals_reviewer = ApprovalsReviewer::User;
                     if previous_approvals_reviewer != ApprovalsReviewer::User {
-                        permissions_history_label = Some("Ask for approval");
+                        permissions_history_label = Some("请求审批");
                     }
                 }
                 approvals_reviewer_override = Some(feature_config.approvals_reviewer);
@@ -660,7 +645,7 @@ impl App {
                 if !self.try_set_approval_policy_on_config(
                     &mut feature_config,
                     auto_review_preset.approval_policy,
-                    "Failed to enable Approve for me",
+                    "启用“为我审批”失败",
                     "failed to set auto-review approval policy on staged config",
                 ) {
                     continue;
@@ -669,7 +654,7 @@ impl App {
                     .try_set_builtin_active_permission_profile_on_config(
                         &mut feature_config,
                         auto_review_preset.active_permission_profile.clone(),
-                        "Failed to enable Approve for me",
+                        "启用“为我审批”失败",
                         "failed to set auto-review permission profile on staged config",
                     )
                 else {
@@ -713,7 +698,7 @@ impl App {
                 let error = crate::config_update::format_config_error(&err);
                 tracing::error!(error = %error, "failed to persist feature flags");
                 self.chat_widget
-                    .add_error_message(format!("Failed to update experimental features: {error}"));
+                    .add_error_message(format!("更新实验性功能失败：{error}"));
                 return;
             }
         };
@@ -723,14 +708,10 @@ impl App {
                 message,
                 "feature flag config write was overridden by effective config"
             );
-            self.chat_widget.add_error_message(format!(
-                "Experimental feature changes were saved but not applied: {message}"
-            ));
+            self.chat_widget
+                .add_error_message(format!("实验性功能更改已保存但未应用：{message}"));
             if let Some(effective_config) = self
-                .read_effective_config_after_overridden_write(
-                    app_server,
-                    "Experimental feature changes",
-                )
+                .read_effective_config_after_overridden_write(app_server, "实验性功能更改")
                 .await
             {
                 self.sync_feature_state_from_effective_config(
@@ -785,7 +766,7 @@ impl App {
                 "failed to set auto-review permission profile on chat config"
             );
             self.chat_widget
-                .add_error_message(format!("Failed to enable Approve for me: {err}"));
+                .add_error_message(format!("启用“为我审批”失败：{err}"));
         }
         if permission_profile_override.is_some() {
             self.runtime_permission_profile_override =
@@ -826,10 +807,8 @@ impl App {
         }
 
         if let Some(label) = permissions_history_label {
-            self.chat_widget.add_info_message(
-                format!("Permissions updated to {label}"),
-                /*hint*/ None,
-            );
+            self.chat_widget
+                .add_info_message(format!("权限已更新为{label}"), /*hint*/ None);
         }
     }
 
@@ -852,7 +831,7 @@ impl App {
             Err(err) => {
                 tracing::error!(error = %err, "failed to persist memory settings");
                 self.chat_widget
-                    .add_error_message(format!("Failed to save memory settings: {err}"));
+                    .add_error_message(format!("保存记忆设置失败：{err}"));
                 return false;
             }
         };
@@ -862,11 +841,10 @@ impl App {
                 message,
                 "memory settings config write was overridden by effective config"
             );
-            self.chat_widget.add_error_message(format!(
-                "Memory setting changes were saved but not applied: {message}"
-            ));
+            self.chat_widget
+                .add_error_message(format!("记忆设置更改已保存但未应用：{message}"));
             let Some(effective_config) = self
-                .read_effective_config_after_overridden_write(app_server, "Memory setting changes")
+                .read_effective_config_after_overridden_write(app_server, "记忆设置更改")
                 .await
             else {
                 return false;
@@ -912,9 +890,8 @@ impl App {
 
         if let Err(err) = app_server.thread_memory_mode_set(thread_id, mode).await {
             tracing::error!(error = %err, %thread_id, "failed to update thread memory mode");
-            self.chat_widget.add_error_message(format!(
-                "Saved memory settings, but failed to update the current thread: {err}"
-            ));
+            self.chat_widget
+                .add_error_message(format!("记忆设置已保存，但更新当前会话失败：{err}"));
         }
     }
 
@@ -925,17 +902,17 @@ impl App {
         if let Err(err) = app_server.memory_reset().await {
             tracing::error!(error = %err, "failed to reset memories");
             self.chat_widget
-                .add_error_message(format!("Failed to reset memories: {err}"));
+                .add_error_message(format!("重置记忆失败：{err}"));
             return;
         }
 
         self.chat_widget
-            .add_info_message("Reset local memories.".to_string(), /*hint*/ None);
+            .add_info_message("已重置本地记忆。".to_string(), /*hint*/ None);
     }
 
     pub(super) fn reasoning_label(reasoning_effort: Option<&ReasoningEffortConfig>) -> String {
         match reasoning_effort {
-            None | Some(ReasoningEffortConfig::None) => "default".to_string(),
+            None | Some(ReasoningEffortConfig::None) => "默认".to_string(),
             Some(reasoning_effort) => reasoning_effort.as_str().to_string(),
         }
     }
@@ -1056,9 +1033,7 @@ impl App {
                         profile.turn_override == RuntimePermissionProfileTurnOverride::LegacySandbox
                     });
         if explicitly_selected {
-            self.add_agents_overview_error(
-                "Permission overrides are not supported when resuming a remote task.".into(),
-            );
+            self.add_agents_overview_error("恢复远程任务时不支持权限覆盖。".into());
             return true;
         }
         false
@@ -1142,9 +1117,8 @@ impl App {
                     error = %err,
                     "failed to sync effective approval policy after an overridden write"
                 );
-                self.chat_widget.add_error_message(format!(
-                    "Failed to refresh overridden Approve for me settings: {err}"
-                ));
+                self.chat_widget
+                    .add_error_message(format!("刷新已覆盖的“为我审批”设置失败：{err}"));
             } else {
                 self.chat_widget.set_approval_policy(policy);
             }
@@ -1171,7 +1145,7 @@ impl App {
         let Some(permission_profile) = self.try_set_builtin_active_permission_profile_on_config(
             &mut config,
             auto_review_preset.active_permission_profile.clone(),
-            "Failed to refresh overridden Approve for me settings",
+            "刷新已覆盖的“为我审批”设置失败",
             "failed to sync overridden Auto-review permission profile",
         ) else {
             return;
@@ -1188,9 +1162,8 @@ impl App {
                 error = %err,
                 "failed to sync overridden Auto-review permission profile on chat config"
             );
-            self.chat_widget.add_error_message(format!(
-                "Failed to refresh overridden Approve for me settings: {err}"
-            ));
+            self.chat_widget
+                .add_error_message(format!("刷新已覆盖的“为我审批”设置失败：{err}"));
             return;
         }
 
@@ -1262,7 +1235,8 @@ impl App {
         {
             return true;
         }
-        self.chat_widget.add_error_message("Windows sandbox setup completed, but its mode was overridden by the effective configuration.".to_string());
+        self.chat_widget
+            .add_error_message("Windows 沙箱设置已完成，但其模式被有效配置覆盖。".to_string());
         false
     }
 }

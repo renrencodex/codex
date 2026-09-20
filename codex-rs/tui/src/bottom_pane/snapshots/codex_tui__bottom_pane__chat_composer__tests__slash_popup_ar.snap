@@ -6,4 +6,4 @@ expression: terminal.backend()
 "› /ar                                                       "
 "                                                            "
 "                                                            "
-"  /archive  archive this session                            "
+"  /archive  归档当前会话                                    " Hidden by multi-width symbols: [(13, " "), (15, " "), (17, " "), (19, " "), (21, " "), (23, " ")]

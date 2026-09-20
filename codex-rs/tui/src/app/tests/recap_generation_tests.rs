@@ -184,9 +184,9 @@ stream_max_retries = 0
             .map(ToString::to_string)
             .collect::<Vec<_>>(),
         vec![
-            "Conversation recap",
+            "对话回顾",
             "Finished parsing.",
-            "Next: Run focused tests.",
+            "下一步：Run focused tests.",
         ]
     );
 
@@ -252,7 +252,7 @@ async fn manual_recap_works_when_auto_recap_disabled() -> Result<()> {
     )
     .await?;
     assert!(
-        render_chat_widget(&app).contains("Generating conversation recap…"),
+        render_chat_widget(&app).contains("正在生成对话回顾…"),
         "manual recap should show progress while generation is in flight"
     );
     let started_event = tokio::time::timeout(Duration::from_secs(/*secs*/ 5), app_event_rx.recv())
@@ -293,7 +293,7 @@ async fn manual_recap_works_when_auto_recap_disabled() -> Result<()> {
         .is_none()
     );
     assert!(
-        !render_chat_widget(&app).contains("Generating conversation recap…"),
+        !render_chat_widget(&app).contains("正在生成对话回顾…"),
         "manual recap progress should clear when generation finishes"
     );
 

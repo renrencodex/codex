@@ -81,10 +81,10 @@ impl AgentsOverviewGroup {
 
     fn label(self) -> &'static str {
         match self {
-            Self::NeedsYou => "Needs input",
-            Self::Working => "Working",
-            Self::Ready => "Ready",
-            Self::Finished => "Finished",
+            Self::NeedsYou => "需要输入",
+            Self::Working => "工作中",
+            Self::Ready => "已就绪",
+            Self::Finished => "已完成",
         }
     }
 }
@@ -100,7 +100,7 @@ pub(super) struct AgentsOverviewRow {
 
 fn display_title(thread: &Thread) -> &str {
     let title = thread.name.as_deref().unwrap_or(&thread.preview);
-    title.trim().lines().next().unwrap_or("Untitled task")
+    title.trim().lines().next().unwrap_or("未命名任务")
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -324,10 +324,10 @@ impl AgentsOverviewView {
 
     fn status(row: &AgentsOverviewRow) -> (&'static str, Span<'static>) {
         match row.group {
-            AgentsOverviewGroup::NeedsYou => ("Needs input", "●".red()),
-            AgentsOverviewGroup::Working => ("Working", "●".green()),
-            AgentsOverviewGroup::Ready => ("Ready", "○".cyan()),
-            AgentsOverviewGroup::Finished => ("Finished", "✓".dim()),
+            AgentsOverviewGroup::NeedsYou => ("需要输入", "●".red()),
+            AgentsOverviewGroup::Working => ("工作中", "●".green()),
+            AgentsOverviewGroup::Ready => ("已就绪", "○".cyan()),
+            AgentsOverviewGroup::Finished => ("已完成", "✓".dim()),
         }
     }
 
@@ -393,7 +393,7 @@ impl AgentsOverviewView {
                 " ".into()
             };
             let (status, dot) = Self::status(row);
-            let current = if row.is_current { "  current" } else { "" };
+            let current = if row.is_current { "  当前" } else { "" };
             let mut spans = vec![
                 marker,
                 " ".into(),
@@ -417,7 +417,7 @@ impl AgentsOverviewView {
         let (status, dot) = Self::status(row);
         let width = usize::from(area.width);
         let mut lines = vec![
-            Line::from("Task details".bold()),
+            Line::from("任务详情".bold()),
             Line::default(),
             crate::line_truncation::truncate_line_with_ellipsis_if_overflow(
                 Line::from(Span::styled(
@@ -428,10 +428,10 @@ impl AgentsOverviewView {
             ),
             Line::from(vec![dot, " ".into(), status.into()]),
             Line::default(),
-            Line::from("Project".dim()),
+            Line::from("项目".dim()),
             Line::from(row.thread.cwd.display().to_string()),
             Line::from(vec![
-                "Model: ".dim(),
+                "模型：".dim(),
                 model_name(&row.thread).to_string().into(),
             ]),
         ];
@@ -443,15 +443,15 @@ impl AgentsOverviewView {
             .and_then(|git| git.branch.as_ref())
         {
             lines.push(Line::default());
-            lines.push("Branch".dim().into());
+            lines.push("分支".dim().into());
             lines.push(branch.clone().into());
         }
         let preview = super::agents_overview_details::preview_markdown(&row.thread.preview);
         let prompt_start = crate::wrapping::word_wrap_lines(lines.clone(), width).len();
-        lines.extend([Line::default(), Line::from("Prompt".dim())]);
+        lines.extend([Line::default(), Line::from("提示词".dim())]);
         let prompt = crate::markdown_render::render_markdown_text_with_width_and_cwd(
             match preview.as_str() {
-                "" => "No prompt available.",
+                "" => "没有可用的提示词。",
                 preview => preview,
             },
             Some(width),
@@ -469,7 +469,7 @@ impl AgentsOverviewView {
         if self.state().connection_notice.is_none() {
             let mut details = row.details.lines.clone();
             if let Some((message, cwd)) = &row.details.last_message {
-                details.extend([Line::default(), "Last message".dim().into()]);
+                details.extend([Line::default(), "上一条消息".dim().into()]);
                 crate::markdown::append_markdown(
                     &crate::markdown::unwrap_markdown_fences(message),
                     Some(width),

@@ -6,7 +6,7 @@ use crate::wrapping::url_preserving_wrap_options;
 use crate::wrapping::word_wrap_line;
 
 #[cfg_attr(not(test), allow(dead_code))]
-const RECAP_HEADING: &str = "Conversation recap";
+const RECAP_HEADING: &str = "对话回顾";
 
 #[cfg_attr(debug_assertions, allow(dead_code))]
 #[derive(Debug)]
@@ -30,25 +30,25 @@ impl HistoryCell for UpdateAvailableHistoryCell {
         use ratatui_macros::line;
         use ratatui_macros::text;
         let update_instruction = if let Some(update_action) = self.update_action {
-            line!["Run ", update_action.command_str().cyan(), " to update."]
+            line!["运行 ", update_action.command_str().cyan(), " 进行更新。"]
         } else {
             line![
-                "See ",
+                "请参阅 ",
                 "https://github.com/openai/codex".cyan().underlined(),
-                " for installation options."
+                " 了解安装选项。"
             ]
         };
 
         let content = text![
             line![
                 "✨\u{200A}".bold().cyan(),
-                "Update available!".bold().cyan(),
+                "有可用更新！".bold().cyan(),
                 " ",
                 format!("{CODEX_CLI_VERSION} -> {}", self.latest_version).bold(),
             ],
             update_instruction,
             "",
-            "See full release notes:",
+            "查看完整发行说明：",
             "https://github.com/openai/codex/releases/latest"
                 .cyan()
                 .underlined(),
@@ -64,16 +64,16 @@ impl HistoryCell for UpdateAvailableHistoryCell {
 
     fn raw_lines(&self) -> Vec<Line<'static>> {
         let update_instruction = if let Some(update_action) = self.update_action {
-            format!("Run {} to update.", update_action.command_str())
+            format!("运行 {} 进行更新。", update_action.command_str())
         } else {
-            "See https://github.com/openai/codex for installation options.".to_string()
+            "请访问 https://github.com/openai/codex 了解安装选项。".to_string()
         };
         vec![
-            Line::from("Update available!"),
+            Line::from("有可用更新！"),
             Line::from(format!("{CODEX_CLI_VERSION} -> {}", self.latest_version)),
             Line::from(update_instruction),
             Line::from(""),
-            Line::from("See full release notes:"),
+            Line::from("查看完整发行说明："),
             Line::from("https://github.com/openai/codex/releases/latest"),
         ]
     }
@@ -97,12 +97,8 @@ pub(crate) fn new_server_version_warning(
 ) -> PrefixedWrappedHistoryCell {
     let mut lines = vec![Line::from(notice.message.yellow())];
     if notice.offer_update {
-        lines.push(Line::from(
-            "Use /daemon to manage the local background server.".cyan(),
-        ));
-        lines.push(Line::from(
-            "Updating may interrupt active or queued work.".yellow(),
-        ));
+        lines.push(Line::from("使用 /daemon 管理本地后台服务器。".cyan()));
+        lines.push(Line::from("更新可能会中断正在执行或排队的工作。".yellow()));
     }
     PrefixedWrappedHistoryCell::new(Text::from(lines), "⚠ ".yellow(), "  ")
 }
@@ -118,14 +114,14 @@ const SAFETY_ACCESS_BLOCK_LEARN_MORE_URL: &str = "https://help.openai.com/en/art
 
 pub(crate) fn new_safety_access_block_event() -> SafetyAccessBlockCell {
     SafetyAccessBlockCell {
-        title: "This content can't be shown",
-        body: "We take extra caution with requests involving biological research and applications that could pose safety risks. Eligible researchers can apply for Trusted Access.",
+        title: "无法显示此内容",
+        body: "对于涉及生物研究及可能带来安全风险的应用请求，我们会格外谨慎。符合条件的研究人员可以申请“可信访问”。",
         actions: &[
             (
-                "Trusted Access",
+                "可信访问",
                 "https://chatgpt.com/r/b749fb02595e04c3007a54375f3f4374",
             ),
-            ("Learn more", SAFETY_ACCESS_BLOCK_LEARN_MORE_URL),
+            ("了解更多", SAFETY_ACCESS_BLOCK_LEARN_MORE_URL),
         ],
     }
 }
@@ -136,26 +132,26 @@ pub(crate) fn new_cyber_policy_error_event(
     use crate::daybreak::Notice;
     let (body, actions): (_, &'static [(&str, &str)]) = match notice {
         Notice::Apply => (
-            "We take extra care with some cybersecurity requests. If you’re doing authorized security work, apply for Daybreak to get broader access.",
+            "对于某些网络安全请求，我们会格外谨慎。如果你正在从事获授权的安全工作，可以申请 Daybreak 以获得更广泛的访问权限。",
             &[
-                ("Learn more", SAFETY_ACCESS_BLOCK_LEARN_MORE_URL),
+                ("了解更多", SAFETY_ACCESS_BLOCK_LEARN_MORE_URL),
                 (
-                    "Apply for Daybreak",
+                    "申请 Daybreak",
                     "https://openai.com/form/enterprise-trusted-access-for-cyber/",
                 ),
             ],
         ),
         Notice::Astra => (
-            "Daybreak isn’t available for Astra. Some cybersecurity requests may still be limited.",
-            &[("Learn more", SAFETY_ACCESS_BLOCK_LEARN_MORE_URL)],
+            "Astra 尚不支持 Daybreak。某些网络安全请求仍可能受到限制。",
+            &[("了解更多", SAFETY_ACCESS_BLOCK_LEARN_MORE_URL)],
         ),
         Notice::Limited => (
-            "We take extra care with some cybersecurity requests.",
-            &[("Learn more", SAFETY_ACCESS_BLOCK_LEARN_MORE_URL)],
+            "对于某些网络安全请求，我们会格外谨慎。",
+            &[("了解更多", SAFETY_ACCESS_BLOCK_LEARN_MORE_URL)],
         ),
     };
     SafetyAccessBlockCell {
-        title: "This content can’t be shown",
+        title: "无法显示此内容",
         body,
         actions,
     }
@@ -294,7 +290,7 @@ impl HistoryCell for ThreadRecapLoadingCell {
                 )
                 .unwrap_or_else(|| "•".dim()),
                 " ".into(),
-                "Generating conversation recap".bold(),
+                "正在生成对话回顾".bold(),
                 "…".dim(),
             ]
             .into(),
@@ -302,7 +298,7 @@ impl HistoryCell for ThreadRecapLoadingCell {
     }
 
     fn raw_lines(&self) -> Vec<Line<'static>> {
-        vec![Line::from("Generating conversation recap...")]
+        vec![Line::from("正在生成对话回顾...")]
     }
 
     fn transcript_animation_tick(&self) -> Option<u64> {
@@ -347,17 +343,17 @@ impl HistoryCell for ThreadRecapHistoryCell {
         if let Some(action) = &self.next_action {
             body.extend(prefix_lines(
                 raw_lines_from_source(action),
-                "Next: ".bold(),
+                "下一步：".bold(),
                 "".into(),
             ));
         }
         let mut body = body.into_iter().map(Line::italic).collect::<Vec<_>>();
-        let prefix = Line::from(vec!["  ".into(), "↳ ".dim(), "Recap: ".bold()]).italic();
+        let prefix = Line::from(vec!["  ".into(), "↳ ".dim(), "回顾：".bold()]).italic();
         let mut options = if wrap_width <= prefix.width() {
             // Keep the text readable when the terminal cannot fit the hanging indent.
             body.insert(
                 /*index*/ 0,
-                Line::from(vec!["↳ ".dim(), "Recap:".bold()]).italic(),
+                Line::from(vec!["↳ ".dim(), "回顾：".bold()]).italic(),
             );
             RtOptions::new(wrap_width)
         } else {
@@ -387,7 +383,7 @@ impl HistoryCell for ThreadRecapHistoryCell {
         let mut lines = vec![Line::from(RECAP_HEADING)];
         lines.extend(raw_lines_from_source(&self.recap));
         if let Some(action) = &self.next_action {
-            lines.extend(raw_lines_from_source(&format!("Next: {action}")));
+            lines.extend(raw_lines_from_source(&format!("下一步：{action}")));
         }
         lines
     }

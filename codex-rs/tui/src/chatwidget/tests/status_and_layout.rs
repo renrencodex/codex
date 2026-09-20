@@ -111,7 +111,7 @@ async fn resumed_session_hides_unknown_token_usage_until_an_update_arrives() {
     chat.refresh_status_line();
     assert_eq!(
         status_line_text(&chat),
-        Some("Context 30% left · Context 70% used · 0 in · 0 out".to_string())
+        Some("上下文剩余 30% · 上下文已使用 70% · 0 输入 · 0 输出".to_string())
     );
 }
 
@@ -131,9 +131,9 @@ async fn app_server_cyber_policy_error_renders_dedicated_notice() {
     let cells = drain_insert_history(&mut rx);
     assert_eq!(cells.len(), 1);
     let rendered = lines_to_single_string(&cells[0]);
-    assert!(rendered.contains("This content can’t be shown"));
+    assert!(rendered.contains("无法显示此内容"));
     assert!(rendered.contains("We take extra care with some cybersecurity requests"));
-    assert!(rendered.contains("Apply for Daybreak"));
+    assert!(rendered.contains("申请 Daybreak"));
     assert!(!rendered.contains("server fallback message"));
 }
 
@@ -199,7 +199,7 @@ async fn token_usage_update_uses_runtime_context_window() {
 
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::ContextWindowSize),
-        Some("950K window".to_string())
+        Some("950K 窗口".to_string())
     );
     assert_eq!(chat.bottom_pane.context_window_percent(), Some(100));
 
@@ -218,7 +218,7 @@ async fn token_usage_update_uses_runtime_context_window() {
                 .map(|span| span.content.as_ref())
                 .collect::<String>()
         })
-        .find(|line| line.contains("Context window"))
+        .find(|line| line.contains("上下文窗口"))
         .expect("context window line");
 
     assert!(
@@ -268,7 +268,7 @@ async fn raw_output_status_line_value_only_shows_when_enabled() {
 
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::RawOutput),
-        Some("raw output".to_string())
+        Some("原始输出".to_string())
     );
 }
 
@@ -285,7 +285,7 @@ async fn status_line_branch_changes_render_no_changes() {
 
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::BranchChanges),
-        Some("No changes".to_string())
+        Some("无更改".to_string())
     );
 }
 
@@ -733,7 +733,7 @@ async fn status_line_uses_secondary_fallback_for_unsupported_window() {
 
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::WeeklyLimit),
-        Some("secondary usage 50% left".to_string())
+        Some("secondary usage 剩余 50%".to_string())
     );
 }
 
@@ -764,11 +764,11 @@ async fn status_line_legacy_limit_items_prefer_matching_windows() {
 
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::FiveHourLimit),
-        Some("5h 60% left".to_string())
+        Some("5h 剩余 60%".to_string())
     );
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::WeeklyLimit),
-        Some("weekly 6% left".to_string())
+        Some("weekly 剩余 6%".to_string())
     );
 }
 
@@ -799,11 +799,11 @@ async fn status_line_shows_secondary_non_weekly_when_primary_is_weekly() {
 
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::FiveHourLimit),
-        Some("monthly 65% left".to_string())
+        Some("monthly 剩余 65%".to_string())
     );
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::WeeklyLimit),
-        Some("weekly 6% left".to_string())
+        Some("weekly 剩余 6%".to_string())
     );
 }
 
@@ -834,7 +834,7 @@ async fn status_line_five_hour_item_omits_weekly_only_limit() {
     );
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::WeeklyLimit),
-        Some("weekly 91% left".to_string())
+        Some("weekly 剩余 91%".to_string())
     );
 }
 
@@ -861,7 +861,7 @@ async fn status_line_single_monthly_primary_omits_weekly_limit_item() {
 
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::FiveHourLimit),
-        Some("monthly 65% left".to_string())
+        Some("monthly 剩余 65%".to_string())
     );
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::WeeklyLimit),
@@ -896,7 +896,7 @@ async fn status_line_secondary_only_non_weekly_limit_omits_primary_limit_item() 
     );
     assert_eq!(
         chat.status_line_value_for_item(crate::bottom_pane::StatusLineItem::WeeklyLimit),
-        Some("monthly 65% left".to_string())
+        Some("monthly 剩余 65%".to_string())
     );
 }
 
@@ -1528,7 +1528,7 @@ async fn rate_limit_usage_warnings_keep_newly_reached_workspace_limit() {
             "Usage limit reached.".to_string(),
         );
         let popup = render_bottom_popup(&chat, /*width*/ 100);
-        assert!(popup.contains("Request a limit increase from your owner"));
+        assert!(popup.contains("请向所有者申请提高限制"));
     }
 }
 
@@ -1831,10 +1831,7 @@ async fn sparse_rate_limit_snapshot_preserves_member_limit_type_for_error_prompt
         "Usage limit reached.".to_string(),
     );
     let popup = render_bottom_popup(&chat, /*width*/ 100);
-    assert!(
-        popup.contains("Request a limit increase from your owner"),
-        "popup: {popup}"
-    );
+    assert!(popup.contains("请向所有者申请提高限制"), "popup: {popup}");
 
     chat.handle_key_event(KeyEvent::new(KeyCode::Char('y'), KeyModifiers::NONE));
     let event = next_send_add_credits_nudge_email_event(&mut rx);
@@ -1853,10 +1850,7 @@ async fn usage_limit_error_remaps_stale_member_credits_state_to_usage_limit_prom
         "Usage limit reached.".to_string(),
     );
     let popup = render_bottom_popup(&chat, /*width*/ 100);
-    assert!(
-        popup.contains("Request a limit increase from your owner"),
-        "popup: {popup}"
-    );
+    assert!(popup.contains("请向所有者申请提高限制"), "popup: {popup}");
 
     chat.handle_key_event(KeyEvent::new(KeyCode::Char('y'), KeyModifiers::NONE));
     let event = next_send_add_credits_nudge_email_event(&mut rx);
@@ -1977,26 +1971,20 @@ async fn workspace_owner_nudge_reappears_after_dismissing_no() {
         "Usage limit reached.".to_string(),
     );
     let popup = render_bottom_popup(&chat, /*width*/ 100);
-    assert!(
-        popup.contains("Request a limit increase from your owner"),
-        "popup: {popup}"
-    );
+    assert!(popup.contains("请向所有者申请提高限制"), "popup: {popup}");
 }
 
 #[tokio::test]
 async fn workspace_owner_credits_nudge_completion_renders_feedback() {
     let cases = [
-        (
-            Ok(AddCreditsNudgeEmailStatus::Sent),
-            "Workspace owner notified.",
-        ),
+        (Ok(AddCreditsNudgeEmailStatus::Sent), "已通知工作区所有者。"),
         (
             Ok(AddCreditsNudgeEmailStatus::CooldownActive),
-            "Workspace owner was already notified recently.",
+            "最近已通知过工作区所有者。",
         ),
         (
             Err("request failed".to_string()),
-            "Could not notify your workspace owner. Please try again.",
+            "无法通知工作区所有者，请重试。",
         ),
     ];
 
@@ -2943,7 +2931,7 @@ async fn status_line_context_used_renders_labeled_percent() {
 
     chat.refresh_status_line();
 
-    assert_eq!(status_line_text(&chat), Some("Context 0% used".to_string()));
+    assert_eq!(status_line_text(&chat), Some("上下文已使用 0%".to_string()));
     assert!(
         drain_insert_history(&mut rx).is_empty(),
         "context-used should remain a valid status line item"
@@ -2958,10 +2946,7 @@ async fn status_line_context_remaining_renders_labeled_percent() {
 
     chat.refresh_status_line();
 
-    assert_eq!(
-        status_line_text(&chat),
-        Some("Context 100% left".to_string())
-    );
+    assert_eq!(status_line_text(&chat), Some("上下文剩余 100%".to_string()));
     assert!(
         drain_insert_history(&mut rx).is_empty(),
         "context-remaining should remain a valid status line item"
@@ -2976,7 +2961,7 @@ async fn status_line_legacy_context_usage_renders_context_used_percent() {
 
     chat.refresh_status_line();
 
-    assert_eq!(status_line_text(&chat), Some("Context 0% used".to_string()));
+    assert_eq!(status_line_text(&chat), Some("上下文已使用 0%".to_string()));
     assert!(
         drain_insert_history(&mut rx).is_empty(),
         "legacy context-usage should remain a valid status line item"
@@ -3051,7 +3036,7 @@ async fn status_line_thread_credits_fetches_and_renders_fractional_credits() {
             groups: Vec::new(),
         })),
     ));
-    assert_eq!(status_line_text(&chat), Some("5.2 credits".to_string()));
+    assert_eq!(status_line_text(&chat), Some("5.2 点".to_string()));
     assert!(rx.try_recv().is_err(), "idle refresh must not poll");
 }
 
@@ -3084,10 +3069,7 @@ async fn status_line_thread_credits_and_cost_share_one_backend_request() {
             groups: Vec::new(),
         })),
     ));
-    assert_eq!(
-        status_line_text(&chat),
-        Some("5.2 credits · ~$0.21".to_string())
-    );
+    assert_eq!(status_line_text(&chat), Some("5.2 点 · ~$0.21".to_string()));
     assert!(rx.try_recv().is_err(), "idle refresh must not poll");
 }
 
@@ -3119,7 +3101,7 @@ async fn status_line_thread_credits_remain_visible_when_usd_is_unavailable() {
         })),
     ));
 
-    assert_eq!(status_line_text(&chat), Some("5.2 credits".to_string()));
+    assert_eq!(status_line_text(&chat), Some("5.2 点".to_string()));
     assert!(
         rx.try_recv().is_err(),
         "credits-only estimates must not trigger retries"
@@ -3163,7 +3145,7 @@ async fn terminal_title_thread_usage_fetches_and_renders_without_status_line() {
 
     assert_eq!(
         chat.last_terminal_title,
-        Some("5.2 credits | ~$0.21".to_string())
+        Some("5.2 点 | ~$0.21".to_string())
     );
     assert_eq!(status_line_text(&chat), None);
     assert!(rx.try_recv().is_err(), "title-only refresh must not poll");
@@ -3198,7 +3180,7 @@ async fn terminal_title_thread_credits_remain_visible_when_usd_is_unavailable() 
         })),
     ));
 
-    assert_eq!(chat.last_terminal_title, Some("5.2 credits".to_string()));
+    assert_eq!(chat.last_terminal_title, Some("5.2 点".to_string()));
     assert!(
         rx.try_recv().is_err(),
         "credits-only title estimates must not trigger retries"
@@ -3235,7 +3217,7 @@ async fn terminal_title_and_status_line_share_one_thread_usage_request() {
         })),
     ));
 
-    assert_eq!(chat.last_terminal_title, Some("5.2 credits".to_string()));
+    assert_eq!(chat.last_terminal_title, Some("5.2 点".to_string()));
     assert_eq!(status_line_text(&chat), Some("~$0.21".to_string()));
 }
 
@@ -3252,7 +3234,7 @@ async fn status_line_estimated_thread_cost_avoids_unsupported_plan_requests() {
 
     chat.refresh_status_line();
 
-    assert_eq!(status_line_text(&chat), Some("Ready".to_string()));
+    assert_eq!(status_line_text(&chat), Some("就绪".to_string()));
     assert!(
         rx.try_recv().is_err(),
         "unsupported plans must not query usage"
@@ -3431,7 +3413,7 @@ async fn completed_turn_refreshes_credits_only_terminal_title() {
             groups: Vec::new(),
         })),
     ));
-    assert_eq!(chat.last_terminal_title, Some("6.2 credits".to_string()));
+    assert_eq!(chat.last_terminal_title, Some("6.2 点".to_string()));
 }
 
 #[tokio::test]
@@ -3639,7 +3621,7 @@ async fn status_line_workspace_headline_omits_when_unavailable() {
 
     chat.refresh_status_line();
 
-    assert_eq!(status_line_text(&chat), Some("Ready".to_string()));
+    assert_eq!(status_line_text(&chat), Some("就绪".to_string()));
     assert!(
         drain_insert_history(&mut rx).is_empty(),
         "workspace-headline should be omitted without warning when no headline is cached"
@@ -3928,11 +3910,11 @@ async fn status_line_fast_mode_renders_on_and_off() {
     chat.local_settings.tui.status_line = Some(vec!["fast-mode".to_string()]);
 
     chat.refresh_status_line();
-    assert_eq!(status_line_text(&chat), Some("Fast off".to_string()));
+    assert_eq!(status_line_text(&chat), Some("快速模式关闭".to_string()));
 
     chat.set_service_tier(Some(ServiceTier::Fast.request_value().to_string()));
     chat.refresh_status_line();
-    assert_eq!(status_line_text(&chat), Some("Fast on".to_string()));
+    assert_eq!(status_line_text(&chat), Some("快速模式开启".to_string()));
 }
 
 #[tokio::test]
@@ -3942,18 +3924,18 @@ async fn status_line_fast_mode_updates_visibility_on_model_change() {
     chat.local_settings.tui.status_line = Some(vec!["fast-mode".to_string()]);
 
     chat.refresh_status_line();
-    assert_eq!(status_line_text(&chat), Some("Fast off".to_string()));
+    assert_eq!(status_line_text(&chat), Some("快速模式关闭".to_string()));
 
     chat.set_model("gpt-5.2");
     assert_eq!(status_line_text(&chat), None);
 
     chat.set_model("gpt-5.4");
-    assert_eq!(status_line_text(&chat), Some("Fast off".to_string()));
+    assert_eq!(status_line_text(&chat), Some("快速模式关闭".to_string()));
 
     chat.set_model("uncatalogued-model");
-    assert_eq!(status_line_text(&chat), Some("Fast off".to_string()));
+    assert_eq!(status_line_text(&chat), Some("快速模式关闭".to_string()));
     chat.set_service_tier(Some(ServiceTier::Fast.request_value().to_string()));
-    assert_eq!(status_line_text(&chat), Some("Fast on".to_string()));
+    assert_eq!(status_line_text(&chat), Some("快速模式开启".to_string()));
 }
 
 #[tokio::test]
@@ -4004,7 +3986,7 @@ async fn status_line_model_with_reasoning_includes_fast_for_fast_capable_models(
 
     assert_eq!(
         status_line_text(&chat),
-        Some(format!("gpt-5.4 xhigh fast · Context 0% used · {test_cwd}"))
+        Some(format!("gpt-5.4 xhigh fast · 上下文已使用 0% · {test_cwd}"))
     );
 
     chat.set_model("gpt-5.2");
@@ -4012,7 +3994,7 @@ async fn status_line_model_with_reasoning_includes_fast_for_fast_capable_models(
 
     assert_eq!(
         status_line_text(&chat),
-        Some(format!("gpt-5.2 xhigh · Context 0% used · {test_cwd}"))
+        Some(format!("gpt-5.2 xhigh · 上下文已使用 0% · {test_cwd}"))
     );
 }
 
@@ -4471,7 +4453,7 @@ fn goal_status_indicator_line_formats_goal_text() {
         ),
         (
             GoalStatusIndicator::BudgetLimited { usage: None },
-            "Goal abandoned",
+            "目标已放弃",
         ),
         (
             GoalStatusIndicator::Complete {
@@ -4479,10 +4461,7 @@ fn goal_status_indicator_line_formats_goal_text() {
             },
             "Goal achieved (10h 12m)",
         ),
-        (
-            GoalStatusIndicator::Complete { usage: None },
-            "Goal achieved",
-        ),
+        (GoalStatusIndicator::Complete { usage: None }, "目标已完成"),
     ];
 
     for (indicator, expected) in cases {
@@ -5168,7 +5147,7 @@ async fn completed_hook_output_precedes_following_assistant_message() {
         history
     );
     let hook_index = history
-        .find("Blocked by hook")
+        .find("已被钩子阻止")
         .expect("hook feedback should be in history");
     let assistant_index = history
         .find("The hook feedback was applied.")

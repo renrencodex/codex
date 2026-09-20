@@ -137,19 +137,18 @@ impl HistoryCell for ComputerActivityCell {
             })
             .unwrap_or_else(|| "•".dim());
         let label = if active.is_some() {
-            "Using computer"
+            "正在操作电脑"
         } else {
-            "Used computer"
+            "已操作电脑"
         };
-        let unit = if count == 1 { "action" } else { "actions" };
         let mut header = vec![
             bullet,
             " ".into(),
             label.bold(),
-            format!(" · {count} {unit}").dim(),
+            format!(" · {count} 个操作").dim(),
         ];
         if failures > 0 {
-            header.push(format!(" · {failures} failed").red());
+            header.push(format!(" · {failures} 个失败").red());
         }
         let mut lines = adaptive_wrap_line(
             &Line::from(header),
@@ -181,19 +180,19 @@ impl HistoryCell for ComputerActivityCell {
                 .and_then(|args| args.get("title"))
                 .and_then(serde_json::Value::as_str)
                 .filter(|title| !title.trim().is_empty())
-                .unwrap_or("Computer action");
+                .unwrap_or("电脑操作");
             let failed = call.success() == Some(false);
             let summary = if failed {
                 match error_preview(call) {
-                    Some(error) if width < 60 => format!("Failed: {error}"),
+                    Some(error) if width < 60 => format!("失败：{error}"),
                     Some(error) => {
                         let title = preview(title, usize::from(width) / 3);
-                        format!("Failed: {title} — {error}")
+                        format!("失败：{title} — {error}")
                     }
-                    None => format!("Failed: {title}"),
+                    None => format!("失败：{title}"),
                 }
             } else if has_image(call) {
-                format!("Captured screenshot · {title}")
+                format!("已截取屏幕截图 · {title}")
             } else {
                 title.to_string()
             };
@@ -208,7 +207,7 @@ impl HistoryCell for ComputerActivityCell {
         }
         if hidden > 0 && active.is_none() {
             let summary = preview(
-                &format!("{hidden} more · ctrl+t"),
+                &format!("另有 {hidden} 个 · ctrl+t"),
                 usize::from(width).saturating_sub(4),
             );
             lines.push(vec!["  └ ".dim(), summary.dim()].into());

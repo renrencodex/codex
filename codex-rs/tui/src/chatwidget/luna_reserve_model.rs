@@ -21,8 +21,7 @@ impl ChatWidget {
         let Some(mut preset) = preset.cloned() else {
             self.bottom_pane.dismiss_view_by_id(view_id);
             self.add_info_message(
-                "Luna model settings are unavailable; please try /model again in a moment."
-                    .to_string(),
+                "Luna 模型设置不可用；请稍后再试 /model。".to_string(),
                 /*hint*/ None,
             );
             return;
@@ -39,10 +38,7 @@ impl ChatWidget {
                 model: preset.clone(),
             });
         })];
-        let header = self.model_menu_header(
-            "Select Model",
-            "Other models return when ordinary usage is available again.",
-        );
+        let header = self.model_menu_header("选择模型", "普通用量恢复后，其他模型将重新可用。");
         self.show_model_selection_view(
             vec![LUNA_RESERVE_MODEL.to_string()],
             SelectionViewParams {

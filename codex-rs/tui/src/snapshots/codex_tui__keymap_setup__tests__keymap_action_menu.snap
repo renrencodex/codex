@@ -3,30 +3,30 @@ source: tui/src/keymap_setup.rs
 expression: snapshot
 ---
 unbound:
-Set key | Capture a key for this unbound action. | enabled
-Set key chord | Capture two consecutive keys for this action. | enabled
-Remove custom binding | Restore the default keymap binding. | enabled
-Back to shortcuts | Return to the shortcut list. | enabled
+设置按键 | 为此未绑定操作捕获一个按键。 | enabled
+设置组合键 | 为此操作捕获两个连续按键。 | enabled
+移除自定义绑定 | 恢复默认按键映射绑定。 | enabled
+返回快捷键列表 | 返回快捷键列表。 | enabled
 
 single:
-Replace binding | Capture a replacement key for `ctrl-enter`. | enabled
-Add alternate binding | Keep `ctrl-enter` and add another key. | enabled
-Replace with key chord | Replace `ctrl-enter` with a two-stroke key chord. | enabled
-Add alternate key chord | Keep `ctrl-enter` and add a two-stroke key chord. | enabled
-Remove custom binding | Restore the default keymap binding. | enabled
-Back to shortcuts | Return to the shortcut list. | enabled
+替换绑定 | 捕获按键以替换 `ctrl-enter`。 | enabled
+添加备用绑定 | 保留 `ctrl-enter` 并添加另一个按键。 | enabled
+替换为组合键 | 用两键组合替换 `ctrl-enter`。 | enabled
+添加备用组合键 | 保留 `ctrl-enter` 并添加两键组合。 | enabled
+移除自定义绑定 | 恢复默认按键映射绑定。 | enabled
+返回快捷键列表 | 返回快捷键列表。 | enabled
 
 multi:
-Replace one binding... | Choose which existing binding to replace. | enabled
-Replace all bindings | Replace `ctrl-enter, alt-shift-enter` with one key. | enabled
-Add alternate binding | Keep `ctrl-enter, alt-shift-enter` and add another key. | enabled
-Replace with key chord | Replace `ctrl-enter, alt-shift-enter` with a two-stroke key chord. | enabled
-Add alternate key chord | Keep `ctrl-enter, alt-shift-enter` and add a two-stroke key chord. | enabled
-Remove custom binding | Restore the default keymap binding. | enabled
-Back to shortcuts | Return to the shortcut list. | enabled
+替换一个绑定…… | 选择要替换的现有绑定。 | enabled
+替换所有绑定 | 用一个按键替换 `ctrl-enter, alt-shift-enter`。 | enabled
+添加备用绑定 | 保留 `ctrl-enter, alt-shift-enter` 并添加另一个按键。 | enabled
+替换为组合键 | 用两键组合替换 `ctrl-enter, alt-shift-enter`。 | enabled
+添加备用组合键 | 保留 `ctrl-enter, alt-shift-enter` 并添加两键组合。 | enabled
+移除自定义绑定 | 恢复默认按键映射绑定。 | enabled
+返回快捷键列表 | 返回快捷键列表。 | enabled
 
 replace picker:
-ctrl-enter | Replace `ctrl-enter` with another key. | enabled
-ctrl-enter (key chord) | Replace `ctrl-enter` with a two-stroke key chord. | enabled
-alt-shift-enter | Replace `alt-shift-enter` with another key. | enabled
-alt-shift-enter (key chord) | Replace `alt-shift-enter` with a two-stroke key chord. | enabled
+ctrl-enter | 用另一个按键替换 `ctrl-enter`。 | enabled
+ctrl-enter（组合键） | 用两键组合替换 `ctrl-enter`。 | enabled
+alt-shift-enter | 用另一个按键替换 `alt-shift-enter`。 | enabled
+alt-shift-enter（组合键） | 用两键组合替换 `alt-shift-enter`。 | enabled

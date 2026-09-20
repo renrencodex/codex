@@ -45,17 +45,13 @@ impl App {
                 .chat_widget
                 .can_change_working_directory(pending.source_thread_id)
         {
-            return self.working_directory_error(
-                "Changing directories requires an idle primary session without queued input.",
-            );
+            return self.working_directory_error("更改目录需要主会话处于空闲状态且没有排队输入。");
         }
         if crate::uses_remote_workspace_or_environment(
             &self.app_server_target,
             self.environment_manager.as_ref(),
         ) {
-            return self.working_directory_error(
-                "Changing directories is not supported for remote workspaces or remote execution environments.",
-            );
+            return self.working_directory_error("远程工作区或远程执行环境不支持更改目录。");
         }
         self.change_working_directory(tui, app_server, pending.destination)
             .await;
@@ -80,7 +76,7 @@ impl App {
                 && self.chat_widget.has_misalignment_policy_violation())
         {
             self.chat_widget.add_error_message(format!(
-                "Cannot continue into the new worktree while the session is offline or blocked by a policy warning. An unused checkout was created at {}; remove it with `git worktree remove <checkout-path>` from the source repository.",
+                "会话离线或被策略警告阻止，无法在新工作树中继续。已在 {} 创建未使用的检出；请在源仓库中运行 `git worktree remove <checkout-path>` 将其移除。",
                 checkout.root.display()
             ));
             return Ok(());
@@ -92,7 +88,7 @@ impl App {
                 .can_change_working_directory(source_thread_id)
         {
             self.chat_widget.add_error_message(format!(
-                "The source conversation changed while creating the worktree. An unused checkout was created at {}; remove it with `git worktree remove <checkout-path>` from the source repository.",
+                "创建工作树期间源对话发生了变化。已在 {} 创建未使用的检出；请在源仓库中运行 `git worktree remove <checkout-path>` 将其移除。",
                 checkout.root.display()
             ));
             return Ok(());
@@ -118,7 +114,7 @@ impl App {
         .await;
         if self.pending_managed_worktree_attach.is_none() {
             return Err(color_eyre::eyre::eyre!(
-                "Could not start a session in the managed worktree. A checkout was retained at {}; remove it with `git worktree remove <checkout-path>` from the source repository if it is no longer needed.",
+                "无法在托管工作树中启动会话。检出已保留在 {}；若不再需要，请在源仓库中运行 `git worktree remove <checkout-path>` 将其移除。",
                 checkout_root.display()
             ));
         }
@@ -155,15 +151,13 @@ impl App {
         destination_config: DestinationConfig,
     ) {
         if self.config.ephemeral || !cwd.as_path().is_dir() {
-            return self.working_directory_error("This task cannot be safely replaced.");
+            return self.working_directory_error("无法安全替换此任务。");
         }
         let Some(thread_id) = self.chat_widget.thread_id() else {
             return;
         };
         if self.pending_server_profiles.contains_key(&thread_id) {
-            return self.working_directory_error(
-                "Wait for permissions to update before changing directories.",
-            );
+            return self.working_directory_error("请等待权限更新完成后再更改目录。");
         }
         if self.app_server_target.thread_params_mode()
             == crate::app_server_session::ThreadParamsMode::Remote
@@ -174,13 +168,11 @@ impl App {
                 .active_permission_profile()
                 .is_some_and(|profile| !profile.id.starts_with(':'))
         {
-            return self.working_directory_error(
-                "Changing directories with a named profile is not supported.",
-            );
+            return self.working_directory_error("使用具名配置文件时不支持更改目录。");
         }
         let cells = &self.transcript_cells;
         if cells.iter().any(|cell| cell.as_any().is::<LoadingCell>()) {
-            return self.working_directory_error("MCP inventory is still loading.");
+            return self.working_directory_error("MCP 清单仍在加载。");
         }
         let agents = self.agent_navigation.ordered_threads();
         let closed_agents: HashSet<_> = agents
@@ -196,7 +188,7 @@ impl App {
                     .is_ok_and(|store| store.active_turn_id().is_none())
         });
         if active || agents.iter().any(|(t, a)| *t != thread_id && a.is_running) {
-            return self.working_directory_error("Cannot change: another agent is running.");
+            return self.working_directory_error("无法更改：另一个代理正在运行。");
         }
         let open_agents: Vec<_> = agents
             .iter()
@@ -207,12 +199,12 @@ impl App {
             DestinationConfig::Load => match self.rebuild_config_for_cwd(cwd.to_path_buf()).await {
                 Ok(config) => config,
                 Err(err) => {
-                    return self.working_directory_error(format!("Cannot load {cwd:?}: {err}"));
+                    return self.working_directory_error(format!("无法加载 {cwd:?}：{err}"));
                 }
             },
         };
         if config.active_project.trust_level.is_none() {
-            return self.working_directory_error("This directory is not trusted; run Codex there.");
+            return self.working_directory_error("此目录不受信任；请在该目录中运行 Codex。");
         }
         if let Some((_, checkout, crate::app_event::ManagedWorktreeMode::Fork, _)) =
             managed_worktree.as_ref()
@@ -225,7 +217,7 @@ impl App {
             )
         {
             return self.working_directory_error(format!(
-                "Cannot fork into this worktree because developer instructions differ. Start a new conversation instead. An unused checkout was created at {}; remove it with `git worktree remove <checkout-path>` from the source repository.",
+                "开发者指令不同，无法派生到此工作树。请改为开始新对话。已在 {} 创建未使用的检出；请在源仓库中运行 `git worktree remove <checkout-path>` 将其移除。",
                 checkout.root.display()
             ));
         }
@@ -235,7 +227,7 @@ impl App {
                 || config.permissions.profile_workspace_roots()
                     != self.config.permissions.profile_workspace_roots())
         {
-            return self.working_directory_error("Permission profile has different settings.");
+            return self.working_directory_error("权限配置文件的设置不同。");
         }
         if let Some(profile) = self.runtime_permission_profile_override.as_ref()
             && profile.turn_override == RuntimePermissionProfileTurnOverride::Preserve
@@ -245,14 +237,14 @@ impl App {
                 cwd.as_path(),
             )
         {
-            return self.working_directory_error("Permission profile cannot be preserved by /cd.");
+            return self.working_directory_error("/cd 无法保留权限配置文件。");
         }
         self.apply_runtime_policy_overrides(&mut config, RuntimePolicyOverrideScope::All);
         if self.runtime_permission_profile_override.is_some() {
             let reviewer = self.config.approvals_reviewer;
             let reviewers = &config.config_layer_stack.requirements().approvals_reviewer;
             if let Err(error) = reviewers.can_set(&reviewer) {
-                return self.working_directory_error(format!("Approvals reviewer: {error}"));
+                return self.working_directory_error(format!("审批审查者：{error}"));
             }
             config.approvals_reviewer = reviewer;
         }
@@ -297,7 +289,7 @@ impl App {
                     })
                 }))
         {
-            return self.working_directory_error("Conversation history is not saved.");
+            return self.working_directory_error("对话历史尚未保存。");
         }
         let mut ids: HashSet<_> = channels
             .keys()
@@ -358,7 +350,7 @@ impl App {
         };
         let mut transitioned = match transitioned {
             Ok(value) => value,
-            Err(e) => return self.working_directory_error(format!("Failed to change: {e}")),
+            Err(e) => return self.working_directory_error(format!("更改失败：{e}")),
         };
         let session = &transitioned.session;
         if session.thread_id == thread_id
@@ -374,7 +366,7 @@ impl App {
                     let _ = app_server.thread_archive(session.thread_id).await;
                 }
             }
-            return self.working_directory_error("Requested directory or permissions not applied.");
+            return self.working_directory_error("请求的目录或权限未生效。");
         }
         if let Some((manager, checkout, _, _)) = managed_worktree.as_ref()
             && let Err(error) =
@@ -385,9 +377,7 @@ impl App {
             if preserve_history {
                 let _ = app_server.thread_archive(replacement_id).await;
             }
-            return self.working_directory_error(format!(
-                "Cannot register managed worktree ownership: {error}"
-            ));
+            return self.working_directory_error(format!("无法注册托管工作树所有权：{error}"));
         }
         let name_error = if let Some(name) = managed_worktree
             .as_ref()
@@ -401,7 +391,7 @@ impl App {
                     transitioned.session.thread_name = Some(name.clone());
                     None
                 }
-                Err(error) => Some(format!("Failed to name the worktree session: {error}")),
+                Err(error) => Some(format!("命名工作树会话失败：{error}")),
             }
         } else {
             None
@@ -412,7 +402,7 @@ impl App {
             if preserve_history {
                 let _ = app_server.thread_archive(replacement_id).await;
             }
-            return self.working_directory_error(format!("Cannot change directories: {error}"));
+            return self.working_directory_error(format!("无法更改目录：{error}"));
         }
         for tracked_id in ids.into_iter().filter(|id| *id != thread_id) {
             if let Err(error) = app_server.thread_unsubscribe(tracked_id).await {
@@ -464,7 +454,7 @@ impl App {
         let attach_widget = App::replace_chat_widget_with_app_server_thread;
         let (lineage, message) = (ThreadAttachPresentation::SessionLineage, None);
         if let Err(error) = attach_widget(self, tui, started, lineage, message).await {
-            return self.working_directory_error(format!("Could not restore session: {error}"));
+            return self.working_directory_error(format!("无法恢复会话：{error}"));
         }
         if let Some(error) = name_error {
             self.chat_widget.add_error_message(error);
@@ -477,7 +467,7 @@ impl App {
         if let Some(message) = project_config_warning(&self.config) {
             self.chat_widget.add_warning_message(message);
         }
-        let message = format!("Working directory changed to: {}", cwd.display());
+        let message = format!("工作目录已更改为：{}", cwd.display());
         self.chat_widget.add_info_message(message, /*hint*/ None);
         if !self.config.bypass_hook_trust {
             let load_review = crate::startup_hooks_review::load_startup_hooks_review_entry;

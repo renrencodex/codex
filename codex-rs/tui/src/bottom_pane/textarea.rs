@@ -409,9 +409,9 @@ impl TextArea {
             return None;
         }
         Some(match self.vim_mode {
-            VimMode::Normal => "Normal",
-            VimMode::Insert => "Insert",
-            VimMode::Replace => "Replace",
+            VimMode::Normal => "普通",
+            VimMode::Insert => "插入",
+            VimMode::Replace => "替换",
         })
     }
 
@@ -421,9 +421,9 @@ impl TextArea {
             return None;
         }
         Some(match self.vim_mode {
-            VimMode::Normal => "Vim: Normal".magenta(),
-            VimMode::Insert => "Vim: Insert".green(),
-            VimMode::Replace => "Vim: Replace".cyan(),
+            VimMode::Normal => "Vim：普通".magenta(),
+            VimMode::Insert => "Vim：插入".green(),
+            VimMode::Replace => "Vim：替换".cyan(),
         })
     }
 

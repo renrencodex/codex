@@ -2,72 +2,72 @@
 source: tui/src/chatwidget/tests/usage.rs
 expression: "states.join(\"\\n---\\n\")"
 ---
-  Usage limit resets
-  Checking your available resets...
+  用 量 限 制 重 置
+  正 在 检 查 可 用 的 重 置 机 会 ……
 
-›    Loading...
+›    正 在 加 载 ……
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回
 ---
-  Usage limit resets
-  2 usage limit resets available.
+  用 量 限 制 重 置
+  有  2 次 可 用 的 重 置 机 会 。
 
-› 1. Full reset (Weekly + 5 hr)  Expires 09:39 on 18 Jun 2026.
-  2. Full reset (Weekly + 5 hr)  Expires 08:59 on 27 Jun 2026.
-  3. Cancel
+› 1. Full reset (Weekly + 5 hr)  到 期 时 间 ： 2026-06-18 09:39.
+  2. Full reset (Weekly + 5 hr)  到 期 时 间 ： 2026-06-27 08:59.
+  3. 取 消
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回
 ---
-  Usage limit resets
-  You don't have any usage limit resets available.
+  用 量 限 制 重 置
+  你 没 有 可 用 的 用 量 限 制 重 置 机 会 。
 
-› 1. Close
+› 1. 关 闭
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回
 ---
-  Usage limit resets
-  Couldn't load usage limit resets. Please try again.
+  用 量 限 制 重 置
+  无 法 加 载 用 量 限 制 重 置 机 会 ， 请 重 试 。
 
-› 1. Try again
-  2. Close
+› 1. 重 试
+  2. 关 闭
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回
 ---
-  Usage limit resets
-  Resetting your usage...
+  用 量 限 制 重 置
+  正 在 重 置 用 量 ……
 
-›    Using a reset...
+›    正 在 使 用 重 置 机 会 ……
 ---
-  Usage limit resets
-  Couldn't reset usage. Please try again.
+  用 量 限 制 重 置
+  无 法 重 置 用 量 ， 请 重 试 。
 
-› 1. Try again
-  2. Close
+› 1. 重 试
+  2. 关 闭
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回
 ---
-  Usage limit resets
-  Your usage does not need a reset right now.
+  用 量 限 制 重 置
+  你 当 前 的 用 量 无 需 重 置 。
 
-› 1. Close
+› 1. 关 闭
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回
 ---
-  Usage limit resets
-  No usage limit resets are available.
+  用 量 限 制 重 置
+  没 有 可 用 的 用 量 限 制 重 置 机 会 。
 
-› 1. Close
+› 1. 关 闭
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回
 ---
-  Usage limit resets
-  Usage reset. Checking your remaining resets...
+  用 量 限 制 重 置
+  用 量 已 重 置 。 正 在 检 查 剩 余 的 重 置 机 会 ……
 
-›    Refreshing...
+›    正 在 刷 新 ……
 ---
-  Usage limit resets
-  Usage reset. You have 1 usage limit reset left.
+  用 量 限 制 重 置
+  用 量 已 重 置 。 你 还 剩  1 次 重 置 机 会 。
 
-› 1. Close
+› 1. 关 闭
 
-  Press enter to confirm or esc to go back
+  按  enter 确 认 ， 或 按  esc 返 回

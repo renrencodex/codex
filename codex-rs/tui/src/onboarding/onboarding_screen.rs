@@ -730,7 +730,7 @@ async fn persist_selected_trust(
             if let Step::TrustDirectory(widget) = &mut onboarding_screen.steps[trust_step_index] {
                 widget.selection = None;
                 widget.error = Some(format!(
-                    "Failed to set trust for {}: {error}",
+                    "设置 {} 的信任状态失败：{error}",
                     trust_target.display()
                 ));
             }

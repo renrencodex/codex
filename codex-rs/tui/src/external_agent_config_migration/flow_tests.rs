@@ -226,23 +226,15 @@ fn external_agent_config_migration_status_lines_use_semantic_colors() {
         vec![
             Line::from(vec![
                 "• ".dim(),
-                "Import started.".cyan(),
-                " You can keep working while it finishes.".into(),
+                "导入已开始。".cyan(),
+                " 导入期间你可以继续工作。".into(),
             ]),
-            Line::from(vec![
-                "  ".into(),
-                "Imported setup will apply to new chats.".dim(),
-            ]),
-            Line::from(vec!["  ".into(), "Importing:".cyan().bold()]),
+            Line::from(vec!["  ".into(), "导入的设置将应用于新对话。".dim(),]),
+            Line::from(vec!["  ".into(), "正在导入：".cyan().bold()]),
+            Line::from(vec!["    ".into(), "设置".cyan(), ": ".into(), "1".green(),]),
             Line::from(vec![
                 "    ".into(),
-                "Settings".cyan(),
-                ": ".into(),
-                "1".green(),
-            ]),
-            Line::from(vec![
-                "    ".into(),
-                "Memory".cyan(),
+                "记忆".cyan(),
                 ": ".into(),
                 "2".green(),
                 " — ".dim(),
@@ -250,7 +242,7 @@ fn external_agent_config_migration_status_lines_use_semantic_colors() {
             ]),
             Line::from(vec![
                 "    ".into(),
-                "Skills".cyan(),
+                "技能".cyan(),
                 ": ".into(),
                 "4".green(),
                 " — ".dim(),
@@ -258,7 +250,7 @@ fn external_agent_config_migration_status_lines_use_semantic_colors() {
             ]),
             Line::from(vec![
                 "    ".into(),
-                "MCP servers".cyan(),
+                "MCP 服务器".cyan(),
                 ": ".into(),
                 "2".green(),
                 " — ".dim(),
@@ -349,7 +341,7 @@ fn external_agent_config_detection_keeps_one_or_multiple_available_sources() {
     );
     detection.record_items(
         ExternalAgentConfigMigrationSource::Cur,
-        vec![detected_item("second")],
+        vec![detected_item("秒")],
     );
     let ExternalAgentConfigDetectionOutcome::Sources(sources) = detection.finish() else {
         panic!("expected two detected sources");
@@ -390,6 +382,6 @@ fn external_agent_config_detection_distinguishes_no_items_from_total_failure() {
     };
     assert_eq!(
         error,
-        "Could not check for importable setup: Claude Code: first failure; Cursor: second failure"
+        "无法检查可导入的设置：Claude Code: first failure; Cursor: second failure"
     );
 }

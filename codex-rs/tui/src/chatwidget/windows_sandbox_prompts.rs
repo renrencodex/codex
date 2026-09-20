@@ -33,12 +33,12 @@ impl ChatWidget {
         header.push(*Box::new(
             Paragraph::new(if allow_unelevated {
                 vec![
-                    line!["Set up the Codex agent sandbox to protect your files and control network access. Learn more <https://developers.openai.com/codex/windows>"],
+                    line!["设置 Codex 智能体沙箱，以保护文件并控制网络访问。了解详情 <https://developers.openai.com/codex/windows>"],
                 ]
             } else {
                 vec![
-                    line!["Your organization requires the default Codex agent sandbox to continue. Set it up to protect your files and control network access."],
-                    line!["Learn more <https://developers.openai.com/codex/windows>"],
+                    line!["你的组织要求先启用默认 Codex 智能体沙箱才能继续。请设置沙箱以保护文件并控制网络访问。"],
+                    line!["了解详情 <https://developers.openai.com/codex/windows>"],
                 ]
             })
             .wrap(Wrap { trim: false }),
@@ -52,7 +52,7 @@ impl ChatWidget {
         let retry_preset = preset.clone();
         let retry_profile_selection = profile_selection.clone();
         let elevated_item = SelectionItem {
-            name: "Set up default sandbox (requires Administrator permissions)".to_string(),
+            name: "设置默认沙箱（需要管理员权限）".to_string(),
             description: None,
             actions: vec![Box::new(move |tx| {
                 accept_otel.counter(
@@ -78,7 +78,7 @@ impl ChatWidget {
         };
         if allow_unelevated {
             items.push(SelectionItem {
-                name: "Use non-admin sandbox (higher risk if prompt injected)".to_string(),
+                name: "使用非管理员沙箱（提示词注入风险较高）".to_string(),
                 description: None,
                 actions: vec![Box::new(move |tx| {
                     legacy_otel.counter(
@@ -97,7 +97,7 @@ impl ChatWidget {
             });
         }
         items.push(SelectionItem {
-            name: "Quit".to_string(),
+            name: "退出".to_string(),
             description: None,
             actions: vec![Box::new(move |tx| {
                 quit_otel.counter(
@@ -150,21 +150,17 @@ impl ChatWidget {
         let setup_choice_is_required =
             !allow_unelevated || self.elevated_windows_sandbox_setup_required();
         let mut lines = Vec::new();
-        lines.push(line![
-            "Couldn't set up your sandbox with Administrator permissions".bold()
-        ]);
+        lines.push(line!["无法使用管理员权限设置沙箱".bold()]);
         lines.push(line![""]);
         if allow_unelevated {
             lines.push(line![
-                "You can still use Codex in a non-admin sandbox. It carries greater risk if prompt injected."
+                "仍可在非管理员沙箱中使用 Codex，但提示词注入会带来更高风险。"
             ]);
         } else {
-            lines.push(line![
-                "Your organization requires the default sandbox before Codex can continue."
-            ]);
+            lines.push(line!["你的组织要求先启用默认沙箱，Codex 才能继续。"]);
         }
         lines.push(line![
-            "Learn more <https://developers.openai.com/codex/windows>"
+            "了解详情 <https://developers.openai.com/codex/windows>"
         ]);
 
         let mut header = ColumnRenderable::new();
@@ -178,7 +174,7 @@ impl ChatWidget {
         let legacy_profile_selection = profile_selection;
         let quit_otel = self.session_telemetry.clone();
         let elevated_item = SelectionItem {
-            name: "Try setting up admin sandbox again".to_string(),
+            name: "重新尝试设置管理员沙箱".to_string(),
             description: None,
             actions: vec![Box::new({
                 let otel = self.session_telemetry.clone();
@@ -208,7 +204,7 @@ impl ChatWidget {
         };
         if allow_unelevated {
             items.push(SelectionItem {
-                name: "Use Codex with non-admin sandbox".to_string(),
+                name: "使用非管理员沙箱运行 Codex".to_string(),
                 description: None,
                 actions: vec![Box::new({
                     let otel = self.session_telemetry.clone();
@@ -231,7 +227,7 @@ impl ChatWidget {
             });
         }
         items.push(SelectionItem {
-            name: "Quit".to_string(),
+            name: "退出".to_string(),
             description: None,
             actions: vec![Box::new(move |tx| {
                 quit_otel.counter(
@@ -293,15 +289,15 @@ impl ChatWidget {
         // accidentally queue messages that will run under an unexpected mode.
         self.bottom_pane.set_composer_input_enabled(
             /*enabled*/ false,
-            Some("Input disabled until setup completes.".to_string()),
+            Some("设置完成前无法输入。".to_string()),
         );
         self.bottom_pane.reset_status_timer(Duration::ZERO);
         self.bottom_pane.ensure_status_indicator();
         self.bottom_pane
             .set_interrupt_hint_visible(/*visible*/ false);
         self.set_status(
-            "Setting up sandbox...".to_string(),
-            Some("Hang tight, this may take a few minutes".to_string()),
+            "正在设置沙箱……".to_string(),
+            Some("请稍候，这可能需要几分钟".to_string()),
             StatusDetailsCapitalization::CapitalizeFirst,
             STATUS_DETAILS_DEFAULT_MAX_LINES,
         );

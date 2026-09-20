@@ -3,15 +3,14 @@ source: tui/src/bottom_pane/app_link_view.rs
 expression: "render_snapshot(&view, Rect::new(0, 0, 72, view.desired_height(72)))"
 ---
 
-  Finish in Browser
+  在 浏 览 器 中 完 成
 
-  Complete the requested action in the browser window that just
-  opened.
-  Then return here and select "I finished".
+  在 刚 打 开 的 浏 览 器 窗 口 中 完 成 请 求 的 操 作 。
+  然 后 返 回 这 里 并 选 择 “我 已 完 成 ”。
 
-  Link:
+  链 接 ：
   https://payments.example/checkout/123
 
-  › 1. I finished
-    2. Back
-  Use tab / ↑ ↓ to move, enter to select, esc to close
+  › 1. 我 已 完 成
+    2. 返 回
+  使 用  tab / ↑ ↓ 移 动 ， enter 选 择 ， esc 关 闭

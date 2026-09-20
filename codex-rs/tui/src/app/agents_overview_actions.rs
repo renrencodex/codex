@@ -47,14 +47,12 @@ struct LifecycleProgress(AgentsOverviewAction);
 impl LifecycleProgress {
     fn header(&self) -> LifecycleHeader {
         let title = match self.0 {
-            AgentsOverviewAction::Archive => "Archiving task…",
-            AgentsOverviewAction::Delete => "Deleting task…",
+            AgentsOverviewAction::Archive => "正在归档任务…",
+            AgentsOverviewAction::Delete => "正在删除任务…",
         };
         LifecycleHeader(vec![
             title.bold().into(),
-            "Please wait. Task switching is unavailable until this finishes."
-                .dim()
-                .into(),
+            "请稍候。完成前无法切换任务。".dim().into(),
         ])
     }
 }
@@ -123,17 +121,17 @@ impl App {
             .lines()
             .next()
             .filter(|name| !name.is_empty())
-            .unwrap_or("Untitled task");
+            .unwrap_or("未命名任务");
         let (title, description, label) = match action {
             AgentsOverviewAction::Archive => (
-                format!("Archive “{name}”?"),
-                "This stops any running work in this task and its child agents, then archives them. Their history can be restored from the resume picker.",
-                "Archive task and child agents",
+                format!("归档“{name}”？"),
+                "这将停止此任务及其子智能体正在运行的工作，然后将其归档。可从恢复选择器恢复历史记录。",
+                "归档任务和子智能体",
             ),
             AgentsOverviewAction::Delete => (
-                format!("Permanently delete “{name}”?"),
-                "This stops any running work in this task and its child agents, then permanently deletes their history. This cannot be undone.",
-                "Permanently delete task and child agents",
+                format!("永久删除“{name}”？"),
+                "这将停止此任务及其子智能体正在运行的工作，并永久删除其历史记录。此操作无法撤销。",
+                "永久删除任务和子智能体",
             ),
         };
         self.chat_widget.show_selection_view(SelectionViewParams {
@@ -143,7 +141,7 @@ impl App {
             ])),
             items: vec![
                 SelectionItem {
-                    name: "Cancel".to_string(),
+                    name: "取消".to_string(),
                     dismiss_on_select: true,
                     ..Default::default()
                 },
@@ -292,16 +290,16 @@ impl App {
         }
         if let Err(error) = result {
             let verb = match action {
-                AgentsOverviewAction::Archive => "archive",
-                AgentsOverviewAction::Delete => "delete",
+                AgentsOverviewAction::Archive => "归档",
+                AgentsOverviewAction::Delete => "删除",
             };
             let mut header = vec![
-                format!("Could not {verb} task").red().bold().into(),
+                format!("无法{verb}任务").red().bold().into(),
                 format!("{error:#}").red().into(),
             ];
             if attempted {
                 header.push(
-                    "Work may have stopped. Resume the task to continue, or retry the action."
+                    "任务可能已停止。请恢复任务以继续，或重试此操作。"
                         .dim()
                         .into(),
                 );
@@ -309,7 +307,7 @@ impl App {
             self.chat_widget.show_selection_view(SelectionViewParams {
                 header: Box::new(LifecycleHeader(header)),
                 items: vec![SelectionItem {
-                    name: "Back to agents".to_string(),
+                    name: "返回智能体列表".to_string(),
                     dismiss_on_select: true,
                     ..Default::default()
                 }],

@@ -2,7 +2,7 @@
 source: tui/src/chatwidget/tests/questions_tests.rs
 expression: "render_bottom_popup(&chat, 80)"
 ---
-• Queued follow-up inputs
+• 已 排 队 的 后 续 输 入
 
   What next?
 

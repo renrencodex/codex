@@ -3,22 +3,22 @@ source: tui/src/keymap_setup.rs
 expression: descriptions
 ---
 
-  Edit Shortcut
-  Edit Queued Message · Chat
-  Current alt-up, shift-left · Default keymap
-  Config `tui.keymap.chat.edit_queued_message`
-  Move up through questions, then edit the last queued message.
+  编 辑 快 捷 键
+  编 辑 排 队 消 息  · 聊 天
+  当 前  alt-up, shift-left · 默 认 按 键 映 射
+  配 置  `tui.keymap.chat.edit_queued_message`
+  配 置 “编 辑 排 队 消 息 ”操 作 的 快 捷 键 。
 
 
-  Edit Shortcut
-  Prompt Stack Back · Chat
-  Current alt-down, shift-right · Default keymap
-  Config `tui.keymap.chat.prompt_stack_back`
-  Move back through questions toward the composer.
+  编 辑 快 捷 键
+  返 回 上 一 层 提 示  · 聊 天
+  当 前  alt-down, shift-right · 默 认 按 键 映 射
+  配 置  `tui.keymap.chat.prompt_stack_back`
+  配 置 “返 回 上 一 层 提 示 ”操 作 的 快 捷 键 。
 
 
-  Edit Shortcut
-  Skip Question · Chat
-  Current ctrl-] · Default keymap
-  Config `tui.keymap.chat.skip_question`
-  Skip the focused question.
+  编 辑 快 捷 键
+  跳 过 问 题  · 聊 天
+  当 前  ctrl-] · 默 认 按 键 映 射
+  配 置  `tui.keymap.chat.skip_question`
+  配 置 “跳 过 问 题 ”操 作 的 快 捷 键 。

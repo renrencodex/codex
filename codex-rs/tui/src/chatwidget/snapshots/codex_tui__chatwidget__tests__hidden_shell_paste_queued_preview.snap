@@ -1,13 +1,13 @@
 ---
 source: tui/src/chatwidget/tests/composer_submission.rs
-expression: normalize_snapshot_paths(render_bottom_popup(&chat, 80))
+expression: "normalize_snapshot_paths(render_bottom_popup(&chat, 80))"
 ---
 • Working (0s • esc to interrupt)
 
-• Queued follow-up inputs
+• 已 排 队 的 后 续 输 入
   ↳ [Pasted Content 1006 chars]
-    ⌥ + ↑ edit last queued message
+    shift + ← 编 辑 最 后 一 条 排 队 消 息
 
 › Ask Codex to do anything
 
-  GPT-5.6-Sol default · /tmp/project
+  GPT-5.6-Sol 默 认  · /tmp/project

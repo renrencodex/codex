@@ -43,9 +43,9 @@ pub(crate) fn fetch(
                         },
                     )
                     .await
-                    .map_err(|_| "Experimental feature request failed".to_string())?;
+                    .map_err(|_| "实验功能请求失败".to_string())?;
                 if response.data.len() > 100 {
-                    return Err("Experimental feature page exceeds requested limit".to_string());
+                    return Err("实验功能页面超出请求限制".to_string());
                 }
                 features.extend(
                     response
@@ -58,15 +58,15 @@ pub(crate) fn fetch(
                     return Ok(features);
                 };
                 if !cursors.insert(next.clone()) {
-                    return Err("Experimental feature pagination repeated a cursor".to_string());
+                    return Err("实验功能分页重复使用了游标".to_string());
                 }
             }
-            Err("Experimental feature discovery exceeded 10 pages".to_string())
+            Err("实验功能发现超过 10 页".to_string())
         };
         tokio::select! {
             _ = response_tx.closed() => {},
             result = tokio::time::timeout(Duration::from_secs(/*secs*/ 5), discovery) => {
-                let result = result.unwrap_or_else(|_| Err("Experimental feature discovery timed out".to_string()));
+                let result = result.unwrap_or_else(|_| Err("实验功能发现超时".to_string()));
                 let _ = response_tx.send(result);
             }
         }
@@ -92,18 +92,14 @@ pub(crate) async fn write(
         "tui-experimental-save-readback",
         tx,
     );
-    let features = rx
-        .await
-        .map_err(|_| "Feature discovery was interrupted")??;
+    let features = rx.await.map_err(|_| "功能发现已中断")??;
     let edits = updates
         .iter()
         .map(|(name, enabled)| {
             let feature = features
                 .iter()
                 .find(|feature| feature.name == *name)
-                .ok_or_else(|| {
-                    format!("The server did not advertise experimental feature `{name}`")
-                })?;
+                .ok_or_else(|| format!("服务器未公布实验功能 `{name}`"))?;
             // Quote the server's key as a single TOML path segment.
             let key = format!("features.{}", serde_json::json!(name));
             Ok(crate::config_update::replace_config_value(
@@ -117,8 +113,9 @@ pub(crate) async fn write(
             ))
         })
         .collect::<Result<Vec<_>, String>>()?;
-    let response = tokio::time::timeout(Duration::from_secs(/*secs*/ 15), request_handle
-        .request_typed::<ConfigWriteResponse>(ClientRequest::ConfigBatchWrite {
+    let response = tokio::time::timeout(
+        Duration::from_secs(/*secs*/ 15),
+        request_handle.request_typed::<ConfigWriteResponse>(ClientRequest::ConfigBatchWrite {
             // A timed-out write may still finish. Bound unanswered retries too.
             request_id: RequestId::String("tui-experimental-feature-write".to_string()),
             params: ConfigBatchWriteParams {
@@ -127,9 +124,11 @@ pub(crate) async fn write(
                 expected_version: None,
                 reload_user_config: true,
             },
-        })).await
-        .map_err(|_| "Saving experimental features timed out; the write may still finish. Reopen /experimental to check.")?
-        .map_err(|_| "Failed to save experimental features. Reopen /experimental to check configured values before retrying.")?;
+        }),
+    )
+    .await
+    .map_err(|_| "保存实验功能超时；写入可能仍会完成。请重新打开 /experimental 检查。")?
+    .map_err(|_| "保存实验功能失败。请重新打开 /experimental 检查配置值后再重试。")?;
     let (tx, rx) = oneshot::channel();
     fetch(
         request_handle,
@@ -139,10 +138,8 @@ pub(crate) async fn write(
     );
     let features = rx
         .await
-        .map_err(|_| "Features were saved, but readback was interrupted")?
-        .map_err(|error| {
-            format!("Features were saved, but configured values could not be refreshed: {error}")
-        })?;
+        .map_err(|_| "功能已保存，但回读被中断")?
+        .map_err(|error| format!("功能已保存，但无法刷新配置值：{error}"))?;
     let overridden = response.status == WriteStatus::OkOverridden
         || updates.iter().any(|(name, enabled)| {
             !features
@@ -151,7 +148,9 @@ pub(crate) async fn write(
         });
     Ok(FeatureWriteResult {
         features,
-        warning: overridden.then(|| "Changes were saved, but the configured values differ from your selections. A higher-priority setting may override them.".to_string()),
+        warning: overridden.then(|| {
+            "更改已保存，但配置值与你的选择不同。更高优先级的设置可能覆盖了这些值。".to_string()
+        }),
     })
 }
 

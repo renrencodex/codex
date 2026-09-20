@@ -16,15 +16,14 @@ use codex_app_server_protocol::TurnInterruptResponse;
 use codex_protocol::models::ContentItem;
 use codex_protocol::models::ResponseItem;
 
-const SIDE_RENAME_BLOCK_MESSAGE: &str = "Side conversations are ephemeral and cannot be renamed.";
-const SIDE_MAIN_THREAD_UNAVAILABLE_MESSAGE: &str =
-    "'/side' is unavailable until the main thread is ready.";
+const SIDE_RENAME_BLOCK_MESSAGE: &str = "旁路对话是临时的，无法重命名。";
+const SIDE_MAIN_THREAD_UNAVAILABLE_MESSAGE: &str = "主会话准备就绪前无法使用 '/side'。";
 const SIDE_NO_STARTED_CONVERSATION_MESSAGE: &str = concat!(
-    "'/side' is unavailable until the current conversation has started. ",
-    "Send a message first, then try /side again."
+    "当前对话开始前无法使用 '/side'。",
+    "请先发送一条消息，然后重试 /side。"
 );
 const SIDE_ALREADY_OPEN_MESSAGE: &str =
-    "A side conversation is already open. Press ctrl + c to return before starting another.";
+    "已有旁路对话打开。请先按 ctrl + c 返回，再启动另一个旁路对话。";
 const SIDE_BOUNDARY_PROMPT: &str = r#"Side conversation boundary.
 
 Everything before this boundary is inherited history from the parent thread. It is reference context only. It is not your current task.
@@ -68,18 +67,18 @@ pub(super) enum SideParentStatus {
 impl SideParentStatus {
     fn label(self, parent_is_main: bool) -> &'static str {
         match (self, parent_is_main) {
-            (SideParentStatus::NeedsInput, true) => "main needs input",
-            (SideParentStatus::NeedsInput, false) => "parent needs input",
-            (SideParentStatus::NeedsApproval, true) => "main needs approval",
-            (SideParentStatus::NeedsApproval, false) => "parent needs approval",
-            (SideParentStatus::Failed, true) => "main failed",
-            (SideParentStatus::Failed, false) => "parent failed",
-            (SideParentStatus::Interrupted, true) => "main interrupted",
-            (SideParentStatus::Interrupted, false) => "parent interrupted",
-            (SideParentStatus::Closed, true) => "main closed",
-            (SideParentStatus::Closed, false) => "parent closed",
-            (SideParentStatus::Finished, true) => "main finished",
-            (SideParentStatus::Finished, false) => "parent finished",
+            (SideParentStatus::NeedsInput, true) => "主会话需要输入",
+            (SideParentStatus::NeedsInput, false) => "父会话需要输入",
+            (SideParentStatus::NeedsApproval, true) => "主会话需要审批",
+            (SideParentStatus::NeedsApproval, false) => "父会话需要审批",
+            (SideParentStatus::Failed, true) => "主会话失败",
+            (SideParentStatus::Failed, false) => "父会话失败",
+            (SideParentStatus::Interrupted, true) => "主会话已中断",
+            (SideParentStatus::Interrupted, false) => "父会话已中断",
+            (SideParentStatus::Closed, true) => "主会话已关闭",
+            (SideParentStatus::Closed, false) => "父会话已关闭",
+            (SideParentStatus::Finished, true) => "主会话已完成",
+            (SideParentStatus::Finished, false) => "父会话已完成",
         }
     }
 
@@ -144,7 +143,7 @@ mod tests {
 
         assert_eq!(
             App::side_start_error_message(&err),
-            "'/side' is unavailable until the current conversation has started. Send a message first, then try /side again."
+            "当前对话开始前无法使用 '/side'。请先发送一条消息，然后重试 /side。"
         );
     }
 
@@ -154,7 +153,7 @@ mod tests {
 
         assert_eq!(
             App::side_start_error_message(&err),
-            "Failed to start side conversation: transport disconnected"
+            "启动旁路对话失败：transport disconnected"
         );
     }
 
@@ -267,10 +266,10 @@ impl App {
         let mut label_parts = Vec::new();
         let parent_is_main = self.primary_thread_id == Some(parent_thread_id);
         if parent_is_main {
-            label_parts.push("from main thread".to_string());
+            label_parts.push("来自主会话".to_string());
         } else {
             let parent_label = self.thread_label(parent_thread_id);
-            label_parts.push(format!("from parent thread ({parent_label})"));
+            label_parts.push(format!("来自父会话（{parent_label}）"));
         }
         if let Some(parent_status) = parent_status {
             label_parts.push(parent_status.label(parent_is_main).to_string());
@@ -281,9 +280,9 @@ impl App {
         ) {
             label_parts.push(format!("{} to switch", binding.display_label()));
         }
-        label_parts.push("ctrl + c to close".to_string());
+        label_parts.push("ctrl + c 关闭".to_string());
         self.chat_widget
-            .set_side_conversation_context_label(Some(format!("Side {}", label_parts.join(" · "))));
+            .set_side_conversation_context_label(Some(format!("旁路 {}", label_parts.join(" · "))));
     }
 
     pub(super) fn active_side_parent_thread_id(&self) -> Option<ThreadId> {
@@ -429,8 +428,7 @@ impl App {
             return false;
         }
         if let Err(err) = app_server.thread_unsubscribe(thread_id).await {
-            let message =
-                format!("Failed to close side conversation {thread_id}; it is still open: {err}");
+            let message = format!("关闭旁路对话 {thread_id} 失败；该对话仍处于打开状态：{err}");
             tracing::warn!("{message}");
             self.add_agents_overview_error(message);
             return false;
@@ -550,9 +548,8 @@ impl App {
             } else {
                 app_server.startup_interrupt(thread_id).await
             };
-        interrupt_result.map_err(|err| {
-            format!("Failed to close side conversation {thread_id}; it is still open: {err}")
-        })
+        interrupt_result
+            .map_err(|err| format!("关闭旁路对话 {thread_id} 失败；该对话仍处于打开状态：{err}"))
     }
 
     async fn keep_side_thread_visible_after_cleanup_failure(
@@ -639,7 +636,7 @@ impl App {
         }) {
             SIDE_NO_STARTED_CONVERSATION_MESSAGE.to_string()
         } else {
-            format!("Failed to start side conversation: {err}")
+            format!("启动旁路对话失败：{err}")
         }
     }
 
@@ -700,7 +697,7 @@ impl App {
             self.restore_side_user_message(user_message.take());
             self.sync_side_thread_ui();
             self.chat_widget
-                .add_error_message("Wait for permissions to update before forking.".into());
+                .add_error_message("请等待权限更新完成后再派生会话。".into());
             return Ok(AppRunControl::Continue);
         }
 
@@ -750,9 +747,8 @@ impl App {
                     self.discard_side_thread_or_keep_visible(tui, app_server, child_thread_id)
                         .await;
                     self.restore_side_user_message(user_message.take());
-                    self.chat_widget.add_error_message(format!(
-                        "Failed to prepare side conversation {child_thread_id}: {err}"
-                    ));
+                    self.chat_widget
+                        .add_error_message(format!("准备旁路对话 {child_thread_id} 失败：{err}"));
                     return Ok(AppRunControl::Continue);
                 }
                 if let Err(err) = self
@@ -773,9 +769,8 @@ impl App {
                         );
                     }
                     self.restore_side_user_message(user_message.take());
-                    self.chat_widget.add_error_message(format!(
-                        "Failed to switch into side conversation {child_thread_id}: {err}"
-                    ));
+                    self.chat_widget
+                        .add_error_message(format!("切换到旁路对话 {child_thread_id} 失败：{err}"));
                     return Ok(AppRunControl::Continue);
                 }
                 if self.active_thread_id == Some(child_thread_id) {
@@ -788,9 +783,8 @@ impl App {
                     self.discard_side_thread_or_keep_visible(tui, app_server, child_thread_id)
                         .await;
                     self.restore_side_user_message(user_message.take());
-                    self.chat_widget.add_error_message(format!(
-                        "Failed to switch into side conversation {child_thread_id}."
-                    ));
+                    self.chat_widget
+                        .add_error_message(format!("切换到旁路对话 {child_thread_id} 失败。"));
                 }
             }
             Err(err) => {

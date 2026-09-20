@@ -3,7 +3,7 @@ source: tui/src/chatwidget/tests/questions_tests.rs
 expression: "format!(\"NORMAL\\n{normal}\\n\\nSEARCH\\n{search}\")"
 ---
 NORMAL
-• Queued follow-up inputs
+• 已 排 队 的 后 续 输 入
 
   Which way?
 
@@ -14,7 +14,7 @@ NORMAL
   enter submit   ctrl + ] skip   ⌥ + ↓ main prompt
 
 SEARCH
-• Queued follow-up inputs
+• 已 排 队 的 后 续 输 入
 
   Which way?
 

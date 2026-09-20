@@ -2,7 +2,7 @@ use crate::status::format_tokens_compact;
 use codex_app_server_protocol::ThreadGoal;
 use codex_app_server_protocol::ThreadGoalStatus;
 
-pub(crate) const GOAL_USAGE: &str = "Usage: /goal [<objective>|clear|edit|pause|resume]";
+pub(crate) const GOAL_USAGE: &str = "用法：/goal [<objective>|clear|edit|pause|resume]";
 
 pub(crate) fn format_goal_elapsed_seconds(seconds: i64) -> String {
     let seconds = seconds.max(0) as u64;
@@ -42,16 +42,16 @@ pub(crate) fn goal_status_label(status: ThreadGoalStatus) -> &'static str {
 }
 
 pub(crate) fn goal_usage_summary(goal: &ThreadGoal) -> String {
-    let mut parts = vec![format!("Objective: {}", goal.objective)];
+    let mut parts = vec![format!("目标：{}", goal.objective)];
     if goal.time_used_seconds > 0 {
         parts.push(format!(
-            "Time: {}.",
+            "时间：{}。",
             format_goal_elapsed_seconds(goal.time_used_seconds)
         ));
     }
     if let Some(token_budget) = goal.token_budget {
         parts.push(format!(
-            "Tokens: {}/{}.",
+            "Tokens：{}/{}。",
             format_tokens_compact(goal.tokens_used),
             format_tokens_compact(token_budget)
         ));

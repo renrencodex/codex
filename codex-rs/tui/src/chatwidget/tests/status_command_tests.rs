@@ -57,7 +57,7 @@ async fn status_command_refresh_updates_cached_limits_for_future_status_outputs(
     assert_matches!(
         rx.try_recv(),
         Ok(AppEvent::CopySelection { text, label, .. })
-            if label == "Whole status" && text.contains("8% left")
+            if label == "Whole status" && text.contains("剩余 8%")
     );
     assert_matches!(rx.try_recv(), Ok(AppEvent::SettingsSelectionClosed));
 
@@ -69,7 +69,7 @@ async fn status_command_refresh_updates_cached_limits_for_future_status_outputs(
         other => panic!("expected refreshed status output, got {other:?}"),
     };
     assert!(
-        refreshed.contains("8% left"),
+        refreshed.contains("剩余 8%"),
         "expected a future /status output to use refreshed cached limits, got: {refreshed}"
     );
 }
@@ -274,7 +274,7 @@ async fn status_command_renders_immediately_and_updates_first_card_without_statu
     ));
 
     let settled = lines_to_single_string(&first_cell.display_lines(/*width*/ 90));
-    assert!(settled.contains("50 credits · ~$1.82"));
+    assert!(settled.contains("50 点 · ~$1.82"));
     assert!(settled.contains("GPT-5.4 80%, GPT-5 Mini 20%"));
     assert!(drain_insert_history(&mut rx).is_empty());
     chat.dispatch_command(SlashCommand::Status);
@@ -284,7 +284,7 @@ async fn status_command_renders_immediately_and_updates_first_card_without_statu
     };
     let rendered =
         normalize_snapshot_paths(lines_to_single_string(&cell.display_lines(/*width*/ 90)));
-    assert!(rendered.contains("50 credits · ~$1.82"));
+    assert!(rendered.contains("50 点 · ~$1.82"));
     assert!(rendered.contains("GPT-5.4 80%, GPT-5 Mini 20%"));
     assert!(rendered.contains("Medium 20%, High 80%"));
     assert!(rendered.contains("Fast mode 80%, Standard 20%"));
@@ -383,7 +383,7 @@ async fn status_command_stays_visible_and_updates_after_thread_usage_retry() {
     for status_cell in [&cell, &retry_cell] {
         assert!(
             lines_to_single_string(&status_cell.display_lines(/*width*/ 90))
-                .contains("50 credits · ~$1.82")
+                .contains("50 点 · ~$1.82")
         );
     }
 }
@@ -428,7 +428,7 @@ async fn status_command_renders_credits_and_breakdowns_without_usd_estimate() {
     ));
 
     let first_rendered = lines_to_single_string(&first_cell.display_lines(/*width*/ 90));
-    assert!(first_rendered.contains("50 credits"));
+    assert!(first_rendered.contains("50 点"));
     assert!(first_rendered.contains("GPT-5.4 100%"));
     assert!(!first_rendered.contains("~$"));
     drain_insert_history(&mut rx);
@@ -439,7 +439,7 @@ async fn status_command_renders_credits_and_breakdowns_without_usd_estimate() {
         }
         event => panic!("expected cached credits-only /status output, got {event:?}"),
     };
-    assert!(rendered.contains("50 credits"));
+    assert!(rendered.contains("50 点"));
     assert!(rendered.contains("GPT-5.4 100%"));
     assert!(rendered.contains("High 100%"));
     assert!(rendered.contains("Fast mode 100%"));
@@ -490,7 +490,7 @@ async fn status_command_drops_stale_usd_when_updated_usage_has_only_credits() {
         }
         event => panic!("expected cached /status output, got {event:?}"),
     };
-    assert!(cached.contains("40 credits · ~$1.82"));
+    assert!(cached.contains("40 点 · ~$1.82"));
     let request_id = match rx.try_recv() {
         Ok(AppEvent::RefreshThreadUsage { request_id, .. }) => request_id,
         event => panic!("expected refreshed thread usage request, got {event:?}"),
@@ -515,7 +515,7 @@ async fn status_command_drops_stale_usd_when_updated_usage_has_only_credits() {
         }
         event => panic!("expected credits-only /status output, got {event:?}"),
     };
-    assert!(refreshed.contains("50 credits"));
+    assert!(refreshed.contains("50 点"));
     assert!(!refreshed.contains("~$1.82"));
 }
 

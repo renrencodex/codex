@@ -3,20 +3,20 @@ source: tui/src/keymap_setup.rs
 expression: "render_picker(params, 120)"
 ---
 
-  Keymap
-  All configurable shortcuts.
-  147 actions, 0 customized, 5 unbound.
+  按 键 映 射
+  所 有 可 配 置 快 捷 键 。
+  共  147 个 操 作 ， 0 个 已 自 定 义 ， 5 个 未 绑 定 。
 
-  [All]  Common  Customized (0)  Unbound (5)  App  Composer  Editor  Vim  Navigation  Agents  Approval  Debug
+  [全 部 ]  常 用   已 自 定 义 （ 0）   未 绑 定 （ 5）   应 用   输 入 框   编 辑 器   Vim  导 航   智 能 体   审 批   调 试
 
-  Type to search shortcuts
-  Chat           Interrupt Turn             esc
-  Chat           Decrease Reasoning Effort  alt-,, shift-down
-  Chat           Increase Reasoning Effort  alt-., shift-up
-  Chat         - Previous Permission Mode   unbound
-  Chat         - Next Permission Mode       unbound
-  Chat           Edit Queued Message        alt-up, shift-left
-  Chat           Prompt Stack Back          alt-down, shift-right
-› Chat           Skip Question              ctrl-]
+  输 入 内 容 以 搜 索 快 捷 键
+  聊 天            中 断 当 前 轮 次           esc
+  聊 天            降 低 推 理 强 度           alt-,, shift-down
+  聊 天            提 高 推 理 强 度           alt-., shift-up
+  聊 天          - 上 一 个 权 限 模 式         未 绑 定
+  聊 天          - 下 一 个 权 限 模 式         未 绑 定
+  聊 天            编 辑 排 队 消 息           alt-up, shift-left
+  聊 天            返 回 上 一 层 提 示         alt-down, shift-right
+› 聊 天            跳 过 问 题               ctrl-]
 
-  left/right group · enter edit shortcut · * custom · - unbound · esc close
+  left/right 分 组  · enter 编 辑 快 捷 键  · * 自 定 义  · - 未 绑 定  · esc 关 闭
