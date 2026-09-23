@@ -174,7 +174,7 @@ pub(crate) fn build_custom_provider_edits(
     if let Some(api_key) = api_key {
         provider["experimental_bearer_token"] = serde_json::json!(api_key);
     }
-    // `id` is rejected upstream if it contains `.` or `"`, so a bare key path segment is safe.
+    // `id` is limited to TOML bare-key characters upstream, so a bare key path segment is safe.
     vec![
         replace_config_value(format!("model_providers.{id}"), provider),
         replace_config_value("model_provider", serde_json::json!(id)),

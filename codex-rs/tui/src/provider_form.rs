@@ -210,11 +210,16 @@ impl ProviderForm {
             }
         }
 
+        // Limited to TOML bare-key characters so the id never needs quoting in
+        // `config.toml` or in a `-c model_providers.<id>...` override.
         let id = self.value(ProviderField::Id);
-        if id.contains('.') || id.contains('"') {
+        if !id
+            .chars()
+            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
+        {
             return Err((
                 ProviderField::Id,
-                "标识符不能包含 . 或 \" 字符。".to_string(),
+                "标识符只能包含英文字母、数字、- 和 _。".to_string(),
             ));
         }
 

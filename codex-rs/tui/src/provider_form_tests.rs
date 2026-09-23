@@ -137,16 +137,43 @@ fn shift_tab_moves_to_the_previous_field() {
 }
 
 #[test]
-fn an_id_containing_a_dot_is_rejected_before_submitting() {
+fn an_id_outside_toml_bare_key_characters_is_rejected_before_submitting() {
+    for id in ["my.proxy", "我的代理"] {
+        let mut form = ProviderForm::new();
+        for value in [id, "My Proxy", "https://example.com/v1", "", "m"] {
+            type_text(&mut form, value);
+            assert_eq!(form.handle_key_event(key(KeyCode::Enter)), None);
+        }
+
+        assert_eq!(
+            (form.selected_field, form.error),
+            (
+                ProviderField::Id.index(),
+                Some("标识符只能包含英文字母、数字、- 和 _。".to_string())
+            ),
+            "id {id:?} should be rejected"
+        );
+    }
+}
+
+#[test]
+fn an_id_with_hyphens_and_underscores_is_accepted() {
     let mut form = ProviderForm::new();
-    for value in ["my.proxy", "My Proxy", "https://example.com/v1", "", "m"] {
+    let mut action = None;
+    for value in ["My_Proxy-2", "My Proxy", "https://example.com/v1", "", "m"] {
         type_text(&mut form, value);
-        assert_eq!(form.handle_key_event(key(KeyCode::Enter)), None);
+        action = form.handle_key_event(key(KeyCode::Enter));
     }
 
     assert_eq!(
-        form.error,
-        Some("标识符不能包含 . 或 \" 字符。".to_string())
+        action,
+        Some(ProviderFormAction::Submitted(ProviderDraft {
+            id: "My_Proxy-2".to_string(),
+            name: "My Proxy".to_string(),
+            base_url: "https://example.com/v1".to_string(),
+            api_key: None,
+            model: "m".to_string(),
+        }))
     );
 }
 
