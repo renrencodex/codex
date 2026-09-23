@@ -525,6 +525,11 @@ impl ChatWidget {
             SlashCommand::Theme => {
                 self.open_theme_picker();
             }
+            SlashCommand::Provider => {
+                // The provider list lives on the app server, so opening the
+                // picker has to round-trip through the async event loop.
+                self.app_event_tx.send(AppEvent::OpenProviderPicker);
+            }
             SlashCommand::Pets => {
                 self.open_pets_picker();
             }
@@ -1231,6 +1236,7 @@ impl ChatWidget {
             | SlashCommand::Title
             | SlashCommand::Statusline
             | SlashCommand::Theme
+            | SlashCommand::Provider
             | SlashCommand::Pets => QueueDrain::Stop,
         }
     }

@@ -1166,6 +1166,22 @@ pub(crate) enum AppEvent {
     /// Show the cyber auto-review notice after the model selection confirmation.
     CyberModelAutoReviewNotice,
 
+    /// Read the owning server's configured providers before showing the picker.
+    OpenProviderPicker,
+
+    /// Collect the model to pair with an already-configured provider.
+    OpenProviderModelPrompt {
+        provider_id: String,
+        provider_name: String,
+        model: String,
+    },
+
+    /// Point `model_provider` and `model` at an already-configured provider.
+    PersistProviderSelection {
+        provider_id: String,
+        model: String,
+    },
+
     /// Read the owning server preference before showing the voice picker.
     OpenRealtimeSettings,
 

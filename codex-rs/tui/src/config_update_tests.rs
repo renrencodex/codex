@@ -29,6 +29,25 @@ fn trusted_project_edit_targets_project_trust_level() {
     );
 }
 
+#[test]
+fn provider_selection_edits_rewrite_the_global_model() {
+    assert_eq!(
+        build_provider_selection_edits("my-proxy", "my-model"),
+        vec![
+            ConfigEdit {
+                key_path: "model_provider".to_string(),
+                value: serde_json::json!("my-proxy"),
+                merge_strategy: MergeStrategy::Replace,
+            },
+            ConfigEdit {
+                key_path: "model".to_string(),
+                value: serde_json::json!("my-model"),
+                merge_strategy: MergeStrategy::Replace,
+            },
+        ]
+    );
+}
+
 #[tokio::test]
 async fn remote_project_trust_guards_thread_start_and_preserves_repository_decisions() -> Result<()>
 {

@@ -13,6 +13,7 @@ pub enum SlashCommand {
     // DO NOT ALPHA-SORT! Enum order is presentation order in the popup, so
     // more frequently used commands should be listed first.
     Model,
+    Provider,
     Ide,
     Permissions,
     Keymap,
@@ -125,6 +126,7 @@ impl SlashCommand {
             SlashCommand::MemoryDrop => "DO NOT USE",
             SlashCommand::MemoryUpdate => "DO NOT USE",
             SlashCommand::Model => "选择要使用的模型和推理强度",
+            SlashCommand::Provider => "切换模型提供商或添加第三方提供商",
             SlashCommand::Ide => "包含 IDE 中的当前选区、打开的文件和其他上下文",
             SlashCommand::Plan => "切换到计划模式",
             SlashCommand::Voice => "启动或停止语音；使用 /voice settings 选择声音",
@@ -286,6 +288,8 @@ impl SlashCommand {
             SlashCommand::TestApproval => true,
             SlashCommand::Agents | SlashCommand::MultiAgents => true,
             SlashCommand::Theme | SlashCommand::Pets => false,
+            // Switching providers rewrites `model`, which the running task depends on.
+            SlashCommand::Provider => false,
         }
     }
 

@@ -151,6 +151,20 @@ pub(crate) fn build_oss_provider_edit(provider: &str) -> ConfigEdit {
     replace_config_value("oss_provider", serde_json::json!(provider))
 }
 
+/// Switches to an already-configured provider.
+///
+/// Both edits must stay in one `config/batchWrite`: `model` is a single global
+/// key rather than a per-provider one, so leaving the previous provider's model
+/// behind would break the newly selected provider. Callers must also check the
+/// returned [`ConfigWriteResponse::status`], since a higher-priority layer can
+/// shadow the write.
+pub(crate) fn build_provider_selection_edits(id: &str, model: &str) -> Vec<ConfigEdit> {
+    vec![
+        replace_config_value("model_provider", serde_json::json!(id)),
+        replace_config_value("model", serde_json::json!(model)),
+    ]
+}
+
 pub(crate) async fn write_config_batch(
     request_handle: AppServerRequestHandle,
     edits: Vec<ConfigEdit>,

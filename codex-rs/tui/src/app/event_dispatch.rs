@@ -2319,6 +2319,21 @@ impl App {
                 }
                 self.chat_widget.on_plugin_mentions_loaded(plugins);
             }
+            AppEvent::OpenProviderPicker => {
+                self.open_provider_picker(app_server).await;
+            }
+            AppEvent::OpenProviderModelPrompt {
+                provider_id,
+                provider_name,
+                model,
+            } => {
+                self.chat_widget
+                    .open_provider_model_prompt(provider_id, provider_name, model);
+            }
+            AppEvent::PersistProviderSelection { provider_id, model } => {
+                self.persist_provider_selection(app_server, provider_id, model)
+                    .await;
+            }
             AppEvent::OpenRealtimeSettings => {
                 self.open_realtime_settings(app_server).await;
             }
