@@ -1,0 +1,17 @@
+---
+source: tui/src/onboarding/custom_provider_tests.rs
+expression: render_visible(&state)
+---
+> 添 加 第 三 方 模 型 提 供 商
+
+  填 写  OpenAI 兼 容 接 口 的 连 接 信 息 。
+
+> 标 识 符 : my-proxy
+  显 示 名 称 : My Proxy
+  基 础  URL: https://example.com/v1
+  API 密 钥 （ 可 选 ） : 留 空 则 不 写 入 密 钥
+  模 型 : provider 支 持 的 模 型 名
+
+  保 存 后 对 新 会 话 生 效 。
+
+  按  enter 继 续 ， tab 切 换 字 段 ， esc 返 回

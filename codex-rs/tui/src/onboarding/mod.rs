@@ -1,5 +1,6 @@
 mod auth;
 mod bedrock;
+mod custom_provider;
 mod keys;
 pub(crate) mod onboarding_screen;
 mod trust_directory;

@@ -1,0 +1,5 @@
+---
+source: tui/src/onboarding/custom_provider_tests.rs
+expression: render_visible(&state)
+---
+> 正 在 保 存 第 三 方 模 型 提 供 商 …

@@ -51,6 +51,7 @@ use crate::key_hint::KeyBindingListExt;
 use crate::motion::MotionMode;
 use crate::motion::shimmer_text;
 use crate::onboarding::bedrock::BedrockState;
+use crate::onboarding::custom_provider::CustomProviderState;
 use crate::onboarding::keys;
 use crate::onboarding::onboarding_screen::KeyboardHandler;
 use crate::onboarding::onboarding_screen::StepStateProvider;
@@ -91,6 +92,8 @@ pub(crate) enum SignInState {
     ApiKeyConfigured,
     Bedrock(BedrockState),
     BedrockConfigured,
+    CustomProvider(CustomProviderState),
+    CustomProviderConfigured,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -99,6 +102,7 @@ pub(crate) enum SignInOption {
     DeviceCode,
     ApiKey,
     Bedrock,
+    CustomProvider,
 }
 
 const API_KEY_DISABLED_MESSAGE: &str = "API 密钥登录已停用。";
@@ -185,6 +189,9 @@ impl KeyboardHandler for AuthModeWidget {
         if self.handle_bedrock_key_event(&key_event) {
             return;
         }
+        if self.handle_custom_provider_key_event(&key_event) {
+            return;
+        }
         if self.handle_api_key_entry_key_event(&key_event) {
             return;
         }
@@ -213,6 +220,10 @@ impl KeyboardHandler for AuthModeWidget {
             self.select_option_by_index(/*index*/ 3);
             return;
         }
+        if keys::SELECT_FIFTH.is_pressed(key_event) {
+            self.select_option_by_index(/*index*/ 4);
+            return;
+        }
         if keys::CONFIRM.is_pressed(key_event) {
             let sign_in_state = { (*self.sign_in_state.read().unwrap()).clone() };
             match sign_in_state {
@@ -238,6 +249,10 @@ impl KeyboardHandler for AuthModeWidget {
             SignInState::Bedrock(_) => {
                 drop(sign_in_state);
                 let _ = self.handle_bedrock_paste(&pasted);
+            }
+            SignInState::CustomProvider(_) => {
+                drop(sign_in_state);
+                let _ = self.handle_custom_provider_paste(&pasted);
             }
             SignInState::ApiKeyEntry(_) => {
                 drop(sign_in_state);
@@ -314,6 +329,7 @@ impl AuthModeWidget {
         self.sign_in_state.read().is_ok_and(|guard| match &*guard {
             SignInState::ApiKeyEntry(_) => true,
             SignInState::Bedrock(state) => state.is_text_entry_active(),
+            SignInState::CustomProvider(state) => state.is_text_entry_active(),
             _ => false,
         })
     }
@@ -326,6 +342,7 @@ impl AuthModeWidget {
         self.sign_in_state.read().is_ok_and(|guard| match &*guard {
             SignInState::ApiKeyEntry(state) => !state.value.is_empty(),
             SignInState::Bedrock(state) => state.is_text_entry_active(),
+            SignInState::CustomProvider(state) => state.is_text_entry_active(),
             _ => false,
         })
     }
@@ -358,6 +375,7 @@ impl AuthModeWidget {
             if self.bedrock_setup_enabled {
                 options.push(SignInOption::Bedrock);
             }
+            options.push(SignInOption::CustomProvider);
         }
         options
     }
@@ -373,6 +391,7 @@ impl AuthModeWidget {
             if self.bedrock_setup_enabled {
                 options.push(SignInOption::Bedrock);
             }
+            options.push(SignInOption::CustomProvider);
         }
         options
     }
@@ -422,6 +441,13 @@ impl AuthModeWidget {
                 if self.bedrock_setup_enabled && self.is_api_login_allowed() {
                     self.start_bedrock_discovery();
                 } else if !self.is_api_login_allowed() {
+                    self.disallow_api_login();
+                }
+            }
+            SignInOption::CustomProvider => {
+                if self.is_api_login_allowed() {
+                    self.start_custom_provider_entry();
+                } else {
                     self.disallow_api_login();
                 }
             }
@@ -521,6 +547,14 @@ impl AuthModeWidget {
                         option,
                         "使用 Amazon Bedrock",
                         "使用 AWS 凭据连接",
+                    ));
+                }
+                SignInOption::CustomProvider => {
+                    lines.extend(create_mode_item(
+                        idx,
+                        option,
+                        "使用第三方模型提供商",
+                        "连接 OpenAI 兼容接口",
                     ));
                 }
             }
@@ -1013,10 +1047,12 @@ impl StepStateProvider for AuthModeWidget {
             | SignInState::ChatGptContinueInBrowser(_)
             | SignInState::ChatGptDeviceCode(_)
             | SignInState::ChatGptSuccessMessage
-            | SignInState::Bedrock(_) => StepState::InProgress,
+            | SignInState::Bedrock(_)
+            | SignInState::CustomProvider(_) => StepState::InProgress,
             SignInState::ChatGptSuccess
             | SignInState::ApiKeyConfigured
-            | SignInState::BedrockConfigured => StepState::Complete,
+            | SignInState::BedrockConfigured
+            | SignInState::CustomProviderConfigured => StepState::Complete,
         }
     }
 }
@@ -1051,6 +1087,14 @@ impl WidgetRef for AuthModeWidget {
             }
             SignInState::BedrockConfigured => {
                 Paragraph::new("✓ Amazon Bedrock configured".green())
+                    .wrap(Wrap { trim: false })
+                    .render(area, buf);
+            }
+            SignInState::CustomProvider(state) => {
+                state.render(area, buf);
+            }
+            SignInState::CustomProviderConfigured => {
+                Paragraph::new("✓ 第三方模型提供商已配置".green())
                     .wrap(Wrap { trim: false })
                     .render(area, buf);
             }
@@ -1179,6 +1223,7 @@ mod tests {
                 SignInOption::ChatGpt,
                 SignInOption::DeviceCode,
                 SignInOption::ApiKey,
+                SignInOption::CustomProvider,
             ]
         );
 
@@ -1190,10 +1235,11 @@ mod tests {
                 SignInOption::DeviceCode,
                 SignInOption::ApiKey,
                 SignInOption::Bedrock,
+                SignInOption::CustomProvider,
             ]
         );
 
-        let area = Rect::new(0, 0, 76, 19);
+        let area = Rect::new(0, 0, 76, 22);
         let mut buffer = Buffer::empty(area);
         widget.render_pick_mode(area, &mut buffer);
         let mut rows = (area.top()..area.bottom())
@@ -1222,6 +1268,9 @@ mod tests {
 
           4. 使 用  Amazon Bedrock
              使 用  AWS 凭 据 连 接
+
+          5. 使 用 第 三 方 模 型 提 供 商
+             连 接  OpenAI 兼 容 接 口
 
           按  enter 继 续
         ");
