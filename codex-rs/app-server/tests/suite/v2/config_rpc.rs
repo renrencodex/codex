@@ -2157,6 +2157,95 @@ async fn config_batch_write_applies_multiple_edits() -> Result<()> {
     Ok(())
 }
 
+/// The TUI's `/provider` flow relies on defining a provider and selecting it in
+/// one batch, because a `model_provider` that names an undefined provider only
+/// fails later, when `Config::load` runs on the next launch.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn config_batch_write_defines_and_selects_a_custom_provider() -> Result<()> {
+    let tmp_dir = TempDir::new()?;
+    let codex_home = tmp_dir.path().canonicalize()?;
+    write_config(&tmp_dir, "")?;
+
+    let mut mcp = TestAppServer::builder()
+        .with_codex_home(&codex_home)
+        .without_auto_env()
+        .build_initialized_with_timeout(DEFAULT_READ_TIMEOUT)
+        .await?;
+
+    let batch_id = mcp
+        .send_config_batch_write_request(ConfigBatchWriteParams {
+            file_path: Some(codex_home.join("config.toml").display().to_string()),
+            edits: vec![
+                ConfigEdit {
+                    key_path: "model_providers.my-proxy".to_string(),
+                    value: json!({
+                        "name": "My Proxy",
+                        "base_url": "https://example.com/v1",
+                        "wire_api": "responses",
+                    }),
+                    merge_strategy: MergeStrategy::Replace,
+                },
+                ConfigEdit {
+                    key_path: "model_provider".to_string(),
+                    value: json!("my-proxy"),
+                    merge_strategy: MergeStrategy::Replace,
+                },
+                ConfigEdit {
+                    key_path: "model".to_string(),
+                    value: json!("my-model"),
+                    merge_strategy: MergeStrategy::Replace,
+                },
+            ],
+            expected_version: None,
+            reload_user_config: false,
+        })
+        .await?;
+    let batch_write: ConfigWriteResponse =
+        timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(batch_id)).await??;
+    assert_eq!(batch_write.status, WriteStatus::Ok);
+
+    let read_id = mcp
+        .send_config_read_request(ConfigReadParams {
+            include_layers: false,
+            cwd: None,
+        })
+        .await?;
+    let read: ConfigReadResponse =
+        timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(read_id)).await??;
+
+    assert_eq!(read.config.model_provider.as_deref(), Some("my-proxy"));
+    assert_eq!(read.config.model.as_deref(), Some("my-model"));
+    assert_eq!(
+        read.config.additional.get("model_providers"),
+        Some(&json!({
+            "my-proxy": {
+                "name": "My Proxy",
+                "base_url": "https://example.com/v1",
+                "wire_api": "responses",
+                "auth": null,
+                "aws": null,
+                "env_http_headers": null,
+                "env_key": null,
+                "env_key_instructions": null,
+                "experimental_bearer_token": null,
+                "gateway_oauth": null,
+                "http_headers": null,
+                "model_catalog_url": null,
+                "query_params": null,
+                "request_max_retries": null,
+                "requires_openai_auth": false,
+                "stream_idle_timeout_ms": null,
+                "stream_max_retries": null,
+                "supports_standalone_web_search": false,
+                "supports_websockets": false,
+                "websocket_connect_timeout_ms": null,
+            }
+        }))
+    );
+
+    Ok(())
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn config_batch_write_round_trips_browser_and_computer_use_config() -> Result<()> {
     let tmp_dir = TempDir::new()?;

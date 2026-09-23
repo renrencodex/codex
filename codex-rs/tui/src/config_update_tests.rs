@@ -30,6 +30,61 @@ fn trusted_project_edit_targets_project_trust_level() {
 }
 
 #[test]
+fn custom_provider_edits_define_and_select_the_provider_in_one_batch() {
+    assert_eq!(
+        build_custom_provider_edits(
+            "my-proxy",
+            "My Proxy",
+            "https://example.com/v1",
+            Some("sk-secret"),
+            "my-model",
+        ),
+        vec![
+            ConfigEdit {
+                key_path: "model_providers.my-proxy".to_string(),
+                value: serde_json::json!({
+                    "name": "My Proxy",
+                    "base_url": "https://example.com/v1",
+                    "wire_api": "responses",
+                    "experimental_bearer_token": "sk-secret",
+                }),
+                merge_strategy: MergeStrategy::Replace,
+            },
+            ConfigEdit {
+                key_path: "model_provider".to_string(),
+                value: serde_json::json!("my-proxy"),
+                merge_strategy: MergeStrategy::Replace,
+            },
+            ConfigEdit {
+                key_path: "model".to_string(),
+                value: serde_json::json!("my-model"),
+                merge_strategy: MergeStrategy::Replace,
+            },
+        ]
+    );
+}
+
+#[test]
+fn custom_provider_edits_omit_the_bearer_token_when_no_api_key_is_given() {
+    assert_eq!(
+        build_custom_provider_edits(
+            "my-proxy",
+            "My Proxy",
+            "https://example.com/v1",
+            /*api_key*/ None,
+            "my-model",
+        )
+        .first()
+        .map(|edit| edit.value.clone()),
+        Some(serde_json::json!({
+            "name": "My Proxy",
+            "base_url": "https://example.com/v1",
+            "wire_api": "responses",
+        }))
+    );
+}
+
+#[test]
 fn provider_selection_edits_rewrite_the_global_model() {
     assert_eq!(
         build_provider_selection_edits("my-proxy", "my-model"),

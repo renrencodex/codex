@@ -1176,10 +1176,18 @@ pub(crate) enum AppEvent {
         model: String,
     },
 
+    /// Show the form that defines a new third-party provider.
+    OpenCustomProviderForm,
+
     /// Point `model_provider` and `model` at an already-configured provider.
     PersistProviderSelection {
         provider_id: String,
         model: String,
+    },
+
+    /// Define a third-party provider and select it in a single config write.
+    PersistCustomProvider {
+        draft: crate::provider_form::ProviderDraft,
     },
 
     /// Read the owning server preference before showing the voice picker.

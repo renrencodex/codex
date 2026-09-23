@@ -17,7 +17,7 @@ fn entries() -> Vec<ProviderEntry> {
 }
 
 #[test]
-fn the_picker_lists_providers_with_the_configured_one_selected() {
+fn picker_lists_providers_and_offers_adding_one() {
     let params = build_provider_picker_params(
         entries(),
         /*current_id*/ Some("my-proxy"),
@@ -36,6 +36,11 @@ fn the_picker_lists_providers_with_the_configured_one_selected() {
                 "My Proxy".to_string(),
                 Some("https://example.com/v1".to_string()),
                 true
+            ),
+            (
+                "添加第三方提供商…".to_string(),
+                Some("填写 OpenAI 兼容接口的连接信息".to_string()),
+                false
             ),
         ]
     );

@@ -2330,9 +2330,15 @@ impl App {
                 self.chat_widget
                     .open_provider_model_prompt(provider_id, provider_name, model);
             }
+            AppEvent::OpenCustomProviderForm => {
+                self.chat_widget.open_custom_provider_form();
+            }
             AppEvent::PersistProviderSelection { provider_id, model } => {
                 self.persist_provider_selection(app_server, provider_id, model)
                     .await;
+            }
+            AppEvent::PersistCustomProvider { draft } => {
+                self.persist_custom_provider(app_server, draft).await;
             }
             AppEvent::OpenRealtimeSettings => {
                 self.open_realtime_settings(app_server).await;

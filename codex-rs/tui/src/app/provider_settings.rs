@@ -6,6 +6,8 @@
 
 use super::*;
 use crate::chatwidget::ProviderEntry;
+use crate::provider_form::ProviderDraft;
+use codex_app_server_protocol::ConfigEdit;
 use codex_app_server_protocol::WriteStatus;
 use codex_model_provider_info::ModelProviderInfo;
 use codex_model_provider_info::built_in_model_providers;
@@ -76,6 +78,45 @@ impl App {
         model: String,
     ) {
         let edits = crate::config_update::build_provider_selection_edits(&provider_id, &model);
+        if let Err(message) = self
+            .write_provider_edits(app_server, edits, &provider_id, &model)
+            .await
+        {
+            self.chat_widget.add_error_message(message);
+        }
+    }
+
+    /// A failed write reopens the form with the draft intact: the values were
+    /// typed by hand and the likely fix is editing one of them.
+    pub(super) async fn persist_custom_provider(
+        &mut self,
+        app_server: &mut AppServerSession,
+        draft: ProviderDraft,
+    ) {
+        let edits = crate::config_update::build_custom_provider_edits(
+            &draft.id,
+            &draft.name,
+            &draft.base_url,
+            draft.api_key.as_deref().map(String::as_str),
+            &draft.model,
+        );
+        if let Err(message) = self
+            .write_provider_edits(app_server, edits, &draft.id, &draft.model)
+            .await
+        {
+            self.chat_widget.reopen_custom_provider_form(draft, message);
+        }
+    }
+
+    /// Reports the failure to the caller instead of printing it, so the
+    /// custom-provider path can render it inside the form it reopens.
+    async fn write_provider_edits(
+        &mut self,
+        app_server: &mut AppServerSession,
+        edits: Vec<ConfigEdit>,
+        provider_id: &str,
+        model: &str,
+    ) -> std::result::Result<(), String> {
         let response = match crate::config_update::write_config_batch(
             app_server.request_handle(),
             edits,
@@ -84,39 +125,35 @@ impl App {
         {
             Ok(response) => response,
             Err(error) => {
-                self.chat_widget.add_error_message(format!(
+                return Err(format!(
                     "保存模型提供商失败：{}",
                     crate::config_update::format_config_error(&error)
                 ));
-                return;
             }
         };
 
         if response.status == WriteStatus::OkOverridden {
-            let message = super::config_persistence::overridden_write_message(&response);
+            let overridden = super::config_persistence::overridden_write_message(&response);
             tracing::warn!(
-                message,
+                overridden,
                 "model provider config write was overridden by effective config"
             );
-            self.chat_widget
-                .add_error_message(format!("模型提供商更改已保存但未应用：{message}"));
+            let mut message = format!("模型提供商更改已保存但未应用：{overridden}");
             if let Some(effective) = self
                 .read_effective_config_after_overridden_write(app_server, "模型提供商更改")
                 .await
                 && let Some(provider) = effective.config.model_provider
             {
-                self.chat_widget.add_info_message(
-                    format!("当前生效的模型提供商为 {provider}。"),
-                    /*hint*/ None,
-                );
+                message.push_str(&format!("当前生效的模型提供商为 {provider}。"));
             }
-            return;
+            return Err(message);
         }
 
         self.chat_widget.add_info_message(
             format!("模型提供商已设置为 {provider_id}，模型为 {model}。"),
             Some("使用 /new 开始新会话后生效".to_string()),
         );
+        Ok(())
     }
 }
 

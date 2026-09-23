@@ -151,13 +151,41 @@ pub(crate) fn build_oss_provider_edit(provider: &str) -> ConfigEdit {
     replace_config_value("oss_provider", serde_json::json!(provider))
 }
 
+/// Defines a third-party provider and selects it in one batch.
+///
+/// The three edits must stay in a single `config/batchWrite`: `model_provider`
+/// pointing at an id that has no `model_providers` entry makes `Config::load`
+/// fail on the next launch, and `model` is global rather than per-provider, so
+/// leaving the previous provider's model behind would break the new provider.
+/// Callers must also check the returned [`ConfigWriteResponse::status`], since
+/// a higher-priority layer can shadow the write.
+pub(crate) fn build_custom_provider_edits(
+    id: &str,
+    name: &str,
+    base_url: &str,
+    api_key: Option<&str>,
+    model: &str,
+) -> Vec<ConfigEdit> {
+    let mut provider = serde_json::json!({
+        "name": name,
+        "base_url": base_url,
+        "wire_api": codex_model_provider_info::WireApi::Responses.to_string(),
+    });
+    if let Some(api_key) = api_key {
+        provider["experimental_bearer_token"] = serde_json::json!(api_key);
+    }
+    // `id` is rejected upstream if it contains `.` or `"`, so a bare key path segment is safe.
+    vec![
+        replace_config_value(format!("model_providers.{id}"), provider),
+        replace_config_value("model_provider", serde_json::json!(id)),
+        replace_config_value("model", serde_json::json!(model)),
+    ]
+}
+
 /// Switches to an already-configured provider.
 ///
-/// Both edits must stay in one `config/batchWrite`: `model` is a single global
-/// key rather than a per-provider one, so leaving the previous provider's model
-/// behind would break the newly selected provider. Callers must also check the
-/// returned [`ConfigWriteResponse::status`], since a higher-priority layer can
-/// shadow the write.
+/// `model` is a single global key rather than a per-provider one, so it has to
+/// be rewritten alongside `model_provider`.
 pub(crate) fn build_provider_selection_edits(id: &str, model: &str) -> Vec<ConfigEdit> {
     vec![
         replace_config_value("model_provider", serde_json::json!(id)),
