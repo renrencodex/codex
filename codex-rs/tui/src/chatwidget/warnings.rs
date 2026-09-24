@@ -21,7 +21,7 @@ impl WarningDisplayState {
     }
 }
 
-fn fallback_model_metadata_warning_slug(message: &str) -> Option<&str> {
+pub(super) fn fallback_model_metadata_warning_slug(message: &str) -> Option<&str> {
     message
         .strip_prefix(FALLBACK_MODEL_METADATA_WARNING_PREFIX)?
         .strip_suffix(FALLBACK_MODEL_METADATA_WARNING_SUFFIX)

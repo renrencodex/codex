@@ -505,6 +505,13 @@ impl ChatWidget {
 
     pub(super) fn on_warning(&mut self, message: impl Into<String>) {
         let message = message.into();
+        // Only OpenAI models ship with bundled metadata, so under any other
+        // provider this fires for every model and leaves nothing to act on.
+        if self.config.model_provider_id != codex_model_provider_info::OPENAI_PROVIDER_ID
+            && super::warnings::fallback_model_metadata_warning_slug(&message).is_some()
+        {
+            return;
+        }
         if !self.warning_display_state.should_display(&message) {
             return;
         }

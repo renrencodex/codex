@@ -2870,6 +2870,22 @@ async fn repeated_model_metadata_warning_is_hidden_for_same_slug() {
 }
 
 #[tokio::test]
+async fn model_metadata_warning_is_hidden_for_third_party_providers() {
+    let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
+    chat.config.model_provider_id = "my-proxy".to_string();
+
+    handle_warning(
+        &mut chat,
+        "Model metadata for `deepseek-chat` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.",
+    );
+    handle_warning(&mut chat, "test warning message");
+
+    let cells = drain_insert_history(&mut rx);
+    assert_eq!(cells.len(), 1, "expected only the generic warning");
+    assert!(lines_to_single_string(&cells[0]).contains("test warning message"));
+}
+
+#[tokio::test]
 async fn repeated_generic_warning_is_not_hidden() {
     let (mut chat, mut rx, _op_rx) = make_chatwidget_manual(/*model_override*/ None).await;
 
