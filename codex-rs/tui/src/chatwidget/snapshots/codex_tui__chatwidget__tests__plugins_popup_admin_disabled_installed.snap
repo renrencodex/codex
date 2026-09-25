@@ -2,13 +2,21 @@
 source: tui/src/chatwidget/tests/popups_and_settings.rs
 expression: popup
 ---
-  插 件
-  浏 览 可 用 插 件 市 场 中 的 插 件 。
-  1 个 可 用 插 件 中 已 安 装  1 个 。
+  Plugins
+  Browse plugins from available marketplaces.
+  Installed 1 of 1 available plugins.
 
-  [全 部 插 件 ]  已 安 装 （ 1）   OpenAI 精 选   工 作 区   添 加 插 件 市 场
+   All Plugins   Installed (1)   OpenAI Curated   Workspace   Add Marketplace
 
-  输 入 内 容 以 搜 索 插 件
-› [!] Admin Blocked  已 被 管 理 员 禁 用    按  Enter 查 看 插 件 详 细 信 息 。
+  Type to search plugins
 
-  space 启 用 /禁 用  · ←/→ 选 择 插 件 市 场  · enter 查 看 详 情  · esc 关 闭
+› [!] Admin Blocked  Disabled   Press Enter to view plugin details.
+
+
+
+
+
+
+
+
+  ←/→ tabs · enter details · space toggle · esc close

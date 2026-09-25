@@ -2,10 +2,10 @@
 source: tui/src/app/tests/buffered_replay.rs
 expression: "normalize_snapshot_paths(render_bottom_popup(&app.chat_widget, 80))"
 ---
-• 已 排 队 的 后 续 输 入
+• Queued follow-up inputs
   ↳ keep queued
-    shift + ← 编 辑 最 后 一 条 排 队 消 息
+    ⌥+↑ edit last queued message
 
 › keep draft
 
-  GPT-5.6-Sol 默 认  · /tmp/project
+  GPT-5.6-Sol default · /tmp/project

@@ -13,6 +13,6 @@ expression: "render_snapshot(&view, Rect::new(0, 0, 72, view.desired_height(72))
   Sign in to this app in your browser, then return here.
 
 
-  › 1. 打 开 登 录  URL
-    2. 返 回
-  使 用  tab / ↑ ↓ 移 动 ， enter 选 择 ， esc 关 闭
+› 1. Open sign-in URL
+  2. Back
+  tab / ↑ ↓ move · enter select · esc close

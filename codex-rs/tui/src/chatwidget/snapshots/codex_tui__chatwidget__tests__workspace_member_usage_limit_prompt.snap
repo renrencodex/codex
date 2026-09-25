@@ -2,10 +2,11 @@
 source: tui/src/chatwidget/tests/status_and_layout.rs
 expression: popup
 ---
-  已 达 到 用 量 限 制
-  请 向 所 有 者 申 请 提 高 限 制 ， 以 继 续 使 用  Codex。 是 否 申 请 ？
+  Usage limit reached
+  Request a limit increase from your owner to continue using codex. Request increase?
 
-  1. 是  (y)
-› 2. 否 （ 默 认 ）  (n)
 
-  按  enter 确 认 ， 或 按  esc 返 回
+  1. Yes (y)
+› 2. No (default) (n)
+
+  enter select · esc back

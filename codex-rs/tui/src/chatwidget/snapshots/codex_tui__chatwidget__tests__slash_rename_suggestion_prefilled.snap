@@ -2,9 +2,9 @@
 source: tui/src/chatwidget/tests/slash_commands.rs
 expression: popup
 ---
-▌ Rename thread
-▌ Suggested from this conversation
-▌
-▌ Fix login timeout
+  Rename thread
+  Suggested from this conversation
 
-按  enter 确 认 ， 或 按  esc 返 回
+› Fix login timeout
+
+  enter submit · esc back

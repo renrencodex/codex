@@ -342,7 +342,7 @@ impl ChatWidget {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
             header: Box::new(DelayedLoadingHeader::new(
                 self.frame_requester.clone(),
-                self.local_settings.tui.animations,
+                self.local_settings.tui.animations && self.local_settings.tui.effects.shimmer,
                 "正在加载可用插件……".to_string(),
                 Some("插件市场列表准备好后，此处会自动更新。".to_string()),
             )),
@@ -352,7 +352,7 @@ impl ChatWidget {
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -361,7 +361,7 @@ impl ChatWidget {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
             header: Box::new(DelayedLoadingHeader::new(
                 self.frame_requester.clone(),
-                self.local_settings.tui.animations,
+                self.local_settings.tui.animations && self.local_settings.tui.effects.shimmer,
                 "正在添加插件市场……".to_string(),
                 /*note*/ None,
             )),
@@ -371,7 +371,7 @@ impl ChatWidget {
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -381,12 +381,12 @@ impl ChatWidget {
         marketplace_name: String,
         marketplace_display_name: String,
     ) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from(
-            format!("移除插件市场 {marketplace_display_name}？").dim(),
-        ));
-        header.push(Line::from("这会从 Codex 中移除已配置的插件市场。".dim()));
+        let header = Paragraph::new(vec![
+            Line::from("插件".bold()),
+            Line::from(format!("移除插件市场 {marketplace_display_name}？").dim()),
+            Line::from("这会从 Codex 中移除已配置的插件市场。".dim()),
+        ])
+        .wrap(Wrap { trim: false });
 
         let cwd_for_remove = self.config.cwd.to_path_buf();
         let cwd_for_cancel = self.config.cwd.to_path_buf();
@@ -401,7 +401,8 @@ impl ChatWidget {
                 Span::from(key_hint::plain(KeyCode::Enter)),
                 " 选择".dim(),
                 " · ".into(),
-                "esc 关闭".dim(),
+                Span::from(key_hint::plain(KeyCode::Esc)),
+                " 关闭".dim(),
             ])),
             items: vec![
                 SelectionItem {
@@ -439,7 +440,7 @@ impl ChatWidget {
                     response: plugins_response_for_on_cancel.clone(),
                 });
             })),
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -447,22 +448,17 @@ impl ChatWidget {
         &self,
         marketplace_display_name: &str,
     ) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from(
-            format!("正在移除 {marketplace_display_name}……").dim(),
-        ));
-
         SelectionViewParams {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
-            header: Box::new(header),
+            title: Some("插件".to_string()),
+            subtitle: Some(format!("正在移除 {marketplace_display_name}……")),
             items: vec![SelectionItem {
                 name: "正在移除插件市场……".to_string(),
                 description: Some("插件市场移除完成后，此处会自动更新。".to_string()),
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -477,7 +473,7 @@ impl ChatWidget {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
             header: Box::new(DelayedLoadingHeader::new(
                 self.frame_requester.clone(),
-                self.local_settings.tui.animations,
+                self.local_settings.tui.animations && self.local_settings.tui.effects.shimmer,
                 loading_text.clone(),
                 /*note*/ None,
             )),
@@ -487,7 +483,7 @@ impl ChatWidget {
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -499,7 +495,7 @@ impl ChatWidget {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
             header: Box::new(DelayedLoadingHeader::new(
                 self.frame_requester.clone(),
-                self.local_settings.tui.animations,
+                self.local_settings.tui.animations && self.local_settings.tui.effects.shimmer,
                 format!("正在加载 {plugin_display_name} 的详细信息……"),
                 /*note*/ None,
             )),
@@ -509,7 +505,7 @@ impl ChatWidget {
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -517,22 +513,17 @@ impl ChatWidget {
         &self,
         plugin_display_name: &str,
     ) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from(
-            format!("正在安装 {plugin_display_name}……").dim(),
-        ));
-
         SelectionViewParams {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
-            header: Box::new(header),
+            title: Some("插件".to_string()),
+            subtitle: Some(format!("正在安装 {plugin_display_name}……")),
             items: vec![SelectionItem {
                 name: "正在安装插件……".to_string(),
                 description: Some("插件安装完成后，此处会自动更新。".to_string()),
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -540,48 +531,36 @@ impl ChatWidget {
         &self,
         plugin_display_name: &str,
     ) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from(
-            format!("正在卸载 {plugin_display_name}……").dim(),
-        ));
-
         SelectionViewParams {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
-            header: Box::new(header),
+            title: Some("插件".to_string()),
+            subtitle: Some(format!("正在卸载 {plugin_display_name}……")),
             items: vec![SelectionItem {
                 name: "正在卸载插件……".to_string(),
                 description: Some("插件移除完成后，此处会自动更新。".to_string()),
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
     pub(super) fn plugins_error_popup_params(&self, err: &str) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from("加载插件失败。".dim()));
-
         SelectionViewParams {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
-            header: Box::new(header),
+            title: Some("插件".to_string()),
+            subtitle: Some("加载插件失败。".to_string()),
             items: vec![SelectionItem {
                 name: "插件市场不可用".to_string(),
                 description: Some(err.to_string()),
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
     pub(super) fn marketplace_add_error_popup_params(&self) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from("添加插件市场失败。".dim()));
-
         let mut items = vec![
             SelectionItem {
                 name: "添加插件市场失败".to_string(),
@@ -618,10 +597,11 @@ impl ChatWidget {
 
         SelectionViewParams {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
-            header: Box::new(header),
+            title: Some("插件".to_string()),
+            subtitle: Some("添加插件市场失败。".to_string()),
             footer_hint: Some(plugin_detail_hint_line()),
             items,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -630,10 +610,6 @@ impl ChatWidget {
         marketplace_name: &str,
         marketplace_display_name: &str,
     ) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from("移除插件市场失败。".dim()));
-
         let marketplace_name = marketplace_name.to_string();
         let marketplace_display_name = marketplace_display_name.to_string();
         let mut items = vec![
@@ -675,10 +651,11 @@ impl ChatWidget {
 
         SelectionViewParams {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
-            header: Box::new(header),
+            title: Some("插件".to_string()),
+            subtitle: Some("移除插件市场失败。".to_string()),
             footer_hint: Some(plugin_detail_hint_line()),
             items,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -687,10 +664,6 @@ impl ChatWidget {
         err: &str,
         plugins_response: Option<&PluginListResponse>,
     ) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from("加载插件详细信息失败。".dim()));
-
         let mut items = vec![SelectionItem {
             name: "插件详细信息不可用".to_string(),
             description: Some(err.to_string()),
@@ -715,10 +688,11 @@ impl ChatWidget {
 
         SelectionViewParams {
             view_id: Some(PLUGINS_SELECTION_VIEW_ID),
-            header: Box::new(header),
+            title: Some("插件".to_string()),
+            subtitle: Some("加载插件详细信息失败。".to_string()),
             footer_hint: Some(plugin_detail_hint_line()),
             items,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -743,7 +717,8 @@ impl ChatWidget {
                 PLUGIN_ROW_PREFIX_WIDTH + UnicodeWidthStr::width(display_name.as_str())
             })
             .chain([UnicodeWidthStr::width("添加插件市场")])
-            .max();
+            .max()
+            .map(|width| width.min(/*other*/ 36));
         let installed_entries = all_entries
             .iter()
             .filter(|(_, plugin, _)| plugin.installed)
@@ -941,6 +916,7 @@ impl ChatWidget {
             )),
             tab_footer_hints,
             tabs,
+            reserve_result_rows: true,
             initial_tab_id,
             is_searchable: true,
             search_placeholder: Some("输入内容以搜索插件".to_string()),
@@ -948,7 +924,7 @@ impl ChatWidget {
             row_display: SelectionRowDisplay::SingleLine,
             name_column_width,
             initial_selected_idx,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -987,10 +963,16 @@ impl ChatWidget {
         let display_name = plugin_display_name(&plugin.summary);
         let detail_status_label = plugin_detail_status_label(&plugin.summary);
         let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from(
-            format!("{display_name} · {detail_status_label} · {marketplace_label}").bold(),
-        ));
+        header.push(
+            ratatui::widgets::Paragraph::new(Line::from("插件".bold()))
+                .wrap(ratatui::widgets::Wrap { trim: false }),
+        );
+        header.push(
+            ratatui::widgets::Paragraph::new(Line::from(
+                format!("{display_name} · {detail_status_label} · {marketplace_label}").bold(),
+            ))
+            .wrap(ratatui::widgets::Wrap { trim: false }),
+        );
         if !plugin.summary.installed {
             header.push(PluginDisclosureLine {
                 line: Line::from(vec![
@@ -1005,7 +987,10 @@ impl ChatWidget {
             });
         }
         if let Some(description) = plugin_detail_description(plugin) {
-            header.push(Line::from(description.dim()));
+            header.push(
+                ratatui::widgets::Paragraph::new(Line::from(description.dim()))
+                    .wrap(ratatui::widgets::Wrap { trim: false }),
+            );
         }
 
         let cwd = self.config.cwd.to_path_buf();
@@ -1135,7 +1120,7 @@ impl ChatWidget {
             footer_hint: Some(plugin_detail_hint_line()),
             items,
             col_width_mode: ColumnWidthMode::AutoAllRows,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -1277,30 +1262,31 @@ fn plugins_popup_hint_line(
 ) -> Line<'static> {
     match (can_remove_marketplace, can_upgrade_marketplace) {
         (true, true) => Line::from(
-            "ctrl + u 升级 · ctrl + r 移除 · space 切换 · ←/→ 标签页 · enter 详情 · esc 关闭",
+            "ctrl+u 升级 · ctrl+r 移除 · space 切换 · ←/→ 标签页 · enter 详情 · esc 关闭",
         ),
         (true, false) => {
-            Line::from("ctrl + r 移除 · space 切换 · ←/→ 标签页 · enter 详情 · esc 关闭")
+            Line::from("ctrl+r 移除 · space 切换 · ←/→ 标签页 · enter 详情 · esc 关闭")
         }
         (false, true) => {
-            Line::from("ctrl + u 升级 · space 切换 · ←/→ 标签页 · enter 详情 · esc 关闭")
+            Line::from("ctrl+u 升级 · space 切换 · ←/→ 标签页 · enter 详情 · esc 关闭")
         }
-        (false, false) => {
-            Line::from("space 启用/禁用 · ←/→ 选择插件市场 · enter 查看详情 · esc 关闭")
-        }
+        (false, false) => Line::from("←/→ 标签页 · enter 详情 · space 切换 · esc 关闭"),
     }
 }
 
 pub(super) fn plugin_detail_hint_line() -> Line<'static> {
-    Line::from("按 esc 关闭。")
+    Line::from("esc 关闭")
 }
 
 pub(super) fn plugins_header(subtitle: String, count_line: String) -> Box<dyn Renderable> {
-    let mut header = ColumnRenderable::new();
-    header.push(Line::from("插件".bold()));
-    header.push(Line::from(subtitle.dim()));
-    header.push(Line::from(count_line.dim()));
-    Box::new(header)
+    Box::new(
+        Paragraph::new(vec![
+            Line::from("插件".bold()),
+            Line::from(subtitle.dim()),
+            Line::from(count_line.dim()),
+        ])
+        .wrap(Wrap { trim: false }),
+    )
 }
 
 fn dedupe_plugin_entries<'a>(

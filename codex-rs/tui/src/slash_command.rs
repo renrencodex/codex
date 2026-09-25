@@ -48,10 +48,12 @@ pub enum SlashCommand {
     Copy,
     Export,
     Raw,
+    Tui,
     Diff,
     Mention,
     Status,
     Daemon,
+    Warnings,
     Cd,
     #[strum(to_string = "pwd", serialize = "cwd")]
     Pwd,
@@ -106,12 +108,14 @@ impl SlashCommand {
             SlashCommand::Copy => "复制上一条回复或其中一部分",
             SlashCommand::Export => "将对话导出为 Markdown",
             SlashCommand::Raw => "切换原始回滚模式，便于在终端中选择复制",
+            SlashCommand::Tui => "choose the TUI mode for the next launch",
             SlashCommand::Diff => "显示 Git 差异（包括未跟踪文件）",
             SlashCommand::Mention => "提及文件",
             SlashCommand::Skills => "使用技能帮助 Codex 更好地完成特定任务",
             SlashCommand::Import => "从 Claude Code 导入设置、当前项目和最近会话",
             SlashCommand::Hooks => "查看和管理生命周期钩子",
             SlashCommand::Daemon => "管理本地后台服务器",
+            SlashCommand::Warnings => "view retained warnings and diagnostic details",
             SlashCommand::Status => "显示当前会话配置和 Token 用量",
             SlashCommand::Cd => "更改当前工作目录",
             SlashCommand::Pwd => "显示当前工作目录",
@@ -131,7 +135,7 @@ impl SlashCommand {
             SlashCommand::Plan => "切换到计划模式",
             SlashCommand::Voice => "启动或停止语音；使用 /voice settings 选择声音",
             SlashCommand::Goal => "设置或查看长时间运行任务的目标",
-            SlashCommand::Agents => "查看所有活动的智能体会话并在其间切换",
+            SlashCommand::Agents => "打开智能体指挥中心",
             SlashCommand::MultiAgents => "在当前会话的子智能体之间切换",
             SlashCommand::Side | SlashCommand::Btw => "在临时派生会话中开始旁路对话",
             SlashCommand::Permissions => "选择允许 Codex 执行的操作",
@@ -195,6 +199,7 @@ impl SlashCommand {
                 | SlashCommand::Mention
                 | SlashCommand::Status
                 | SlashCommand::Daemon
+                | SlashCommand::Warnings
                 | SlashCommand::Pwd
                 | SlashCommand::Usage
                 | SlashCommand::Ide
@@ -219,6 +224,7 @@ impl SlashCommand {
                 | SlashCommand::Quit
                 | SlashCommand::Exit
                 | SlashCommand::Status
+                | SlashCommand::Warnings
                 | SlashCommand::DebugConfig
                 | SlashCommand::Pwd
                 | SlashCommand::Rollout
@@ -240,6 +246,7 @@ impl SlashCommand {
             | SlashCommand::Recap
             | SlashCommand::Export
             | SlashCommand::Keymap
+            | SlashCommand::Tui
             | SlashCommand::Vim
             | SlashCommand::ElevateSandbox
             | SlashCommand::Experimental
@@ -264,6 +271,7 @@ impl SlashCommand {
             | SlashCommand::Hooks
             | SlashCommand::Status
             | SlashCommand::Daemon
+            | SlashCommand::Warnings
             | SlashCommand::Pwd
             | SlashCommand::Usage
             | SlashCommand::DebugConfig

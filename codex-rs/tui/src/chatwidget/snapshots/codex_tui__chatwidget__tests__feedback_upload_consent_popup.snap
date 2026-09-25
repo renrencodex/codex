@@ -2,22 +2,24 @@
 source: tui/src/chatwidget/tests/popups_and_settings.rs
 expression: popup
 ---
-  是 否 上 传 日 志 ？
+  Upload logs?
 
-  将 发 送 以 下 文 件 ：
+  The following files will be sent:
     • codex-logs.log
     • codex-doctor-report.json
-    • codex-apps-tools-cache.json（ 如 可 用 ）
-    • codex-app-directory-cache.json（ 如 可 用 ）
+    • codex-apps-tools-cache.json (if available)
+    • codex-app-directory-cache.json (if available)
     • windows-sandbox.log
     • auto-review-rollout-thread-1.jsonl
     • codex-connectivity-diagnostics.txt
 
-  连 接 诊 断
+  Connectivity diagnostics
     - Proxy environment variables are set and may affect connectivity.
       - HTTPS_PROXY = hello
 
-› 1. 是   与 团 队 共 享 当 前  Codex 会 话 日 志 和 诊 断 信 息 ， 以 便 排 查 问 题 。
-  2. 否
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. Yes  Share the current Codex session logs and diagnostics with the team for
+          troubleshooting.
+  2. No
+
+  enter select · esc back

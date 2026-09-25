@@ -2,13 +2,13 @@
 source: tui/src/keymap_setup.rs
 expression: rendered
 ---
-按 键 检 查 器
-按 任 意 键 查 看  Codex 收 到 的 内 容 。 Esc 会 被 检 查 ； Ctrl+C 关 闭 。
-提 示 ： Codex 只 能 检 查 终 端 实 际 发 送 的 按 键 。
+Keypress Inspector
+Press any key to see what Codex receives. Esc is inspected; Ctrl+C closes.
+Tip: Codex can only inspect keys your terminal sends.
 
-检 测 结 果 ： ctrl + o
-配 置 键 ： ctrl-o
-原 始 事 件 ： code=Char('o'), modifiers=ctrl, kind=Press
+Detected: f8
+Config key: f8
+Raw event: code=F(8), modifiers=none, kind=Press
 
-已 分 配 操 作 ：
-  - global.copy (复 制 ) - 配 置 “复 制 ”操 作 的 快 捷 键 。  [默 认 ]
+Assigned actions:
+  - chat.toggle_voice (Toggle Voice) - Start or stop a voice conversation. [Default]

@@ -1,15 +1,16 @@
 ---
 source: tui/src/bottom_pane/request_user_input/mod.rs
+assertion_line: 3852
 expression: "render_snapshot(&overlay, area)"
 ---
                                                                                                                         
-  问 题  2/2（ 2 个 未 回 答 ）                                                                                                 
+  Question 2/2 (2 unanswered)                                                                                           
   Share details.                                                                                                        
                                                                                                                         
-  › 输 入 回 答 （ 可 选 ）                                                                                                     
+  › Type your answer (optional)                                                                                         
                                                                                                                         
                                                                                                                         
                                                                                                                         
                                                                                                                         
                                                                                                                         
-  enter 全 部 提 交  | ctrl + p / ctrl + n 切 换 问 题  | esc 中 断
+  enter to submit all | ctrl+p / ctrl+n change question | esc to interrupt

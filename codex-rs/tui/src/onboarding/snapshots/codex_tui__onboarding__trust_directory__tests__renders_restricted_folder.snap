@@ -2,13 +2,16 @@
 source: tui/src/onboarding/trust_directory.rs
 expression: terminal.backend()
 ---
-> 当前目录：/workspace/project
 
-  来自不受信任文件夹的配置、钩子和执行策略将保持停用。受信任的项目文件
-  夹仍可提供设置；技能仍会加载，工具遵循权限设置。打开文件夹不会更改已
-  保存的信任状态。
+  Folder access
+  /workspace/project                                                
 
-› 1. 以受限模式打开                                                   
-  2. 返回代理指挥中心
+  Config, hooks, and exec policies from untrusted folders stay
+  disabled. Trusted project folders can still contribute settings.
+  Skills still load, and tools follow your permission settings.
+  Opening will not change saved trust.
 
-  按 enter 继续；esc 返回
+› 1. Open restricted                                                  
+  2. Back to Agent Command Center
+
+  enter continue · esc back

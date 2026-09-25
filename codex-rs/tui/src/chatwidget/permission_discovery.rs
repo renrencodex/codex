@@ -19,14 +19,13 @@ impl ChatWidget {
         self.permission_popup_request_id = Some(request_id);
         self.bottom_pane.show_selection_view(SelectionViewParams {
             view_id: Some(VIEW_ID),
-            title: Some("更新模型权限".to_string()),
+            title: Some("更新模型权限".into()),
             items: vec![SelectionItem {
                 name: "正在加载权限配置文件…".to_string(),
                 is_disabled: true,
                 ..Default::default()
             }],
-            footer_hint: Some(standard_popup_hint_line()),
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
         self.app_event_tx.send(AppEvent::FetchPermissionProfiles {
             request_id,
@@ -74,8 +73,7 @@ impl ChatWidget {
                     dismiss_on_select: true,
                     ..Default::default()
                 }],
-                footer_hint: Some(standard_popup_hint_line()),
-                ..Default::default()
+                ..SelectionViewParams::picker()
             }),
         }
     }

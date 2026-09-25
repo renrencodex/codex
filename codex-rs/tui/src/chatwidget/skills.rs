@@ -53,7 +53,7 @@ impl ChatWidget {
             subtitle: Some("选择操作".to_string()),
             footer_hint: Some(standard_popup_hint_line()),
             items,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 

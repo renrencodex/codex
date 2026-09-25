@@ -2,8 +2,8 @@
 source: tui/src/chatwidget/tests/slash_commands.rs
 expression: popup
 ---
-▌ Save conversation
-▌
-▌ codex-session-00000000-0000-0000-0000-000000000123.md
+  Save conversation
 
-按  enter 确 认 ， 或 按  esc 返 回
+› codex-session-00000000-0000-0000-0000-000000000123.md
+
+  enter submit · esc back

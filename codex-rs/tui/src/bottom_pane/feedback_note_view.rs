@@ -221,6 +221,8 @@ impl Renderable for FeedbackNoteView {
             return;
         }
 
+        buf.set_style(area, crate::style::user_message_style());
+
         // Four rows leave room for one intro line; show the disclosure before submission.
         let intro_content = if area.height == 4 {
             IntroContent::DisclosureOnly
@@ -289,6 +291,7 @@ impl Renderable for FeedbackNoteView {
                         height: 1,
                     };
                     Clear.render(blank_rect, buf);
+                    buf.set_style(blank_rect, crate::style::user_message_style());
                 }
                 let textarea_rect = Rect {
                     x: input_area.x.saturating_add(2),
@@ -314,6 +317,7 @@ impl Renderable for FeedbackNoteView {
                 height: 1,
             };
             Clear.render(blank_area, buf);
+            buf.set_style(blank_area, crate::style::user_message_style());
             if max_scroll > 0 {
                 Paragraph::new(Line::from(vec![
                     key_hint::plain(KeyCode::PageUp).into(),
@@ -381,13 +385,13 @@ impl FeedbackNoteView {
                 lines.push(Line::from(vec![
                     "提交反馈即表示你同意 OpenAI 将反馈用于安全目的和内部模型训练，详情请参阅"
                         .dim(),
-                    "此处".cyan().underlined(),
+                    "此处".fg(crate::style::accent_color()).underlined(),
                     "。请勿分享受保密协议约束、享有特权、与人力资源相关或敏感的个人信息。".dim(),
                 ]));
             }
             FeedbackAudience::External => lines.push(Line::from(vec![
                 "你的反馈可能会用于改进 ChatGPT。".dim(),
-                "了解详情".cyan().underlined(),
+                "了解详情".fg(crate::style::accent_color()).underlined(),
                 "。".dim(),
             ])),
         }
@@ -401,7 +405,7 @@ impl FeedbackNoteView {
 }
 
 fn gutter() -> Span<'static> {
-    "▌ ".cyan()
+    "▌ ".fg(crate::style::accent_color())
 }
 
 fn feedback_title_and_placeholder(category: FeedbackCategory) -> (String, String) {

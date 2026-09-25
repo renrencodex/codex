@@ -3,10 +3,10 @@ source: tui/src/resume_picker.rs
 expression: snapshot
 ---
   Fix resume picker timestamps
-  42 秒前       ⌁ 无工作目录                      无分支
+  42s ago       ⌁ no cwd                          no branch
 
-❯ Investigate lazy pagination cap
-  35 分钟前     ⌁ 无工作目录                      无分支
+› Investigate lazy pagination cap                                               
+  35m ago       ⌁ no cwd                          no branch                    
 
   Explain the codebase
-  2 小时前      ⌁ 无工作目录                      无分支
+  2h ago        ⌁ no cwd                          no branch

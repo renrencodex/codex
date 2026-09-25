@@ -1,10 +1,11 @@
 ---
 source: tui/src/bottom_pane/chat_composer.rs
+assertion_line: 9511
 expression: terminal.backend()
 ---
+"› /resume  resume a saved chat                              "
 "                                                            "
 "› /res                                                      "
 "                                                            "
 "                                                            "
-"                                                            "
-"  /resume  恢复已保存的会话                                 " Hidden by multi-width symbols: [(12, " "), (14, " "), (16, " "), (18, " "), (20, " "), (22, " "), (24, " "), (26, " ")]
+"                                         100% context left  "

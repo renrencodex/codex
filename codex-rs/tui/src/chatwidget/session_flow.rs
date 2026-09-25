@@ -3,6 +3,7 @@
 //! checks the previous model when it applies the final selection.
 
 use super::*;
+use crate::style::accent_color;
 
 impl ChatWidget {
     /// Offer the flourish only for a successful primary thread/start without initial work.
@@ -284,14 +285,19 @@ impl ChatWidget {
             vec![
                 "• ".dim(),
                 "线程分叉自 ".into(),
-                name.cyan(),
+                name.fg(accent_color()),
                 " (".into(),
-                forked_from_id_text.cyan(),
+                forked_from_id_text.fg(accent_color()),
                 ")".into(),
             ]
             .into()
         } else {
-            vec!["• ".dim(), "线程分叉自 ".into(), forked_from_id_text.cyan()].into()
+            vec![
+                "• ".dim(),
+                "线程分叉自 ".into(),
+                forked_from_id_text.fg(accent_color()),
+            ]
+            .into()
         };
         self.app_event_tx.send(AppEvent::InsertHistoryCell(Box::new(
             PlainHistoryCell::new(vec![line]),

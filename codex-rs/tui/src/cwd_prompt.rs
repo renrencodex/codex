@@ -1,14 +1,18 @@
+//! Resume/fork directory choices with shared picker presentation and caller-owned persistence.
+
 use std::path::Path;
 
+use crate::bottom_pane::picker_option_list;
+use crate::bottom_pane::render_menu_surface;
 use crate::key_hint;
 use crate::legacy_core::config::Config;
 use crate::legacy_core::config::edit::ConfigEditsBuilder;
 use crate::local_settings::LocalSettings;
 use crate::render::Insets;
-use crate::render::renderable::ColumnRenderable;
+use crate::render::renderable::FlexRenderable;
 use crate::render::renderable::Renderable;
 use crate::render::renderable::RenderableExt as _;
-use crate::selection_list::selection_option_row;
+use crate::render::renderable::RenderableItem;
 use crate::tui::FrameRequester;
 use crate::tui::Tui;
 use crate::tui::TuiEvent;
@@ -24,7 +28,9 @@ use ratatui::prelude::Widget;
 use ratatui::style::Stylize as _;
 use ratatui::text::Line;
 use ratatui::widgets::Clear;
+use ratatui::widgets::Paragraph;
 use ratatui::widgets::WidgetRef;
+use ratatui::widgets::Wrap;
 use tokio_stream::StreamExt;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -134,7 +140,7 @@ pub(crate) async fn run_cwd_selection_prompt(
             tui.screen_size_for_event(&event)?;
             match event {
                 TuiEvent::Key(key_event) => screen.handle_key(key_event),
-                TuiEvent::Paste(_) | TuiEvent::FocusLost => {}
+                TuiEvent::Paste(_) | TuiEvent::FocusLost | TuiEvent::Mouse(_) => {}
                 TuiEvent::Draw | TuiEvent::Resume | TuiEvent::Resize(_) | TuiEvent::FocusGained => {
                     tui.draw(u16::MAX, |frame| {
                         frame.render_widget_ref(&screen, frame.area());
@@ -275,72 +281,70 @@ impl CwdPromptScreen {
 impl WidgetRef for &CwdPromptScreen {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
         Clear.render(area, buf);
-        let mut column = ColumnRenderable::new();
+        let mut column = FlexRenderable::new();
 
         let action_verb = self.action.verb();
         let action_past = self.action.past_participle();
         let current_cwd = self.current_cwd.as_str();
         let session_cwd = self.session_cwd.as_str();
 
-        column.push("");
-        column.push(Line::from(vec![
-            "选择工作目录以".into(),
-            action_verb.bold(),
-            "此会话".into(),
-        ]));
-        column.push("");
+        column.push(/*flex*/ 1, RenderableItem::Borrowed(&""));
         column.push(
-            Line::from(format!("会话目录 = {action_past}会话中记录的最新 cwd"))
-                .dim()
-                .inset(Insets::tlbr(
-                    /*top*/ 0, /*left*/ 2, /*bottom*/ 0, /*right*/ 0,
-                )),
+            /*flex*/ 0,
+            Paragraph::new(format!("工作目录 · {action_verb}").bold())
+                .wrap(Wrap { trim: false })
+                .inset(Insets::vh(/*v*/ 0, /*h*/ 2)),
         );
         column.push(
-            Line::from("当前目录 = 你当前的工作目录".dim()).inset(Insets::tlbr(
-                /*top*/ 0, /*left*/ 2, /*bottom*/ 0, /*right*/ 0,
-            )),
+            /*flex*/ 0,
+            Paragraph::new(format!(
+                "会话目录 = {action_past}会话中记录的最新 cwd\n\
+                 当前目录 = 你当前的工作目录"
+            ))
+            .dim()
+            .wrap(Wrap { trim: false })
+            .inset(Insets::vh(/*v*/ 0, /*h*/ 2)),
         );
-        column.push("");
-        column.push(selection_option_row(
-            /*index*/ 0,
+        let mut labels = vec![
             format!("使用会话目录（{session_cwd}）"),
-            self.highlighted == CwdSelection::Session,
-        ));
-        column.push(selection_option_row(
-            /*index*/ 1,
             format!("使用当前目录（{current_cwd}）"),
-            self.highlighted == CwdSelection::Current,
-        ));
-        column.push(selection_option_row(
-            /*index*/ 2,
             "始终使用会话目录".to_string(),
-            self.highlighted == CwdSelection::SessionAndRemember,
-        ));
+        ];
         if self.allow_remember_current {
             let label = if self.remembered_current_cwd == self.current_cwd {
                 "始终使用当前目录".to_string()
             } else {
                 format!("始终使用当前目录（{}）", self.remembered_current_cwd)
             };
-            column.push(selection_option_row(
-                /*index*/ 3,
-                label,
-                self.highlighted == CwdSelection::CurrentAndRemember,
-            ));
+            labels.push(label);
         }
-        column.push("");
+        let selected_index = match self.highlighted {
+            CwdSelection::Session => 0,
+            CwdSelection::Current => 1,
+            CwdSelection::SessionAndRemember => 2,
+            CwdSelection::CurrentAndRemember => 3,
+        };
+        column.push(/*flex*/ 1, picker_option_list(labels, selected_index));
         column.push(
-            Line::from(vec![
-                "按 ".dim(),
+            /*flex*/ 0,
+            Paragraph::new(Line::from(vec![
                 key_hint::plain(KeyCode::Enter).into(),
-                " 继续".dim(),
-            ])
-            .inset(Insets::tlbr(
-                /*top*/ 0, /*left*/ 2, /*bottom*/ 0, /*right*/ 0,
-            )),
+                " 继续 · ".dim(),
+                key_hint::plain(KeyCode::Esc).into(),
+                " 使用会话目录 · ".dim(),
+                key_hint::ctrl(KeyCode::Char('c')).into(),
+                " 退出".dim(),
+            ]))
+            .wrap(Wrap { trim: false })
+            .inset(Insets::vh(/*v*/ 0, /*h*/ 2)),
         );
-        column.render(area, buf);
+        column.push(/*flex*/ 1, RenderableItem::Borrowed(&""));
+        let panel = Rect {
+            height: column.desired_height(area.width).min(area.height),
+            ..area
+        };
+        render_menu_surface(panel, buf);
+        column.render(panel, buf);
     }
 }
 
@@ -457,6 +461,26 @@ mod tests {
         screen.handle_key(KeyEvent::new(KeyCode::Down, KeyModifiers::NONE));
         screen.handle_key(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
         assert_eq!(screen.selection(), Some(CwdSelection::Current));
+    }
+
+    #[test]
+    fn narrow_picker_keeps_selected_choice_and_escape_uses_session() {
+        let mut screen = new_prompt();
+        screen.session_cwd = "/workspace/projects/design-system/日本語/session".to_string();
+        screen.current_cwd = "/workspace/projects/design-system/Português/current".to_string();
+        screen.handle_key(KeyEvent::new(KeyCode::Up, KeyModifiers::NONE));
+        let (width, height) = (40, 16);
+        let mut terminal = Terminal::new(VT100Backend::new(width, height)).expect("terminal");
+        terminal
+            .draw(|frame| frame.render_widget_ref(&screen, frame.area()))
+            .expect("render resized directory picker");
+        let rendered = terminal.backend().to_string();
+        assert!(rendered.contains("› 4. Always use current directory"));
+        assert!(rendered.contains("esc use session"));
+        assert_eq!(screen.selection(), None);
+        insta::assert_snapshot!(format!("cwd_picker_selected_{width}x{height}"), rendered);
+        screen.handle_key(KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE));
+        assert_eq!(screen.selection(), Some(CwdSelection::Session));
     }
 
     #[test]

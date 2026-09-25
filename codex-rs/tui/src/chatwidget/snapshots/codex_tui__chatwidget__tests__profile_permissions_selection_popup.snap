@@ -2,11 +2,20 @@
 source: tui/src/chatwidget/tests/permissions.rs
 expression: "render_bottom_popup(&chat, 80)"
 ---
-  更 新 模 型 权 限
+  Update Model Permissions
 
-› 1. 请 求 审 批 （ 当 前 ）   允 许 在 工 作 区 内 读 写 和 运 行 命 令 ； 需 要 时 请 求 审 批 。
-  2. 代 我 审 批           仅 对 检 测 为 可 能 不 安 全 的 操 作 发 起 询 问 。
-  3. 完 全 访 问           允 许 不 受 沙 箱 限 制 地 访 问 系 统 。
-  4. 只 读               仅 允 许 读 取 ； 修 改 文 件 或 执 行 受 限 操 作 时 请 求 审 批 。
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. Ask for approval (current)  Codex can read and edit files in the current
+                                 workspace, and run commands. Approval is
+                                 required to access the internet or edit other
+                                 files.
+  2. Approve for me              Only ask for actions detected as potentially
+                                 unsafe.
+  3. Full Access                 Codex can edit files outside this workspace and
+                                 access the internet without asking for
+                                 approval. Exercise caution when using.
+  4. Read Only                   Codex can read files in the current workspace.
+                                 Approval is required to edit files or access
+                                 the internet.
+
+  enter select · esc back

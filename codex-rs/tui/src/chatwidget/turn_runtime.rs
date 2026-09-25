@@ -143,7 +143,10 @@ impl ChatWidget {
         self.transcript.saw_copy_source_this_turn = false;
         // If a stream is currently active, finalize it.
         self.flush_answer_and_plan_streams();
+        self.flush_interrupt_activity();
+        self.finish_dynamic_activity();
         self.flush_unified_exec_wait_streak();
+        self.flush_completed_tool_activity();
         if !from_replay {
             self.collect_runtime_metrics_delta();
         }
@@ -310,6 +313,8 @@ impl ChatWidget {
     /// and should continue to drive the bottom-pane running indicator while it is in progress.
     pub(super) fn finalize_turn(&mut self) {
         self.flush_answer_and_plan_streams();
+        self.flush_interrupt_activity();
+        self.finish_dynamic_activity();
         if self.status_state.reasoning_resume_turn_id.is_some() {
             self.on_agent_reasoning_final();
         }
@@ -358,7 +363,7 @@ impl ChatWidget {
             message
         };
 
-        self.add_to_history(history_cell::new_warning_event(message));
+        self.add_to_history(history_cell::new_error_event(message));
         self.request_redraw();
         self.maybe_send_next_queued_input();
     }
@@ -505,11 +510,7 @@ impl ChatWidget {
 
     pub(super) fn on_warning(&mut self, message: impl Into<String>) {
         let message = message.into();
-        // Only OpenAI models ship with bundled metadata, so under any other
-        // provider this fires for every model and leaves nothing to act on.
-        if self.config.model_provider_id != codex_model_provider_info::OPENAI_PROVIDER_ID
-            && super::warnings::fallback_model_metadata_warning_slug(&message).is_some()
-        {
+        if self.is_unactionable_warning(&message) {
             return;
         }
         if !self.warning_display_state.should_display(&message) {

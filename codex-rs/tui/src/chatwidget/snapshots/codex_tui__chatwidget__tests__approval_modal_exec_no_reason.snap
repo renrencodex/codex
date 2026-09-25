@@ -4,12 +4,13 @@ expression: terminal.backend().vt100().screen().contents()
 ---
 
 
-  是否要运行以下命令？
+  Would you like to run the following command?
 
   $ echo hello world
 
-› 1. 是，继续 (y)
-  2. 是，并且不再询问以 `echo hello world` 开头的命令 (p)
-  3. 否，并告诉 Codex 应如何调整 (esc)
 
-  按 enter 确认，或按 esc 取消
+› 1. Yes, proceed (y)                                                                               
+  2. Yes, and don't ask again for commands that start with `echo hello world` (p)
+  3. No, and tell Codex what to do differently (esc)
+
+  Press enter to confirm or esc to cancel

@@ -1,35 +1,45 @@
 ---
 source: tui/src/bottom_pane/chat_composer/sparkle_tests.rs
+assertion_line: 365
 expression: "snapshots.join(\"\\n\\n\")"
 ---
 shortcut help:
+  Keyboard shortcuts
+
+  Compose                       Session
+  /        Commands             tab     Send message
+  @        Mention files        ⌥+,     Less reasoning
+  !        Shell command        ⌥+.     More reasoning
+  ctrl+j   New line             ctrl+c  Quit
+  ctrl+v   Paste image
+  ctrl+g   External editor      Transcript (open first)
+  ctrl+r   Search history       ctrl+t                 Open transcript
+  esc esc  Edit last message    f3                     Find text
+                                pgup / pgdn            Scroll
+                                ctrl+space             Start selection
+                                ctrl+home / ctrl+end   Top / latest
+                                shift+⌥+, / shift+⌥+.  Top / latest
+
+  /keymap customize
 
 › Ask Codex to do anything
 
-  / 输 入 命 令                          ! 输 入  Shell 命 令
-  ctrl + j 插 入 换 行                   tab 提 交 消 息
-  @ 插 入 文 件 路 径                      ctrl + v 粘 贴 图 片
-  ctrl + g 在 外 部 编 辑 器 中 编 辑         esc esc 编 辑 上 一 条 消 息
-  ctrl + r 搜 索 历 史                   ctrl + c 退 出
-  ⌥ + , 降 低 推 理 强 度                  ⌥ + . 提 高 推 理 强 度
-  ctrl + t 查 看 对 话 记 录
-
-  使 用 以 下 命 令 自 定 义 快 捷 键 ： /keymap
+  ? / esc close
 
 after /model selects Astra:
                             ⠈     ⢀     ⠁                 ⠂
 ›⠁Ask Codex to do anything         ⠈      ⠁
        ⢀            ⠠     ⠄         ⠠          ⢀    ⠠     ⡀
-  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%
+  ? for shortcuts                                            100% context left
 
 literal pasted question mark:
 
 › ?
 
-                                                               上 下 文 剩 余  100%
+                                                             100% context left
 
 after clearing and selecting Astra:
 
 › Ask Codex to do anything
 
-  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%
+  ? for shortcuts                                            100% context left

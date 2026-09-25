@@ -2,8 +2,8 @@
 source: tui/src/bottom_pane/chat_composer.rs
 expression: terminal.backend()
 ---
+"› /pets  choose or hide the terminal pet                    "
 "                                                            "
 "› /pet                                                      "
 "                                                            "
-"                                                            "
-"  /pets  选择或隐藏终端宠物                                 " Hidden by multi-width symbols: [(10, " "), (12, " "), (14, " "), (16, " "), (18, " "), (20, " "), (22, " "), (24, " "), (26, " ")]
+"                                         100% context left  "

@@ -2,6 +2,7 @@
 
 use super::*;
 use crate::app_event::TranscriptExportDestination;
+use crate::bottom_pane::popup_consts::picker_hint_line_for_keymap;
 
 impl ChatWidget {
     pub(crate) fn copy_transcript_to_clipboard(&mut self, markdown: &str) {
@@ -9,11 +10,9 @@ impl ChatWidget {
             markdown,
             crate::clipboard_copy::CopyFormat::PlainText,
         ) {
-            Ok(lease) => {
-                if let Some(lease) = lease {
-                    self.clipboard_lease = Some(lease);
-                }
-                self.add_info_message("已将对话复制到剪贴板".to_string(), /*hint*/ None);
+            Ok(outcome) => {
+                let status = outcome.store(&mut self.clipboard_lease);
+                self.add_info_message(status.message("conversation"), /*hint*/ None);
             }
             Err(error) => self.add_error_message(format!("复制失败：{error}")),
         }
@@ -21,9 +20,14 @@ impl ChatWidget {
 
     pub(super) fn show_transcript_export_popup(&mut self) {
         self.show_selection_view(SelectionViewParams {
-            title: Some("导出对话".to_string()),
-            subtitle: Some("将完整对话保存为 Markdown".to_string()),
-            footer_hint: Some(standard_popup_hint_line()),
+            header: Box::new(
+                Paragraph::new(vec![
+                    Line::from("导出对话".bold()),
+                    Line::from("将完整对话保存为 Markdown".dim()),
+                ])
+                .wrap(Wrap { trim: false }),
+            ),
+            footer_hint: Some(picker_hint_line_for_keymap(&self.bottom_pane.list_keymap())),
             items: vec![
                 SelectionItem {
                     name: "复制到剪贴板".to_string(),
@@ -47,7 +51,7 @@ impl ChatWidget {
                     ..Default::default()
                 },
             ],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
         self.defer_input_until_settings_applied();
         self.request_redraw();

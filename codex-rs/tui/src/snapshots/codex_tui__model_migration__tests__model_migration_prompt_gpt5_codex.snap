@@ -3,12 +3,14 @@ source: tui/src/model_migration.rs
 expression: terminal.backend()
 ---
 
-> Codex 已升级，为你介绍 gpt-5.1-codex-max。
+  Codex just got an upgrade. Introducing
+  gpt-5.1-codex-max.
 
-  建议从 gpt-5-codex 切换到 gpt-5.1-codex-max。
+  We recommend switching from gpt-5-codex to
+  gpt-5.1-codex-max.
 
   Codex-optimized flagship for deep and fast reasoning.
-  如需详细了解 gpt-5.1-codex-max，请访问
+  Learn more about gpt-5.1-codex-max at
   https://www.codex.com/models/gpt-5.1-codex-max
 
-  按 enter 继续
+  enter/esc continue · ctrl+c quit

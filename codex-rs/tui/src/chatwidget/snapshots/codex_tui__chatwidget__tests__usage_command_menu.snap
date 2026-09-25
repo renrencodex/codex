@@ -2,10 +2,11 @@
 source: tui/src/chatwidget/tests/usage.rs
 expression: "render_bottom_popup(&chat, 80)"
 ---
-  用 量
-  查 看 账 户 用 量 ， 或 兑 换 已 获 得 的 重 置 机 会 。
+  Usage
+  Account usage and resets.
 
-› 1. 查 看 分 析               浏 览 账 户 用 量 和 活 动 。
-  2. 兑 换 用 量 限 制 重 置 机 会   你 有  2 次 可 用 的 用 量 限 制 重 置 机 会 。
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. View analytics  Usage history.
+  2. Redeem reset    2 available.
+
+  enter open · esc back

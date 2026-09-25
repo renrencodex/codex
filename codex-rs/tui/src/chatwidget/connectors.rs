@@ -213,32 +213,25 @@ impl ChatWidget {
     }
 
     fn connectors_loading_popup_params(&self) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("应用".bold()));
-        header.push(Line::from("正在加载已安装和可用的应用…".dim()));
-
         SelectionViewParams {
             view_id: Some(CONNECTORS_SELECTION_VIEW_ID),
-            header: Box::new(header),
+            title: Some("应用".to_string()),
+            subtitle: Some("正在加载已安装和可用的应用…".to_string()),
             items: vec![SelectionItem {
                 name: "正在加载应用…".to_string(),
                 description: Some("完整列表准备就绪后，此处会自动更新。".to_string()),
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
     fn connectors_error_popup_params(&self) -> SelectionViewParams {
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("应用".bold()));
-        header.push(Line::from("加载应用失败。".dim()));
-
         SelectionViewParams {
             view_id: Some(CONNECTORS_SELECTION_VIEW_ID),
-            header: Box::new(header),
-            footer_hint: Some(self.bottom_pane.standard_popup_hint_line()),
+            title: Some("应用".to_string()),
+            subtitle: Some("加载应用失败。".to_string()),
             items: vec![
                 SelectionItem {
                     name: "应用目录不可用".to_string(),
@@ -257,7 +250,7 @@ impl ChatWidget {
                     ..Default::default()
                 },
             ],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -271,12 +264,12 @@ impl ChatWidget {
             .iter()
             .filter(|connector| connector.is_accessible)
             .count();
-        let mut header = ColumnRenderable::new();
-        header.push(Line::from("应用".bold()));
-        header.push(Line::from("使用 $ 将已安装的应用插入提示词。".dim()));
-        header.push(Line::from(
-            format!("{total} 个可用应用中已安装 {installed} 个。").dim(),
-        ));
+        let header = Paragraph::new(vec![
+            Line::from("应用".bold()),
+            Line::from("使用 $ 将已安装的应用插入提示词。".dim()),
+            Line::from(format!("{total} 个可用应用中已安装 {installed} 个。").dim()),
+        ])
+        .wrap(Wrap { trim: false });
         let initial_selected_idx = selected_connector_id.and_then(|selected_connector_id| {
             connectors
                 .iter()
@@ -346,13 +339,12 @@ impl ChatWidget {
         SelectionViewParams {
             view_id: Some(CONNECTORS_SELECTION_VIEW_ID),
             header: Box::new(header),
-            footer_hint: Some(self.bottom_pane.standard_popup_hint_line()),
             items,
             is_searchable: true,
             search_placeholder: Some("输入文字以搜索应用".to_string()),
             col_width_mode: ColumnWidthMode::AutoAllRows,
             initial_selected_idx,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 

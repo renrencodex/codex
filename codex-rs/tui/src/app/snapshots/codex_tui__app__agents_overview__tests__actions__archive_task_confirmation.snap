@@ -6,7 +6,8 @@ expression: "render_bottom_popup(&app.chat_widget, 72)"
   This stops any running work in this task and its child agents, then
   archives them. Their history can be restored from the resume picker.
 
+
 › 1. Cancel
   2. Archive task and child agents
 
-  按  enter 确 认 ， 或 按  esc 返 回
+  enter select · esc back

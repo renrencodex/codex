@@ -3,13 +3,14 @@ source: tui/src/bottom_pane/approval_overlay.rs
 expression: "normalize_snapshot_paths(render_overlay_lines(&view, 120))"
 ---
 
-  是 否 要 进 行 以 下 修 改 ？
+  Would you like to make the following edits?
 
-  说 明 ： 应 用 建 议 的 文 件 修 改
-  目 标 ： 不 可 用
+  Description: Apply proposed file edits
+  Destination: unavailable
 
-› 1. 是 ， 继 续  (y)
-  2. 是 ， 并 且 不 再 询 问 这 些 文 件  (a)
-  3. 否 ， 并 告 诉  Codex 应 如 何 调 整  (esc)
 
-  按  enter 确 认 ， 或 按  esc 取 消
+› 1. Yes, proceed (y)
+  2. Yes, and don't ask again for these files (a)
+  3. No, and tell Codex what to do differently (esc)
+
+  Press enter to confirm or esc to cancel

@@ -33,23 +33,22 @@ impl ChatWidget {
         let reset_eligible = self.has_chatgpt_account;
         let (reset_action_enabled, reset_description) =
             match (reset_eligible, self.available_rate_limit_reset_credits) {
-                (true, Some(available_count)) if available_count > 0 => (
-                    true,
-                    format!("你有 {available_count} 次可用的用量限制重置机会。"),
-                ),
-                (true, None) => (true, "检查是否有可用的重置机会。".to_string()),
-                (true, Some(_)) | (false, _) => (false, "没有可用的用量限制重置机会。".to_string()),
+                (true, Some(available_count)) if available_count > 0 => {
+                    (true, format!("{available_count} 个可用。"))
+                }
+                (true, None) => (true, "检查可用性。".to_string()),
+                (true, Some(_)) | (false, _) => (false, "暂无可用。".to_string()),
             };
 
         SelectionViewParams {
             view_id: Some(USAGE_MENU_VIEW_ID),
             title: Some("用量".to_string()),
-            subtitle: Some("查看账户用量，或兑换已获得的重置机会。".to_string()),
-            footer_hint: Some(standard_popup_hint_line()),
+            subtitle: Some("账户用量和重置机会。".to_string()),
+            footer_hint: Some(usage_hint_line(&self.bottom_pane.list_keymap(), "打开")),
             items: vec![
                 SelectionItem {
                     name: "查看分析".to_string(),
-                    description: Some("浏览账户用量和活动。".to_string()),
+                    description: Some("用量历史。".to_string()),
                     actions: vec![Box::new(|tx| {
                         tx.send(AppEvent::OpenAnalytics { view: None });
                     })],
@@ -57,7 +56,7 @@ impl ChatWidget {
                     ..Default::default()
                 },
                 SelectionItem {
-                    name: "兑换用量限制重置机会".to_string(),
+                    name: "兑换重置机会".to_string(),
                     description: Some(reset_description),
                     is_disabled: !reset_action_enabled,
                     actions: vec![Box::new(|tx| {
@@ -67,7 +66,7 @@ impl ChatWidget {
                     ..Default::default()
                 },
             ],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -111,7 +110,7 @@ impl ChatWidget {
                 is_disabled: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
         self.request_redraw();
         request_id
@@ -204,10 +203,10 @@ impl ChatWidget {
                 "有 {} 次可用的重置机会。",
                 reset_credits.available_count
             )),
-            footer_hint: Some(standard_popup_hint_line()),
+            footer_hint: Some(usage_hint_line(&self.bottom_pane.list_keymap(), "选择")),
             items,
             initial_selected_idx: Some(0),
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -240,7 +239,7 @@ impl ChatWidget {
             view_id: Some(RATE_LIMIT_RESET_CONFIRMATION_VIEW_ID),
             title: Some("使用此重置机会？".to_string()),
             subtitle: Some(subtitle),
-            footer_hint: Some(standard_popup_hint_line()),
+            footer_hint: Some(usage_hint_line(&self.bottom_pane.list_keymap(), "确认")),
             items: vec![
                 SelectionItem {
                     name: "是，使用重置机会".to_string(),
@@ -268,7 +267,7 @@ impl ChatWidget {
             on_cancel: Some(Box::new(move |_| {
                 confirmation_gate.store(true, Ordering::Release);
             })),
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
         true
     }
@@ -293,7 +292,7 @@ impl ChatWidget {
                 dismiss_on_select: true,
                 ..Default::default()
             }],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -317,7 +316,7 @@ impl ChatWidget {
                     ..Default::default()
                 },
             ],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -341,7 +340,7 @@ impl ChatWidget {
                 ..Default::default()
             }],
             allow_cancel: false,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
         self.request_redraw();
         request_id
@@ -418,7 +417,7 @@ impl ChatWidget {
                             ..Default::default()
                         },
                     ],
-                    ..Default::default()
+                    ..SelectionViewParams::picker()
                 });
                 false
             }
@@ -462,7 +461,7 @@ impl ChatWidget {
                 ..Default::default()
             }],
             allow_cancel: false,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         }
     }
 
@@ -559,4 +558,25 @@ impl ChatWidget {
             .wrapping_add(/*rhs*/ 1);
         request_id
     }
+}
+
+/// Keep usage actions readable on narrow terminals and honor customized list bindings.
+fn usage_hint_line(
+    keymap: &crate::keymap::ListKeymap,
+    accept_label: &'static str,
+) -> Line<'static> {
+    let mut spans = Vec::new();
+    for (action, label) in [
+        (crate::keymap::ListAction::Accept, accept_label),
+        (crate::keymap::ListAction::Cancel, "返回"),
+    ] {
+        if let Some(hint) = keymap.primary_hint(action) {
+            if !spans.is_empty() {
+                spans.push(" · ".into());
+            }
+            spans.extend(hint.spans());
+            spans.push(format!(" {label}").into());
+        }
+    }
+    Line::from(spans)
 }

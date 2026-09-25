@@ -1,10 +1,11 @@
 //! Permission and approval popup flows for `ChatWidget`.
 //!
-//! This module owns the generic permission pickers and confirmation surfaces;
+//! This module presents permission choices and confirmations in the shared picker;
 //! Windows-specific sandbox prompting lives beside it in
 //! `windows_sandbox_prompts`.
 
 use super::*;
+use crate::style::accent_color;
 use codex_protocol::openai_models::MODEL_SPECIALTY_CYBER;
 
 impl ChatWidget {
@@ -173,19 +174,17 @@ impl ChatWidget {
         let footer_note = show_elevate_sandbox_hint.then(|| {
             vec![
                 "非管理员沙箱通常可以保护文件并阻止网络访问，但受到提示注入时风险更高。要升级到默认沙箱，请运行 ".dim(),
-                "/setup-default-sandbox".cyan(),
+                "/setup-default-sandbox".fg(accent_color()),
                 ".".dim(),
             ]
             .into()
         });
 
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some("更新模型权限".to_string()),
             footer_note,
-            footer_hint: Some(standard_popup_hint_line()),
             items,
-            header: Box::new(()),
-            ..Default::default()
+            title: Some("更新模型权限".into()),
+            ..SelectionViewParams::picker()
         });
     }
 
@@ -235,13 +234,18 @@ impl ChatWidget {
         );
 
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some("自动审查拒绝记录".to_string()),
-            subtitle: Some("选择要批准重试的操作。".to_string()),
-            footer_hint: Some(standard_popup_hint_line()),
+            header: Box::new(
+                Paragraph::new(vec![
+                    Line::from("自动审查拒绝记录".bold()),
+                    Line::from("选择要批准重试的操作。".dim()),
+                ])
+                .wrap(Wrap { trim: false }),
+            ),
             items,
             is_searchable: true,
-            col_width_mode: ColumnWidthMode::AutoAllRows,
-            ..Default::default()
+            // Denial rationales remain visible before authorizing a retry.
+            description_layout: crate::bottom_pane::SelectionDescriptionLayout::Columns,
+            ..SelectionViewParams::picker()
         });
         self.request_redraw();
     }
@@ -510,10 +514,9 @@ impl ChatWidget {
         ];
 
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            footer_hint: Some(standard_popup_hint_line()),
             items,
             header: Box::new(header),
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 }

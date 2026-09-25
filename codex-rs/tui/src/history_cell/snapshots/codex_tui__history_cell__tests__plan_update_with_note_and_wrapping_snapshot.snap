@@ -1,8 +1,16 @@
 ---
 source: tui/src/history_cell/tests.rs
+assertion_line: 2632
 expression: rendered
 ---
-• 已更新计划
+Compact
+• Updated Plan · 1/4 complete
+  └ □ Harden Grafana client err…
+    □ Add tests for transient f…
+    □ Document the retry behavi…
+
+Full
+• Updated Plan
   └ I’ll update Grafana call
     error handling by adding
     retries and clearer messages
@@ -18,3 +26,5 @@ expression: rendered
     □ Add tests for transient
       failure scenarios and
       surfacing to the UI
+    □ Document the retry
+      behavior

@@ -4,6 +4,7 @@ expression: popup
 ---
   Worktrees
 
+
 › 1. Continue current conversation  Preserve this conversation in the new
                                     checkout
   2. Start new conversation         Open a fresh conversation in the new
@@ -11,4 +12,4 @@ expression: popup
   3. Browse worktrees               Resume an owner thread or copy a working
                                     directory
 
-  按  enter 确 认 ， 或 按  esc 返 回
+  enter select · esc back

@@ -2,19 +2,19 @@
 source: tui/src/chatwidget/tests/status_surface_previews.rs
 expression: status_line_popup_snapshot(&mut chat)
 ---
-  配 置 状 态 栏
-  选 择 要 在 状 态 栏 中 显 示 的 项 目 。
+  Configure Status Line
+  Select which items to display in the status line.
 
-  输 入 以 搜 索
-  >
-› [x] 使 用 主 题 颜 色          应 用 当 前  /theme 的 颜 色
+  Type to search
+
+› [x] Use theme colors      Apply colors from the active /theme
   ───────────────────────
-  [x] 项 目                  项 目 名 称 （ 不 可 用 时 省 略 ）
-  [x] Git 分 支              当 前  Git 分 支 （ 不 可 用 时 省 略 ）
-  [x] 会 话 标 题              当 前 会 话 标 题 ； 未 命 名 时 显 示 会 话 标 识 符
-  [ ] 模 型                  当 前 模 型 名 称
-  [ ] 模 型 与 推 理 强 度        当 前 模 型 名 称 和 推 理 强 度
-  [ ] 推 理 强 度              当 前 推 理 强 度
-
+  [x] project-name          Project name (omitted when unavailable)
+  [x] git-branch            Current Git branch (omitted when unavailable)
+  [x] thread-title          Current thread title, or thread identifier when unnamed
+  [ ] model                 Current model name
+  [ ] model-with-reasoning  Current model name with reasoning level
+  [ ] reasoning             Current reasoning level
+↓
   preview-live-root · feature/live-preview-branch · Live preview thread
-  按  space 切 换 ; ←/→ 移 动 ; enter 确 认 并 关 闭 ; esc 关 闭
+  space toggle · ←/→ reorder · enter save · esc cancel

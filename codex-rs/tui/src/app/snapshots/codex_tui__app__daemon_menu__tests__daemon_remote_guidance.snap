@@ -2,11 +2,13 @@
 source: tui/src/app/daemon_menu_tests.rs
 expression: "render_bottom_popup(&app.chat_widget, 80)"
 ---
-  后 台 服 务
-  未 连 接 到 本 地 后 台 服 务 器 。
-  请 在 主 机 上 管 理 此 服 务 器 。 远 程 连 接 无 法 执 行 本 地 后 台 服 务 更 新 。
+  Daemon
+  Not connected to the local background server.
+  Manage this server on its host. Local daemon updates are unavailable for
+  remote connections.
 
-›    安 装 最 新 公 开 稳 定 版
-     使 用 当 前  CLI 构 建
 
-  按  enter 确 认 ， 或 按  esc 返 回
+›    Install latest public stable
+     Use this CLI build
+
+  enter select · esc back

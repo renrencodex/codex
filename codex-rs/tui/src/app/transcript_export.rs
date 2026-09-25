@@ -236,6 +236,8 @@ fn render_markdown_transcript(cells: &[Arc<dyn HistoryCell>]) -> Result<String, 
             }
             lines.extend(image_labels.into_iter().map(Into::into));
             lines
+        } else if let Some(reasoning) = cell.as_any().downcast_ref::<ReasoningSummaryCell>() {
+            raw_lines_from_source(reasoning.markdown_source().trim())
         } else {
             cell.raw_lines()
         };
@@ -247,6 +249,7 @@ fn render_markdown_transcript(cells: &[Arc<dyn HistoryCell>]) -> Result<String, 
                     [
                         "• 已将对话保存到 ",
                         "• 已将对话复制到剪贴板",
+                        "• Copy unconfirmed; /export saves chat",
                         "■ 导出失败：",
                         "■ 复制失败：",
                     ]

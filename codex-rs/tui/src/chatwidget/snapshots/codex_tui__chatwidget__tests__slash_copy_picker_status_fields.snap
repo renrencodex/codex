@@ -4,10 +4,11 @@ expression: "render_bottom_popup(&chat,\n100).replace(&directory,\n\"[[workspace
 ---
   Copy to clipboard
 
-› 1. Whole status  >_ OpenAI Codex (vVERSION)
-  2. 模 型           gpt-5.5
-  3. 目 录           [[workspace]]
-  4. 会 话 名 称       Clipboard example
-  5. 会 话  ID       00000000-0000-0000-0000-000000000123
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. Whole status  >_ OpenAI Codex (vVERSION)
+  2. Model         gpt-5.5
+  3. Directory     [[workspace]]
+  4. Thread name   Clipboard example
+  5. Session ID    00000000-0000-0000-0000-000000000123
+
+  enter select · esc back

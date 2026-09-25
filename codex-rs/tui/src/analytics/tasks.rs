@@ -45,14 +45,15 @@ pub(super) async fn read(
     if session.kind != super::models::AccountKind::Consumer {
         return Ok(None);
     }
-    session.backend.ensure_identity().await?;
-    let mut roots = tokio::time::timeout(
+    live.ensure_identity().await?;
+    let roots = tokio::time::timeout(
         std::time::Duration::from_secs(/*secs*/ 60),
         super::chats::roots(&handle),
     )
     .await
-    .map_err(|_| "列出对话超时。按 R 重试。".to_string())??;
-    session.backend.ensure_identity().await?;
+    .map_err(|_| "列出对话超时。按 R 重试。".to_string());
+    live.ensure_identity().await?;
+    let mut roots = roots??;
     roots.sort_by(|a, b| {
         b.updated_at
             .cmp(&a.updated_at)
@@ -74,6 +75,7 @@ pub(super) async fn read(
         }
     }
     drop(pending);
+    live.ensure_identity().await?;
     let mut seen = HashSet::new();
     let mut batches = Vec::new();
     let mut batch = Vec::new();
@@ -114,6 +116,7 @@ pub(super) async fn read(
     let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(/*secs*/ 25);
     while let Ok(Some(result)) = tokio::time::timeout_at(deadline, pending.next()).await {
         completed_batches += 1;
+        live.ensure_identity().await?;
         match result {
             Ok(response) => {
                 freshness.push(
@@ -146,7 +149,7 @@ pub(super) async fn read(
         freshness.push(/*value*/ None);
     }
     drop(pending);
-    session.backend.ensure_identity().await?;
+    live.ensure_identity().await?;
     Ok(Some(Chats {
         truncated,
         updated_at: if freshness.iter().all(Option::is_some) {

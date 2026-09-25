@@ -2,8 +2,9 @@
 source: tui/src/app/tests/realtime_requests.rs
 expression: "crate::chatwidget::tests::helpers::render_bottom_popup(&app.chat_widget, 80)"
 ---
-  选 择 语 音
-  将 在 下 次 语 音 对 话 中 生 效 。
+  Select voice
+  Applies to your next voice conversation.
+
 
   1. juniper
   2. maple
@@ -12,6 +13,6 @@ expression: "crate::chatwidget::tests::helpers::render_bottom_popup(&app.chat_wi
   5. vale
   6. breeze
   7. arbor
-› 8. sol（ 当 前 ）
-
-  按  enter 确 认 ， 或 按  esc 返 回
+› 8. sol (current)
+↓
+  enter select · esc back

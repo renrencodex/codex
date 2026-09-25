@@ -4,7 +4,8 @@ expression: popup
 ---
   Where should the forked conversation run?
 
+
 › 1. Current checkout  Keep using the current working directory
   2. New worktree      Create an isolated managed checkout
 
-  按  enter 确 认 ， 或 按  esc 返 回
+  enter select · esc back

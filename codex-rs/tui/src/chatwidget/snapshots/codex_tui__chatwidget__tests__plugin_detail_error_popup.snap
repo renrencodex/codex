@@ -2,10 +2,11 @@
 source: tui/src/chatwidget/tests/popups_and_settings.rs
 expression: popup
 ---
-  插 件
-  加 载 插 件 详 细 信 息 失 败 。
+  Plugins
+  Failed to load plugin details.
 
-     插 件 详 细 信 息 不 可 用   Failed to load plugin details.
-› 1. 返 回 插 件 列 表         返 回 插 件 列 表 。
 
-  按  esc 关 闭 。
+     Plugin detail unavailable  Failed to load plugin details.
+› 1. Back to plugins            Return to the plugin list.
+
+  esc close

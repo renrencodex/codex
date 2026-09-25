@@ -128,6 +128,10 @@ async fn usage_command_opens_menu_when_reset_is_available_snapshot() {
         "usage_command_menu",
         render_bottom_popup(&chat, /*width*/ 80)
     );
+    assert_chatwidget_snapshot!(
+        "usage_command_menu_narrow",
+        render_bottom_popup(&chat, /*width*/ 40)
+    );
     chat.handle_key_event(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
     assert_matches!(rx.try_recv(), Ok(AppEvent::OpenAnalytics { view: None }));
 }
@@ -212,7 +216,7 @@ async fn usage_menu_refresh_failure_preserves_disabled_known_zero() {
         Err("backend unavailable".to_string()),
     );
 
-    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("没有可用的用量限制重置机会。"));
+    assert!(render_bottom_popup(&chat, /*width*/ 80).contains("暂无可用。"));
     chat.handle_key_event(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
     assert_matches!(rx.try_recv(), Ok(AppEvent::OpenAnalytics { view: None }));
 }
@@ -811,8 +815,8 @@ async fn failed_post_consume_refresh_does_not_keep_stale_reset_count() {
     chat.dispatch_command(SlashCommand::Usage);
 
     let rendered = render_bottom_popup(&chat, /*width*/ 80);
-    assert!(rendered.contains("检查是否有可用的重置机会。"));
-    assert!(!rendered.contains("你有 2 次可用的用量限制重置机会。"));
+    assert!(rendered.contains("检查可用性。"));
+    assert!(!rendered.contains("2 个可用。"));
 }
 
 #[tokio::test]

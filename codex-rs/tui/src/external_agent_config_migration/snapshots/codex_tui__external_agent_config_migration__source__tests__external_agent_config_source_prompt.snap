@@ -3,11 +3,11 @@ source: tui/src/external_agent_config_migration/source_tests.rs
 expression: terminal.backend()
 ---
 
-选择导入来源
+Choose an import source
 
-  选择要从中导入设置的应用。
+  Select the app whose setup you want to import.
 
-› 1. Claude Code
+› 1. Claude Code                                                                
   2. Cursor
 
-  按 enter 继续
+  enter continue · esc cancel

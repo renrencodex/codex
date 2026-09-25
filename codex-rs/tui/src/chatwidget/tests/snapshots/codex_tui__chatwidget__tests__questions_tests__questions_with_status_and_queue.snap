@@ -5,10 +5,10 @@ expression: "format!(\"OPEN\\n{open}\\n\\nONLY QUESTIONS\\n{completed}\")"
 OPEN
 • Working (0s • esc to interrupt)
 
-• 已 排 队 的 后 续 输 入
+• Queued follow-up inputs
   ↳ queued follow-up
 
 ONLY QUESTIONS
-• 已 排 队 的 后 续 输 入
+• Queued follow-up inputs
   ? 2 questions
-    shift + ← to answer
+    ⌥+↑ to answer

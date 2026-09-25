@@ -845,14 +845,26 @@ impl ChatWidget {
             "请在 ChatGPT 中安装所需应用以继续："
         };
         let mut header = ColumnRenderable::new();
-        header.push(Line::from("插件".bold()));
-        header.push(Line::from(
-            format!("插件 {} 已安装。", flow.plugin_display_name).bold(),
-        ));
-        header.push(Line::from(
-            format!("应用设置 {current}/{total}：{}", app.name).dim(),
-        ));
-        header.push(Line::from(status_label.dim()));
+        header.push(
+            ratatui::widgets::Paragraph::new(Line::from("插件".bold()))
+                .wrap(ratatui::widgets::Wrap { trim: false }),
+        );
+        header.push(
+            ratatui::widgets::Paragraph::new(Line::from(
+                format!("插件 {} 已安装。", flow.plugin_display_name).bold(),
+            ))
+            .wrap(ratatui::widgets::Wrap { trim: false }),
+        );
+        header.push(
+            ratatui::widgets::Paragraph::new(Line::from(
+                format!("应用设置 {current}/{total}：{}", app.name).dim(),
+            ))
+            .wrap(ratatui::widgets::Wrap { trim: false }),
+        );
+        header.push(
+            ratatui::widgets::Paragraph::new(Line::from(status_label.dim()))
+                .wrap(ratatui::widgets::Wrap { trim: false }),
+        );
 
         let mut items = Vec::new();
 
@@ -924,7 +936,7 @@ impl ChatWidget {
             footer_hint: Some(plugin_detail_hint_line()),
             items,
             col_width_mode: ColumnWidthMode::AutoAllRows,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         })
     }
 

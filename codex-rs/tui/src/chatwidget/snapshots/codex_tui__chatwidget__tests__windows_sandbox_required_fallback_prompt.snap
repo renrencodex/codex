@@ -2,12 +2,13 @@
 source: tui/src/chatwidget/tests/permissions.rs
 expression: popup
 ---
-  无 法 使 用 管 理 员 权 限 设 置 沙 箱
+  Couldn't set up your sandbox with Administrator permissions
 
-  你 的 组 织 要 求 先 启 用 默 认 沙 箱 ， Codex 才 能 继 续 。
-  了 解 详 情  <https://developers.openai.com/codex/windows>
+  Your organization requires the default sandbox before Codex can continue.
+  Learn more <https://developers.openai.com/codex/windows>
 
-› 1. 重 新 尝 试 设 置 管 理 员 沙 箱
-  2. 退 出
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. Try setting up admin sandbox again
+  2. Quit
+
+  enter select · esc back

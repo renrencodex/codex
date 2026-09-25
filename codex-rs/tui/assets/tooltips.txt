@@ -1,26 +1,46 @@
-对话过长时使用 /compact 总结历史并释放上下文空间。
-使用 /new 开始新想法；之前的会话仍会保留在历史记录中。
-如果发现异常，使用 /feedback 向维护者发送日志。
-使用 /model 快速切换模型或推理强度。
-使用 /permissions 控制 Codex 何时请求确认。
-运行 /review 对当前更改进行代码审查。
-使用 /skills 列出可用技能，或让 Codex 使用某项技能。
-使用 /status 查看当前模型、批准设置和 Token 用量。
-使用 /statusline 配置状态栏中显示的项目。
-使用 /fork 将当前对话分叉到新线程。
-使用 /side 在临时分叉中开始旁路对话，不影响主线程。
-使用 /init 创建包含项目专用指导的 AGENTS.md。
-使用 /mcp 列出已配置的 MCP 工具。
-使用 /rename 重命名线程，以便日后恢复。
+# Tips support Markdown: **emphasis**, `code`, and [label](https://example.com) links.
+# Tips may use {key:context.action} to insert the configured primary key or chord.
+# A tip is skipped if any referenced action is unbound or unavailable.
+使用 **/new** 开始新想法；之前的会话仍会保留在历史记录中。
+如果发现异常，使用 **/feedback** 向维护者发送日志。
+使用 **/model** 快速切换模型或推理强度。
+使用 **/permissions** 控制 Codex 何时请求确认。
+运行 **/review** 对当前更改进行代码审查。
+使用 **/skills** 列出可用技能，或让 Codex 使用某项技能。
+使用 **/status** 查看当前模型、批准设置和 Token 用量。
+使用 **/statusline** 配置状态栏中显示的项目。
+使用 **/fork** 将当前对话分叉到新线程。
+使用 **/side** 在临时分叉中开始旁路对话，不影响主线程。
+使用 **/init** 创建包含项目专用指导的 `AGENTS.md`。
+使用 **/mcp** 列出已配置的 MCP 工具。
+使用 **/rename** 重命名线程，以便日后恢复。
 API 问题可使用 OpenAI 文档 MCP；运行 `codex mcp add openaiDeveloperDocs --url https://developers.openai.com/mcp` 启用。
-加入 OpenAI 社区 Discord：http://discord.gg/openai
-访问 Codex 社区论坛：https://community.openai.com/c/codex/37
+访问 [Codex 社区论坛](https://community.openai.com/c/codex/37)。
 使用 `!` 可从 Codex 运行任意 shell 命令（例如 `!ls`）。
-输入 / 打开命令弹窗；Tab 可自动补全斜杠命令。
-编辑器为空时，按 Esc 返回并编辑上一条消息；按 Enter 确认。
-任务运行时按 Tab 将消息排队；其他情况下会立即发送（`!` 除外）。
-在 ~/.codex/config.toml 中配置 [tui.keymap] 可重新绑定受支持的快捷键。
-有关受支持的操作和示例，请参阅 Codex 按键映射文档。
-使用 Ctrl+V 粘贴图片并附加到下一条消息。
+输入 `/` 打开命令弹窗；`Tab` 可自动补全斜杠命令。
+编辑器为空时，按 `Esc` 返回并编辑上一条消息；按 `Enter` 确认。
+任务运行时按 {key:composer.queue} 将消息排队；其他情况下会立即发送（`!` 除外）。
+使用 **/keymap** 配置键盘快捷键。
+使用 `Ctrl+V` 粘贴图片并附加到下一条消息。
 运行 `codex resume` 可恢复之前的对话。
-使用 /copy 或按 Ctrl+O，将最新智能体响应复制为 Markdown。
+使用 **/copy** 或按 {key:global.copy}，将最新智能体响应复制为 Markdown。
+使用 **/vim** 切换输入框的 Vim 编辑模式。
+从 Claude Code 迁移过来？使用 **/import** 导入你的配置、项目和最近的对话。
+使用 **/hooks** 查看和管理生命周期 hooks。
+使用 **/archive** 归档当前会话。
+支持工作树时，使用 **/worktree** 在单独的 Git 工作树中开始或继续对话。
+回到之前的对话？使用 **/recap** 生成摘要。
+语音可用时，使用 **/voice** 开始或停止语音对话，或使用 **/voice settings** 选择声音。
+启用目标功能后，使用 **/goal** 设置或查看长时间运行任务的目标。
+使用 **/agents** 打开智能体指挥中心。
+使用 **/subagents** 在当前会话的子智能体之间切换。
+使用 **/export** 将对话保存为 Markdown。
+使用 ChatGPT 登录时，使用 **/usage** 查看账户用量并使用可用的用量限制重置机会。
+使用 **/title** 选择终端标题中显示的内容。
+使用 **/theme** 选择语法高亮主题。
+启用插件后，使用 **/plugins** 浏览插件。
+按 {key:global.open_transcript} 打开完整对话记录。
+按 {key:global.find_transcript} 搜索此对话。
+按 {key:global.open_external_editor} 在外部编辑器中编辑当前草稿。
+按 {key:composer.history_search_previous} 搜索之前输入过的提示词。
+对于可调推理强度的模型，按 {key:chat.increase_reasoning_effort} 提高推理强度，或按 {key:chat.decrease_reasoning_effort} 降低推理强度。

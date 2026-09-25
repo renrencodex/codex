@@ -40,14 +40,20 @@ impl App {
                     "已在服务器上为新会话保存{label}设置。当前会话保持不变。项目或任务设置可能会覆盖它。"
                 )))
             }
-            Ok(response) => Box::new(history_cell::new_error_event(format!(
-                "{label}设置已保存但被覆盖：{}",
-                overridden_write_message(&response)
-            ))),
-            Err(err) => Box::new(history_cell::new_error_event(format!(
-                "保存{label}设置失败：{}",
-                crate::config_update::format_config_error(&err)
-            ))),
+            Ok(response) => {
+                self.transcript_view.jump_to_latest();
+                Box::new(history_cell::new_error_event(format!(
+                    "{label}设置已保存但被覆盖：{}",
+                    overridden_write_message(&response)
+                )))
+            }
+            Err(err) => {
+                self.transcript_view.jump_to_latest();
+                Box::new(history_cell::new_error_event(format!(
+                    "保存{label}设置失败：{}",
+                    crate::config_update::format_config_error(&err)
+                )))
+            }
         };
         self.insert_history_cell(tui, notice);
     }

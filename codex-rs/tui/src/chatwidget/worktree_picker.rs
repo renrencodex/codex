@@ -1,7 +1,10 @@
 //! Worktree choices for local, feature-enabled session commands.
+//!
+//! Shared picker presentation preserves request identity and action safety checks.
 
 use super::*;
 use crate::app_event::ManagedWorktreeMode;
+use crate::bottom_pane::PickerSurface;
 use crate::worktree_browser::Action;
 use crate::worktree_browser::Entry;
 use crate::worktree_browser::Owner;
@@ -40,8 +43,7 @@ impl ChatWidget {
         };
         let current_name = name.clone();
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some(title.to_string()),
-            footer_hint: Some(standard_popup_hint_line()),
+            title: Some(title.into()),
             items: vec![
                 SelectionItem {
                     name: "当前检出".to_string(),
@@ -74,7 +76,7 @@ impl ChatWidget {
                     ..Default::default()
                 },
             ],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
         self.request_redraw();
     }
@@ -90,8 +92,7 @@ impl ChatWidget {
         }
 
         self.bottom_pane.show_selection_view(SelectionViewParams {
-            title: Some("工作树".to_string()),
-            footer_hint: Some(standard_popup_hint_line()),
+            title: Some("工作树".into()),
             items: vec![
                 SelectionItem {
                     name: "继续当前对话".to_string(),
@@ -125,7 +126,7 @@ impl ChatWidget {
                     ..Default::default()
                 },
             ],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
         self.request_redraw();
     }
@@ -143,13 +144,13 @@ impl ChatWidget {
         self.worktree_popup_request_id = Some(request.id);
         self.bottom_pane.show_selection_view(SelectionViewParams {
             view_id: Some(BROWSER_VIEW_ID),
-            title: Some("托管工作树".to_string()),
+            picker_surface: PickerSurface::Panel,
+            title: Some("托管工作树".into()),
             items: vec![SelectionItem {
                 name: "正在加载工作树…".to_string(),
                 is_disabled: true,
                 ..Default::default()
             }],
-            footer_hint: Some(standard_popup_hint_line()),
             ..Default::default()
         });
         Some(request)
@@ -201,11 +202,17 @@ impl ChatWidget {
                 .map(|entry| {
                     let request = request.clone();
                     let (name, description) = match &entry.owner {
-                        Owner::None => (entry.cwd.display().to_string(), "未关联线程".to_string()),
-                        Owner::Unavailable(_) => (
-                            entry.cwd.display().to_string(),
-                            "所属线程不可用".to_string(),
-                        ),
+                        Owner::None | Owner::Unavailable(_) => {
+                            let status = if matches!(entry.owner, Owner::None) {
+                                "未关联线程"
+                            } else {
+                                "所属线程不可用"
+                            };
+                            (
+                                entry.cwd.display().to_string(),
+                                format!("{status} · {}", entry.cwd.display()),
+                            )
+                        }
                         Owner::Archived(thread) | Owner::Resumable(thread) => {
                             let status = match &entry.owner {
                                 Owner::Archived(_) => "已归档 · ",
@@ -240,8 +247,7 @@ impl ChatWidget {
                     }
                 })
                 .collect(),
-            footer_hint: Some(standard_popup_hint_line()),
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 
@@ -332,8 +338,7 @@ impl ChatWidget {
             title: Some(title),
             subtitle: Some(entry.cwd.display().to_string()),
             items,
-            footer_hint: Some(standard_popup_hint_line()),
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 
@@ -364,8 +369,7 @@ impl ChatWidget {
                     ..Default::default()
                 },
             ],
-            footer_hint: Some(standard_popup_hint_line()),
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 }

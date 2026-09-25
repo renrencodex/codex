@@ -187,7 +187,7 @@ impl ChatWidget {
             ),
             items,
             allow_cancel: false,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 
@@ -232,7 +232,7 @@ impl ChatWidget {
                 },
             ],
             allow_cancel: false,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 

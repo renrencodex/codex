@@ -1,13 +1,14 @@
 ---
 source: tui/src/bottom_pane/request_user_input/mod.rs
+assertion_line: 3785
 expression: "render_snapshot(&overlay, area)"
 ---
                                                                                                                         
-  问 题  1/1（ 1 个 未 回 答 ）                                                                                                 
+  Question 1/1 (1 unanswered)                                                                                           
   Share details.                                                                                                        
                                                                                                                         
-  › 输 入 回 答 （ 可 选 ）                                                                                                     
+  › Type your answer (optional)                                                                                         
                                                                                                                         
                                                                                                                         
                                                                                                                         
-  ctrl + j 提 交 回 答  | esc 中 断
+  ctrl+j to submit answer | esc to interrupt

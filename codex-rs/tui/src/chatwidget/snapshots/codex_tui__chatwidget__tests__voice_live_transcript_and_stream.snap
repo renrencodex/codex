@@ -10,9 +10,8 @@ expression: rendered
 "                                                            "
 "                                                            "
 "                                                            "
-" voice ● 正在聆听               ctrl+x mute     /voice stop " Hidden by multi-width symbols: [(10, " "), (12, " "), (14, " "), (16, " ")]
-"   mic ▁▁▁▁▁▁  codex ▁▁▁▁▁▁                                 "
+" voice ● listening              ctrl+x mute     /voice stop "
 "                                                            "
 "› Ask Codex to do anything                                  "
 "                                                            "
-"  GPT-5.6-Sol 默认 · /tmp/project                           " Hidden by multi-width symbols: [(15, " "), (17, " ")]
+"  GPT-5.6-Sol default · /tmp/project                        "

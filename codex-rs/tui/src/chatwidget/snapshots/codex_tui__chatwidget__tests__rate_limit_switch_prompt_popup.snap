@@ -2,11 +2,14 @@
 source: tui/src/chatwidget/tests/status_and_layout.rs
 expression: popup
 ---
-  即 将 达 到 速 率 限 制
-  是 否 切 换 到  gpt-5.6-luna 以 减 少 点 数 用 量 ？
+  Approaching rate limits
+  Switch to gpt-6-luna for lower credit usage?
 
-› 1. 切 换 到  gpt-5.6-luna       Fast and affordable agentic coding model.
-  2. 保 留 当 前 模 型
-  3. 保 留 当 前 模 型 （ 不 再 显 示 ）   以 后 不 再 显 示 有 关 切 换 模 型 的 速 率 限 制 提 醒 。
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. Switch to gpt-6-luna                   Fast and affordable model for easier
+                                            tasks.
+  2. Keep current model
+  3. Keep current model (never show again)  Hide future rate limit reminders
+                                            about switching models.
+
+  enter select · esc back

@@ -280,7 +280,7 @@ impl App {
         ) {
             label_parts.push(format!("{} to switch", binding.display_label()));
         }
-        label_parts.push("ctrl + c 关闭".to_string());
+        label_parts.push("ctrl+c 关闭".to_string());
         self.chat_widget
             .set_side_conversation_context_label(Some(format!("旁路 {}", label_parts.join(" · "))));
     }

@@ -2,8 +2,8 @@
 source: tui/src/chatwidget/tests/goal_menu.rs
 expression: "render_bottom_popup(&chat, 100)"
 ---
-▌ 编 辑 目 标
-▌
-▌ Keep improving the bare goal command until it feels calm and useful.
+  Edit goal
 
-按  enter 确 认 ， 或 按  esc 返 回
+› Keep improving the bare goal command until it feels calm and useful.
+
+  enter submit · esc back

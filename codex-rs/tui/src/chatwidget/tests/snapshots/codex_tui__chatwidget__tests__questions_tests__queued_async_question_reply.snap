@@ -1,8 +1,9 @@
 ---
 source: tui/src/chatwidget/tests/questions_tests.rs
+assertion_line: 51
 expression: "render_bottom_popup(&chat, 80)"
 ---
-• 已 排 队 的 后 续 输 入
+• Queued follow-up inputs
   ↳ > Which way?
 
     !literal answer
@@ -11,4 +12,4 @@ expression: "render_bottom_popup(&chat, 80)"
 
   Type your answer
 
-  enter submit   ctrl + ] skip   ⌥ + ↓ main prompt   shift + ← queued messages
+  enter submit   ctrl+] skip   ⌥+↓ main prompt   ⌥+↑ queued messages

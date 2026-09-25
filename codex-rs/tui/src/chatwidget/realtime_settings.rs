@@ -29,7 +29,7 @@ impl ChatWidget {
             subtitle: Some("将在下次语音对话中生效。".to_string()),
             footer_hint: Some(standard_popup_hint_line()),
             items,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 

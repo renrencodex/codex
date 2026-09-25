@@ -1,11 +1,12 @@
 ---
 source: tui/src/chatwidget/tests/questions_tests.rs
+assertion_line: 937
 expression: "render_bottom_popup(&chat, 80)"
 ---
-• 已 排 队 的 后 续 输 入
+• Queued follow-up inputs
 
   Same title?
 
   My draft for the second question
 
-  enter submit   ctrl + ] skip   ⌥ + ↓ main prompt
+  enter submit   ctrl+] skip   ⌥+↓ main prompt

@@ -1,7 +1,25 @@
 ---
 source: tui/src/bottom_pane/chat_composer.rs
+assertion_line: 5620
 expression: terminal.backend()
 ---
+"  Keyboard shortcuts                                                                                "
+"                                                                                                    "
+"  Compose                             Session                                                       "
+"  /              Commands             tab     Send message                                          "
+"  @              Mention files        ⌥+,     Less reasoning                                        "
+"  !              Shell command        ⌥+.     More reasoning                                        "
+"  ctrl+x enter   New line             ctrl+c  Quit                                                  "
+"  ctrl+v         Paste image                                                                        "
+"  ctrl+g ctrl+g  External editor      Transcript (open first)                                       "
+"  ctrl+r         Search history       ctrl+t                 Open transcript                        "
+"  esc esc        Edit last message    f3                     Find text                              "
+"                                      pgup / pgdn            Scroll                                 "
+"                                      ctrl+space             Start selection                        "
+"                                      ctrl+home / ctrl+end   Top / latest                           "
+"                                      shift+⌥+, / shift+⌥+.  Top / latest                           "
+"                                                                                                    "
+"  /keymap customize                                                                                 "
 "                                                                                                    "
 "› Ask Codex to do anything                                                                          "
 "                                                                                                    "
@@ -9,13 +27,4 @@ expression: terminal.backend()
 "                                                                                                    "
 "                                                                                                    "
 "                                                                                                    "
-"                                                                                                    "
-"  / 输入命令                                  ! 输入 Shell 命令                                     " Hidden by multi-width symbols: [(5, " "), (7, " "), (9, " "), (11, " "), (49, " "), (51, " "), (60, " "), (62, " ")]
-"  ctrl + x enter 插入换行                     tab 提交消息                                          " Hidden by multi-width symbols: [(18, " "), (20, " "), (22, " "), (24, " "), (51, " "), (53, " "), (55, " "), (57, " ")]
-"  @ 插入文件路径                              ctrl + v 粘贴图片                                     " Hidden by multi-width symbols: [(5, " "), (7, " "), (9, " "), (11, " "), (13, " "), (15, " "), (56, " "), (58, " "), (60, " "), (62, " ")]
-"  ctrl + g ctrl + g 在外部编辑器中编辑        esc esc 编辑上一条消息                                " Hidden by multi-width symbols: [(21, " "), (23, " "), (25, " "), (27, " "), (29, " "), (31, " "), (33, " "), (35, " "), (37, " "), (55, " "), (57, " "), (59, " "), (61, " "), (63, " "), (65, " "), (67, " ")]
-"  ctrl + r 搜索历史                           ctrl + c 退出                                         " Hidden by multi-width symbols: [(12, " "), (14, " "), (16, " "), (18, " "), (56, " "), (58, " ")]
-"  ⌥ + , 降低推理强度                          ⌥ + . 提高推理强度                                    " Hidden by multi-width symbols: [(9, " "), (11, " "), (13, " "), (15, " "), (17, " "), (19, " "), (53, " "), (55, " "), (57, " "), (59, " "), (61, " "), (63, " ")]
-"  ctrl + t 查看对话记录                                                                             " Hidden by multi-width symbols: [(12, " "), (14, " "), (16, " "), (18, " "), (20, " "), (22, " ")]
-"                                                                                                    "
-"  使用以下命令自定义快捷键：/keymap                                                                 " Hidden by multi-width symbols: [(3, " "), (5, " "), (7, " "), (9, " "), (11, " "), (13, " "), (15, " "), (17, " "), (19, " "), (21, " "), (23, " "), (25, " "), (27, " ")]
+"  ? / esc close                                                                                     "

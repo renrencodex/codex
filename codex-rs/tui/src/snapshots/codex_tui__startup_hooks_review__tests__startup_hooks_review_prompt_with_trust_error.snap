@@ -10,8 +10,9 @@ expression: "render_lines(&view, 62)"
   Invalid configuration: features.fast_mode=true is not
   supported; allowed set [fast_mode=false]
 
+
 › 1. Review hooks
   2. Trust all and continue
   3. Continue without trusting (hooks won't run)
 
-  按  enter 确 认 ， 或 按  esc 返 回
+  enter confirm · esc skip

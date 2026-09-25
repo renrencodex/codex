@@ -149,13 +149,7 @@ impl AnalyticsView {
             lines.extend([values, labels, Line::default()]);
         }
         let selected = self.sections[Section::Summary].group;
-        let controls = Line::from(super::summary::VIEWS[selected].label());
-        if inner_width >= 58 {
-            lines.push(columns("Token 活动".bold().into(), controls, inner_width));
-        } else {
-            lines.push("Token 活动".bold().into());
-            lines.extend(word_wrap_lines([controls], RtOptions::new(inner_width)));
-        }
+        lines.push("Token 活动".bold().into());
         lines.push("过去 12 个月".set_style(secondary_style()).into());
         lines.push(Line::default());
         if let Some(buckets) = &tokens.daily_usage_buckets {

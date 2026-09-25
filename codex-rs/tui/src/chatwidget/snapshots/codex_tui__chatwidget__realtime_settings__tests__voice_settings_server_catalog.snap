@@ -2,10 +2,11 @@
 source: tui/src/chatwidget/realtime_settings_tests.rs
 expression: "render_bottom_popup(&chat, 80)"
 ---
-  选 择 语 音
-  将 在 下 次 语 音 对 话 中 生 效 。
+  Select voice
+  Applies to your next voice conversation.
 
-› 1. cove（ 当 前 ）
+
+› 1. cove (current)
   2. maple
 
-  按  enter 确 认 ， 或 按  esc 返 回
+  enter select · esc back

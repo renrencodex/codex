@@ -1,4 +1,7 @@
 //! Shortcut picker construction for `/keymap`.
+//!
+//! Keep the shared picker panel and reserved result viewport on the production
+//! factory so tabs and search stay anchored in the live picker.
 
 use codex_config::types::TuiKeymap;
 use ratatui::style::Styled;
@@ -9,6 +12,7 @@ use unicode_width::UnicodeWidthStr;
 
 use crate::app_event::AppEvent;
 use crate::bottom_pane::ColumnWidthMode;
+use crate::bottom_pane::PickerSurface;
 use crate::bottom_pane::SelectionItem;
 use crate::bottom_pane::SelectionRowDisplay;
 use crate::bottom_pane::SelectionTab;
@@ -283,6 +287,9 @@ fn build_keymap_picker_params_for_action(
 
     SelectionViewParams {
         view_id: Some(KEYMAP_PICKER_VIEW_ID),
+        picker_surface: PickerSurface::Panel,
+        max_visible_rows: 24,
+        reserve_result_rows: true,
         header: Box::new(()),
         footer_hint: Some(keymap_picker_hint_line()),
         tab_footer_hints: vec![(KEYMAP_DEBUG_TAB_ID.to_string(), keymap_debug_hint_line())],
@@ -447,27 +454,30 @@ fn action_count_line(count: usize) -> String {
 }
 
 fn keymap_picker_hint_line() -> Line<'static> {
-    let style = accent_style();
-    Line::from(vec![
-        "left/right".set_style(style),
-        " 分组 · ".dim(),
-        "enter".set_style(style),
-        " 编辑快捷键 · ".dim(),
-        "*".set_style(style),
-        " 自定义 · ".dim(),
-        "-".set_style(style),
-        " 未绑定 · ".dim(),
-        "esc".set_style(style),
-        " 关闭".dim(),
-    ])
+    [
+        ("left/right", " 分组 · "),
+        ("enter", " 编辑快捷键 · "),
+        ("*", " 自定义 · "),
+        ("-", " 未绑定 · "),
+        ("esc", " 关闭"),
+    ]
+    .into_iter()
+    .flat_map(|(key, label)| {
+        crate::key_hint::key_label_spans(key)
+            .into_iter()
+            .chain([label.set_style(crate::style::footer_hint_label_style())])
+    })
+    .collect::<Line>()
 }
 
 fn keymap_debug_hint_line() -> Line<'static> {
-    let style = accent_style();
-    Line::from(vec![
-        "enter".set_style(style),
-        " 启动检查器 · ".dim(),
-        "esc".set_style(style),
-        " 关闭".dim(),
-    ])
+    let mut spans = crate::key_hint::key_label_spans("enter");
+    spans.push(" 启动检查器 · ".set_style(crate::style::footer_hint_label_style()));
+    spans.extend(crate::key_hint::key_label_spans("esc"));
+    spans.push(" 关闭".set_style(crate::style::footer_hint_label_style()));
+    spans.into()
 }
+
+#[cfg(test)]
+#[path = "picker_tests.rs"]
+mod tests;

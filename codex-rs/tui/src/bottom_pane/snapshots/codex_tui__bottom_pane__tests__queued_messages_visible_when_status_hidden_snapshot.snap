@@ -2,10 +2,10 @@
 source: tui/src/bottom_pane/mod.rs
 expression: "render_snapshot(&pane, area)"
 ---
-• 已 排 队 的 后 续 输 入                               
+• Queued follow-up inputs                       
   ↳ Queued follow-up question                   
-    ⌥ + ↑ 编 辑 最 后 一 条 排 队 消 息                   
+    ⌥+↑ edit last queued message                
                                                 
 › Ask Codex to do anything                      
                                                 
-  ? 查 看 快 捷 键                  上 下 文 剩 余  100%
+  ? for shortcuts            100% context left

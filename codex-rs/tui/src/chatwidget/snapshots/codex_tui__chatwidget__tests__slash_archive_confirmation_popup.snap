@@ -2,10 +2,11 @@
 source: tui/src/chatwidget/tests/slash_commands.rs
 expression: popup
 ---
-  是 否 归 档 此 会 话 ？
-  确 定 吗 ？ 这 将 归 档 当 前 会 话
+  Archive this session?
+  Are you sure? This will archive the current session
 
-› 1. 否 ， 不 归 档   返 回 当 前 会 话
-  2. 是 ， 归 档     立 即 归 档 此 会 话
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. No, don't archive  Return to the current session
+  2. Yes, archive       Archive this session now
+
+  enter select · esc back

@@ -2,18 +2,20 @@
 source: tui/src/chatwidget/tests/popups_and_settings.rs
 expression: strip_osc8_for_snapshot(&popup)
 ---
-  插 件
-  Figma · 可 安 装  · 本 地
-  与 此 应 用 共 享 的 数 据 受 其 服 务 条 款 和 隐 私 政 策 . 了 解 详 情 .
+  Plugins
+  Figma · Can be installed · Local
+  Data shared with this app is subject to the app's terms of service and privacy policy. Learn
+  more.
   Turn Figma files into implementation context.
 
-› 1. 返 回 插 件 列 表   返 回 插 件 列 表 。
-  2. 安 装 插 件       立 即 安 装 此 插 件 。
-     来 源           本 地
-     认 证           安 装 时 认 证
-     技 能           design-review, extract-copy
-     钩 子           PreToolUse (1), Stop (2)
-     应 用           Figma, Slack
-     MCP 服 务 器     figma-mcp, docs-mcp
 
-  按  esc 关 闭 。
+› 1. Back to plugins  Return to the plugin list.
+  2. Install plugin   Install this plugin now.
+     Source           Local
+     Auth             Auth on install
+     Skills           design-review, extract-copy
+     Hooks            PreToolUse (1), Stop (2)
+     Apps             Figma, Slack
+     MCP Servers      figma-mcp, docs-mcp
+
+  esc close

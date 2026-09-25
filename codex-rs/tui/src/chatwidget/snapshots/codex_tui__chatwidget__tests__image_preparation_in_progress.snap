@@ -2,10 +2,10 @@
 source: tui/src/chatwidget/tests/composer_submission.rs
 expression: "normalize_snapshot_paths(render_bottom_popup(&chat, 80))"
 ---
-• 已 排 队 的 后 续 输 入
+• Queued follow-up inputs
   ↳ Preparing images: describe
-    shift + ← 编 辑 最 后 一 条 排 队 消 息
+    ⌥+↑ edit last queued message
 
 › x
 
-  GPT-5.6-Sol 默 认  · /tmp/project
+  GPT-5.6-Sol default · /tmp/project

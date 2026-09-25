@@ -76,7 +76,7 @@ impl App {
         self.chat_widget.show_selection_view(SelectionViewParams {
             header: Box::new(DaemonMenuHeader(header)),
             items,
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 
@@ -88,15 +88,23 @@ impl App {
             return;
         }
         let mut explanation = match source {
-            DaemonUpdateSource::PublicStable => "安装最新公开稳定版（运行命令时解析版本）。这将恢复正式版更新资格，并保留自动更新设置。".to_string(),
+            DaemonUpdateSource::PublicStable => {
+                "安装最新的公开稳定版。恢复正式更新资格，自动更新设置保持不变。".to_string()
+            }
             DaemonUpdateSource::ThisCli => {
                 let version = codex_install_context::InstallContext::current()
                     .package_manifest()
-                    .map_or_else(|| CODEX_CLI_VERSION.to_string(), |manifest| manifest.version.to_string());
-                format!("使用来自 {} 的当前 CLI 软件包 v{version}。完整的本地软件包将被复制并固定，不再自动更新。", executable.display())
+                    .map_or_else(
+                        || CODEX_CLI_VERSION.to_string(),
+                        |manifest| manifest.version.to_string(),
+                    );
+                format!(
+                    "使用来自 {} 的当前 CLI 软件包 v{version}。复制完整软件包并固定，不再自动更新。",
+                    executable.display()
+                )
             }
         };
-        explanation.push_str("\n后台服务会在需要时重启，正在进行或排队的工作可能被中断。\nCodex 将退出并在此终端中执行更新，随后返回 shell。之后请重新启动 Codex。");
+        explanation.push_str("\n这可能会重启后台服务，并中断正在进行或排队的工作。\nCodex 将退出并在此终端中执行更新，之后请重新启动 Codex。");
         let mut header = vec![Line::from("更新后台服务并退出 Codex？".bold())];
         header.extend(explanation.lines().map(|line| Line::from(line.to_owned())));
         self.chat_widget.show_selection_view(SelectionViewParams {
@@ -117,7 +125,7 @@ impl App {
                     ..Default::default()
                 },
             ],
-            ..Default::default()
+            ..SelectionViewParams::picker()
         });
     }
 }

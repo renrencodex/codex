@@ -1,5 +1,6 @@
 //! Shared popup-related constants for bottom pane widgets.
 
+use ratatui::style::Stylize;
 use ratatui::text::Line;
 
 use crate::key_hint;
@@ -23,13 +24,19 @@ pub(crate) fn standard_popup_hint_line() -> Line<'static> {
     ])
 }
 
-pub(crate) fn standard_popup_hint_line_for_keymap(list_keymap: &ListKeymap) -> Line<'static> {
-    accept_cancel_hint_line(
-        list_keymap.primary_hint(ListAction::Accept),
-        "确认",
-        list_keymap.primary_hint(ListAction::Cancel),
-        "返回",
-    )
+/// Compact footer for shared pickers, using only the configured list actions.
+pub(crate) fn picker_hint_line_for_keymap(list_keymap: &ListKeymap) -> Line<'static> {
+    let mut spans = Vec::new();
+    for (action, label) in [(ListAction::Accept, "选择"), (ListAction::Cancel, "返回")] {
+        if let Some(hint) = list_keymap.primary_hint(action) {
+            if !spans.is_empty() {
+                spans.push(" · ".dim());
+            }
+            spans.extend(hint.spans());
+            spans.push(format!(" {label}").dim());
+        }
+    }
+    spans.into()
 }
 
 pub(crate) fn accept_cancel_hint_line(
@@ -38,24 +45,16 @@ pub(crate) fn accept_cancel_hint_line(
     cancel: Option<ShortcutHint>,
     cancel_label: &'static str,
 ) -> Line<'static> {
-    match (accept, cancel) {
-        (Some(accept), Some(cancel)) => Line::from(vec![
-            "按 ".into(),
-            accept.into(),
-            format!(" {accept_label}，或按 ").into(),
-            cancel.into(),
-            format!(" {cancel_label}").into(),
-        ]),
-        (Some(accept), None) => Line::from(vec![
-            "按 ".into(),
-            accept.into(),
-            format!(" {accept_label}").into(),
-        ]),
-        (None, Some(cancel)) => Line::from(vec![
-            "按 ".into(),
-            cancel.into(),
-            format!(" {cancel_label}").into(),
-        ]),
-        (None, None) => Line::from(""),
+    let mut spans = Vec::new();
+    if let Some(accept) = accept {
+        spans.push("按 ".dim());
+        spans.extend(accept.spans());
+        spans.push(format!(" {accept_label}").dim());
     }
+    if let Some(cancel) = cancel {
+        spans.push(if spans.is_empty() { "按 " } else { " 或 " }.dim());
+        spans.extend(cancel.spans());
+        spans.push(format!(" {cancel_label}").dim());
+    }
+    spans.into()
 }

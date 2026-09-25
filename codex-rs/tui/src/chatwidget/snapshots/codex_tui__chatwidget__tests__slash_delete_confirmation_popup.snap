@@ -2,10 +2,11 @@
 source: tui/src/chatwidget/tests/slash_commands.rs
 expression: popup
 ---
-  是 否 删 除 此 会 话 ？
-  此 操 作 无 法 撤 销 ， 子 代 理 会 话 也 将 被 删 除 。
+  Delete this session?
+  Cannot be undone. Subagent threads will also be deleted.
 
-› 1. 否 ， 保 留 此 会 话   返 回 当 前 会 话
-  2. 是 ， 删 除 并 退 出   立 即 永 久 删 除 此 会 话
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. No, keep this session  Return to the current session
+  2. Yes, delete and exit   Permanently delete this session now
+
+  enter select · esc back

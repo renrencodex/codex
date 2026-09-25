@@ -3,20 +3,37 @@ source: tui/src/keymap_setup.rs
 expression: "render_picker(params, 120)"
 ---
 
-  按 键 映 射
-  所 有 可 配 置 快 捷 键 。
-  共  147 个 操 作 ， 1 个 已 自 定 义 ， 5 个 未 绑 定 。
+  Keymap
+  All configurable shortcuts.
+  150 actions, 1 customized, 5 unbound.
 
-  [全 部 ]  常 用   已 自 定 义 （ 1）   未 绑 定 （ 5）   应 用   输 入 框   编 辑 器   Vim  导 航   智 能 体   审 批   调 试
+   All   Common   Customized (1)   Unbound (5)   App   Composer   Editor   Vim   Navigation   Agents   Approval      ›
 
-  输 入 内 容 以 搜 索 快 捷 键
-› 全 局          - 打 开 智 能 体 面 板         未 绑 定
-  全 局            打 开 对 话 记 录           ctrl-t
-  全 局            打 开 外 部 编 辑 器         ctrl-g
-  全 局            复 制                   ctrl-o
-  全 局            清 空 终 端               ctrl-l
-  全 局          - 切 换  Vim 模 式          未 绑 定
-  全 局            切 换 原 始 输 出           alt-r
-  全 局            切 换 侧 边 对 话           ctrl-/
+  Type to search shortcuts
 
-  left/right 分 组  · enter 编 辑 快 捷 键  · * 自 定 义  · - 未 绑 定  · esc 关 闭
+› Global       - Open Agents                unbound
+  Global         Open Transcript            ctrl-t
+  Global         Find Transcript            f3
+  Global         Focus Activity             f4
+  Global         Open External Editor       ctrl-g
+  Global         Copy                       ctrl-o
+  Global         Clear Terminal             ctrl-l
+  Global       - Toggle Vim Mode            unbound
+  Global         Toggle Raw Output          alt-r
+  Global         Toggle Side Conversation   ctrl-/
+  Chat           Interrupt Turn             esc
+  Chat           Decrease Reasoning Effort  alt-,, shift-down
+  Chat           Increase Reasoning Effort  alt-., shift-up
+  Chat         - Previous Permission Mode   unbound
+  Chat         - Next Permission Mode       unbound
+  Chat           Edit Queued Message        alt-up, shift-left
+  Chat           Prompt Stack Back          alt-down, shift-right
+  Chat           Skip Question              ctrl-]
+  Chat           Toggle Voice               f8
+  Chat           Toggle Voice Mute          ctrl-x
+  Composer     * Submit                     ctrl-enter
+  Composer       Queue                      tab
+  Composer       Toggle Shortcuts           ?, shift-?
+  Composer       History Search Previous    ctrl-r
+↓
+  left/right group · enter edit shortcut · * custom · - unbound · esc close

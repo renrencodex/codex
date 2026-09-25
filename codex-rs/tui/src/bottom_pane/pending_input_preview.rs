@@ -97,11 +97,9 @@ impl PendingInputPreview {
         if !self.pending_steers.is_empty() {
             let mut header = vec!["将在下次工具调用后提交的消息".into()];
             if let Some(interrupt_binding) = self.interrupt_binding {
-                header.extend(vec![
-                    "（按 ".dim(),
-                    interrupt_binding.into(),
-                    " 可中断并立即发送）".dim(),
-                ]);
+                header.push("（按 ".dim());
+                header.extend(interrupt_binding.spans());
+                header.push(" 可中断并立即发送）".dim());
             }
             Self::push_section_header(&mut lines, width, Line::from(header));
 
@@ -167,14 +165,10 @@ impl PendingInputPreview {
             && !has_questions
             && let Some(edit_binding) = self.edit_binding
         {
-            lines.push(
-                Line::from(vec![
-                    "    ".into(),
-                    edit_binding.into(),
-                    " 编辑最后一条排队消息".into(),
-                ])
-                .dim(),
-            );
+            let mut hint = Line::from("    ");
+            hint.spans.extend(edit_binding.spans());
+            hint.spans.push(" 编辑最后一条排队消息".dim());
+            lines.push(hint);
         }
 
         Paragraph::new(lines).into()

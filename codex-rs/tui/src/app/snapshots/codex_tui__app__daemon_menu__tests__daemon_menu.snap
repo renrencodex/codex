@@ -2,10 +2,11 @@
 source: tui/src/app/daemon_menu_tests.rs
 expression: "render_bottom_popup(&app.chat_widget, 80)"
 ---
-  后 台 服 务
-  后 台 服 务 正 在 运 行 ： v0.153.0
+  Daemon
+  Running daemon: v0.153.0
 
-› 1. 安 装 最 新 公 开 稳 定 版
-  2. 使 用 当 前  CLI 构 建
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. Install latest public stable
+  2. Use this CLI build
+
+  enter select · esc back

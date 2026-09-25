@@ -58,13 +58,13 @@ impl ChatWidget {
             let label = if effort == Some(ReasoningEffortConfig::Ultra) {
                 " 应用 · "
             } else {
-                " 设为默认 · "
+                " 默认 · "
             };
-            hints.extend([accept.into(), label.into()]);
+            hints.extend([accept.into(), label.dim()]);
         }
-        hints.extend([key.into(), " 仅用于此会话".into()]);
+        hints.extend([key.into(), " 会话".dim()]);
         if let Some(cancel) = keymap.primary_hint(ListAction::Cancel) {
-            hints.extend([" · ".into(), cancel.into(), " 返回".into()]);
+            hints.extend([" · ".dim(), cancel.into(), " 返回".dim()]);
         }
         let warning = effort
             .as_ref()

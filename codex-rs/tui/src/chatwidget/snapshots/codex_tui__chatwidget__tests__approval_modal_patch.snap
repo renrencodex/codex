@@ -4,13 +4,14 @@ expression: normalize_snapshot_paths(contents)
 ---
 
 
-  是否要进行以下修改？
+  Would you like to make the following edits?
 
-  说明：The model wants to apply changes
-  目标：/tmp/project/README.md
+  Description: The model wants to apply changes
+  Destination: /tmp/project/README.md
 
-› 1. 是，继续 (y)
-  2. 是，并且不再询问这些文件 (a)
-  3. 否，并告诉 Codex 应如何调整 (esc)
 
-  按 enter 确认，或按 esc 取消
+› 1. Yes, proceed (y)                                                           
+  2. Yes, and don't ask again for these files (a)
+  3. No, and tell Codex what to do differently (esc)
+
+  Press enter to confirm or esc to cancel

@@ -1,16 +1,18 @@
 ---
 source: tui/src/bottom_pane/chat_composer/sparkle_tests.rs
+assertion_line: 561
 expression: "format!(\"command during startup:\\n{}\\n\\nafter command:\\n{}\", text(&pending),\ntext(&completed))"
 ---
 command during startup:
+› /status      show current session configuration and token usage
+  /statusline  configure which items appear in the status line
 
 › /status
 
-  /status      显 示 当 前 会 话 配 置 和  Token 用 量
-  /statusline  配 置 状 态 栏 中 显 示 的 项 目
+                                                             100% context left
 
 after command:
                             ⠈     ⢀     ⠁                 ⠂
 ›⠁Ask Codex to do anything         ⠈      ⠁
        ⢀            ⠠     ⠄         ⠠          ⢀    ⠠     ⡀
-  ? 查 看 快 捷 键                                                  上 下 文 剩 余  100%
+  ? for shortcuts                                            100% context left

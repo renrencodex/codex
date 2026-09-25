@@ -1,7 +1,9 @@
 ---
 source: tui/src/bottom_pane/chat_composer.rs
+assertion_line: 5328
 expression: terminal.backend()
 ---
+"› /diff  show git diff (including untracked files)                                                  "
 "                                                                                                    "
 "› /dide tail                                                                                        "
 "                                                                                                    "
@@ -9,5 +11,4 @@ expression: terminal.backend()
 "                                                                                                    "
 "                                                                                                    "
 "                                                                                                    "
-"                                                                                                    "
-"  /diff  显示 Git 差异（包括未跟踪文件）                                                            " Hidden by multi-width symbols: [(10, " "), (12, " "), (19, " "), (21, " "), (23, " "), (25, " "), (27, " "), (29, " "), (31, " "), (33, " "), (35, " "), (37, " "), (39, " ")]
+"                                                                  100% context left | Vim: Replace  "

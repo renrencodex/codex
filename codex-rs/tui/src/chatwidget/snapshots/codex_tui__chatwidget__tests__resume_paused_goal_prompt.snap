@@ -2,10 +2,11 @@
 source: tui/src/chatwidget/tests/goal_menu.rs
 expression: "render_bottom_popup(&chat, 100)"
 ---
-  要 恢 复 已 暂 停 的 目 标 吗 ？
-  目 标 ： Keep improving the bare goal command until it feels calm and useful.
+  Resume paused goal?
+  Goal: Keep improving the bare goal command until it feels calm and useful.
 
-› 1. 恢 复 目 标   将 其 标 记 为 活 动 状 态 ， 并 在 空 闲 时 继 续
-  2. 保 持 暂 停   保 持 暂 停 ； 稍 后 使 用  /goal resume 恢 复
 
-  按  enter 确 认 ， 或 按  esc 返 回
+› 1. Resume goal   Mark it active and continue when idle
+  2. Leave paused  Keep it paused; use /goal resume later
+
+  enter select · esc back

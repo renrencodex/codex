@@ -2,8 +2,8 @@
 source: tui/src/bottom_pane/chat_composer.rs
 expression: terminal.backend()
 ---
+"› /btw  start a side conversation in an ephemeral fork      "
 "                                                            "
 "› /bt                                                       "
 "                                                            "
-"                                                            "
-"  /btw  在临时派生会话中开始旁路对话                        " Hidden by multi-width symbols: [(9, " "), (11, " "), (13, " "), (15, " "), (17, " "), (19, " "), (21, " "), (23, " "), (25, " "), (27, " "), (29, " "), (31, " "), (33, " "), (35, " ")]
+"                                         100% context left  "
